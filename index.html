@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.1</title>
+    <title>Toko Serba Ada - v1.0.2</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -227,7 +227,7 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.1). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.2). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
@@ -331,7 +331,7 @@
     <!-- ADMIN (PANEL PENJUAL DENGAN TEMA ELEGANT GELAP) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.1</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.2</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -392,7 +392,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.1
+            Powered by Ari GPM &bull; v1.0.2
         </div>
     </div>
     
@@ -497,7 +497,7 @@
                 return { status: "success", message: "Pesanan dibuat.", orderId: orderId };
             }
             if (action === "ro_provinsi") return { status: "success", data: { rajaongkir: { results: [{ province_id: "6", province: "DKI Jakarta" }, { province_id: "10", province: "Jawa Tengah" }, { province_id: "11", province: "Jawa Timur" }] } } };
-            if (action === "ro_kota") return { status: "success", data: { rajaongkir: { results: [{ city_id: "151", type: "Kota", city_name: "Jakarta Pusat" }, { city_id: "399", type: "Kota", city_name: "Semarang" }, { city_id: "444", type: "Kota", city_name: "Surabaya" }] } } };
+            if (action.startsWith("ro_kota")) return { status: "success", data: { rajaongkir: { results: [{ city_id: "151", type: "Kota", city_name: "Jakarta Pusat" }, { city_id: "399", type: "Kota", city_name: "Semarang" }, { city_id: "444", type: "Kota", city_name: "Surabaya" }] } } };
             if (action === "ro_ongkir") return { status: "success", data: { rajaongkir: { results: [{ code: data.courier, name: data.courier.toUpperCase(), costs: [{ service: "REG", description: "Reguler", cost: [{ value: 15000, etd: "2-3", note: "" }] }, { service: "YES", description: "Kilat", cost: [{ value: 25000, etd: "1-1", note: "" }] }] }] } } };
             return { status: "error", message: "Action salah" };
         }
@@ -568,7 +568,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.1";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.2";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -808,6 +808,7 @@
                 if(sortedTop.length > 0) { sortedTop.forEach(([nama, qty]) => { topHtml += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #334155; font-size:13px;"><span style="font-weight:600;">${nama}</span><b style="color:#818cf8;">${qty} terjual</b></div>`; }); } else { topHtml = "<p style='font-size:13px; color:#94a3b8;'>Belum ada data penjualan.</p>"; }
                 document.getElementById('repTopProduk').innerHTML = topHtml;
 
+                document.getElementById('setNamaToko_v1') // no change needed
                 document.getElementById('setNamaToko').value = res.data.settings.Nama_Toko || ""; 
                 document.getElementById('setWaAdmin').value = res.data.settings.WhatsApp_Admin || ""; 
                 document.getElementById('setLogoUrl').value = res.data.settings.Logo_URL || "";
@@ -823,7 +824,7 @@
 
         function openProductModal() { ['formIdProduk','formFotoBase64','formNama','formKategori','formStok','formDeskripsi','formHargaNormal','formHargaPromo'].forEach(id => document.getElementById(id).value = ""); document.getElementById('formStok').value = "100"; document.getElementById('imagePreview').style.display='none'; document.getElementById('productModal').style.display='flex'; }
         function editProduct(p) { openProductModal(); document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formNama').value = p.Nama_Produk; document.getElementById('formKategori').value = p.Kategori; document.getElementById('formStok').value = p.Stok || 100; document.getElementById('formDeskripsi').value = p.Deskripsi||""; document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaPromo').value = p.Harga_Promo||""; document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display='block';} }
-        async function submitProduct() { const p = { ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama').value, Kategori: document.getElementById('formKategori').value, Stok: document.getElementById('formStok').value, Deskripsi: document.getElementById('formDeskripsi').value, Harga_Normal: document.getElementById('formHargaNormal').value, Harga_Promo: document.getElementById('formHargaPromo').value, Status: document.getElementById('formStatus').value, Foto_Base64: document.getElementById('formFotoBase64').value }; if(!p.Nama_Produk || !p.Harga_Normal) { showToast("Nama dan Harga Normal wajib diisi!", "error"); return; } const r = await fetchAPI("save_product", "POST", p); if(r.status==='success'){ closeModal('productModal'); loadAdminData(); initApp();} }
+        async function submitProduct() { const p = { ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama', 'formFotoBase64').value, Nama_Produk: document.getElementById('formNama').value, Kategori: document.getElementById('formKategori').value, Stok: document.getElementById('formStok').value, Deskripsi: document.getElementById('formDeskripsi').value, Harga_Normal: document.getElementById('formHargaNormal').value, Harga_Promo: document.getElementById('formHargaPromo').value, Status: document.getElementById('formStatus').value, Foto_Base64: document.getElementById('formFotoBase64').value }; if(!p.Nama_Produk || !p.Harga_Normal) { showToast("Nama dan Harga Normal wajib diisi!", "error"); return; } const r = await fetchAPI("save_product", "POST", p); if(r.status==='success'){ closeModal('productModal'); loadAdminData(); initApp();} }
         function openBannerModal() { ['bannerId','bannerBase64'].forEach(id => document.getElementById(id).value = ""); document.getElementById('bannerPreview').style.display='none'; document.getElementById('bannerModal').style.display='flex'; }
         async function submitBanner() { const b = { ID_Banner: document.getElementById('bannerId').value, Status: document.getElementById('bannerStatus').value, Foto_Base64: document.getElementById('bannerBase64').value }; const r = await fetchAPI("save_banner", "POST", b); if(r.status==='success'){ closeModal('bannerModal'); loadAdminData(); initApp();} }
 
