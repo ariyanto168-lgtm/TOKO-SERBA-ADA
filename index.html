@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.4</title>
+    <title>Toko Serba Ada - v1.0.5</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -227,12 +227,12 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.4). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.5). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR (DENGAN MENU PESANAN PELANGGAN) -->
+        <!-- BOTTOM NAVIGATION BAR -->
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="scrollToTop()">
                 <i>🏠</i> Beranda
@@ -265,6 +265,16 @@
             <div id="customerOrdersResult">
                 <p style="font-size:13px; color:var(--text-muted); text-align:center; padding:20px;">Belum ada data dicari.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP LIHAT BUKTI TRANSFER (MENCEGAH BLANK/LOGOUT) -->
+    <div class="modal-overlay center" id="proofModal" onclick="if(event.target===this) closeModal('proofModal')">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-drag-handle" onclick="closeModal('proofModal')"></div>
+            <h3 style="margin-bottom: 16px; font-weight: 800;">Bukti Pembayaran</h3>
+            <img id="proofImageElement" src="" style="width: 100%; max-height: 350px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px;">
+            <button class="btn btn-secondary" style="width: 100%;" onclick="closeModal('proofModal')">Tutup</button>
         </div>
     </div>
 
@@ -352,7 +362,7 @@
     <!-- ADMIN (PANEL PENJUAL DENGAN TEMA ELEGANT GELAP) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.4</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.5</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -413,7 +423,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.4
+            Powered by Ari GPM &bull; v1.0.5
         </div>
     </div>
     
@@ -567,6 +577,11 @@
             if(savedWa) fetchCustomerOrders();
         }
 
+        function viewProofModal(base64Url) {
+            document.getElementById('proofImageElement').src = base64Url;
+            document.getElementById('proofModal').style.display = 'flex';
+        }
+
         async function fetchCustomerOrders() {
             const wa = document.getElementById('checkWaInput').value.trim();
             if(!wa) { showToast("Masukkan nomor WhatsApp!", "error"); return; }
@@ -581,7 +596,7 @@
                     items.forEach(it => {
                         itemsHtml += `<div style="display:flex; justify-content:space-between; font-size:12px; margin-top:4px; color:var(--text-muted);"><span>${it.Jumlah}x ${it.Nama_Produk}</span><span>${formatRp(it.Subtotal)}</span></div>`;
                     });
-                    let buktiBtn = o.Bukti_Transfer ? `<a href="${o.Bukti_Transfer}" target="_blank" style="font-size:12px; color:var(--primary); font-weight:600; display:inline-block; margin-top:8px;">Lihat Bukti Transfer</a>` : '';
+                    let buktiBtn = o.Bukti_Transfer ? `<button class="btn btn-outline" style="font-size:12px; padding:6px 12px; margin-top:10px; width:100%; border-color:var(--primary); color:var(--primary);" onclick="viewProofModal('${o.Bukti_Transfer}')">Lihat Bukti Transfer</button>` : '';
                     html += `
                         <div style="background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:14px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -644,7 +659,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.4";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.5";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -870,7 +885,7 @@
                 document.getElementById('adminBannerList').innerHTML = res.data.banners.length ? res.data.banners.map(b => `<div class="admin-card"><img src="${b.Foto_URL}" style="width:80px;height:40px;object-fit:cover;border-radius:6px; border:1px solid #334155;"><div style="flex:1; margin-left:12px;"><b>Banner Promosi</b><br><span class="badge ${b.Status==='Aktif'?'aktif':'nonaktif'}">${b.Status}</span></div><button class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="deleteItem('delete_banner','${b.ID_Banner}')">Hapus</button></div>`).join('') : '<p style="color:#94a3b8;">Belum ada banner.</p>';
                 
                 document.getElementById('adminOrderList').innerHTML = res.data.orders.length ? res.data.orders.map(o => {
-                    const btnBukti = o.Bukti_Transfer ? `<a href="${o.Bukti_Transfer}" target="_blank" class="btn btn-outline" style="font-size:12px; padding:6px 12px; margin-bottom:12px; color:#818cf8; border-color:#818cf8;">Lihat Bukti Pembayaran</a>` : '';
+                    const btnBukti = o.Bukti_Transfer ? `<button class="btn btn-outline" style="font-size:12px; padding:6px 12px; margin-bottom:12px; color:#818cf8; border-color:#818cf8; width:100%;" onclick="viewProofModal('${o.Bukti_Transfer}')">Lihat Bukti Pembayaran</button>` : '';
                     return `<div class="admin-card" style="flex-direction:column; align-items:flex-start;"><div style="width:100%; display:flex; justify-content:space-between; margin-bottom:6px;"><b>${o.ID_Pesanan}</b> <span class="badge ${o.Status_Pesanan.toLowerCase()}">${o.Status_Pesanan}</span></div><div style="font-size:13px; margin-bottom:12px; line-height:1.5;"><b>${o.Nama_Pembeli}</b> (${o.WhatsApp})<br><span style="color:#94a3b8">${o.Tanggal}</span><br><span style="color:#818cf8; font-weight:800; font-size:15px;">Total: ${formatRp(o.Total)}</span></div>${btnBukti}<select style="width:100%; padding:10px; border-radius:10px;" onchange="updateStatus('${o.ID_Pesanan}', this.value)"><option disabled selected>Ubah Status Pesanan...</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div>`
                 }).join('') : '<p style="color:#94a3b8;">Belum ada pesanan masuk.</p>';
 
