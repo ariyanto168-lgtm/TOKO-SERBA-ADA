@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.6</title>
+    <title>Toko Serba Ada - v1.0.7</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -233,7 +233,7 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.6). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.7). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
@@ -344,12 +344,12 @@
             <div class="ongkir-box" id="roWrapper" style="display:block;">
                 <h4 style="margin-bottom:12px; font-weight: 700;">Opsi Pengiriman</h4>
                 
-                <!-- PILIHAN KURIR TOKO (MANUAL TARIF PENJUAL) -->
-                <div id="storeCourierOptionContainer" style="margin-bottom: 10px;"></div>
+                <!-- KURIR TOKO (Otomatis tampil jika penjual mengisi tarif > 0) -->
+                <div id="storeCourierOptionContainer" style="margin-bottom: 12px;"></div>
 
-                <div class="form-group"><label>Provinsi*</label><select id="roProv" onchange="loadRoCities()"><option value="">Memuat...</option></select></div>
-                <div class="form-group"><label>Kota/Kabupaten*</label><select id="roKota" onchange="calculateRoCost()"><option value="">Pilih Provinsi Dahulu</option></select></div>
-                <div class="form-group"><label>Ekspedisi Eksternal*</label>
+                <div class="form-group"><label>Provinsi (Ekspedisi Lain)</label><select id="roProv" onchange="loadRoCities()"><option value="">Memuat...</option></select></div>
+                <div class="form-group"><label>Kota/Kabupaten</label><select id="roKota" onchange="calculateRoCost()"><option value="">Pilih Provinsi Dahulu</option></select></div>
+                <div class="form-group"><label>Ekspedisi Eksternal</label>
                     <select id="roKurir" onchange="calculateRoCost()">
                         <option value="jne" selected>JNE</option><option value="pos">POS</option><option value="tiki">TIKI</option>
                     </select>
@@ -379,7 +379,7 @@
     <!-- ADMIN (PANEL PENJUAL DENGAN TEMA ELEGANT GELAP) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.6</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.7</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -443,7 +443,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.6
+            Powered by Ari GPM &bull; v1.0.7
         </div>
     </div>
     
@@ -707,7 +707,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.6";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.7";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -811,16 +811,10 @@
             let html = ""; cart.forEach(i => html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.qty}x ${i.nama}</span><span>${formatRp(i.harga*i.qty)}</span></div>`);
             document.getElementById('checkoutSummary').innerHTML = html;
             
-            // Render opsi Kurir Toko jika diatur penjual
-            const tarifKurirToko = Number(storeSettings.Tarif_Kurir_Toko || 0);
+            // Selalu tampilkan opsi Kurir Toko (jika tarif diset > 0, atau tampilkan default aktif dengan tarif tersimpan)
+            const tarifKurirToko = Number(storeSettings.Tarif_Kurir_Toko || storeSettings.Tararif_Kurir_Toko || 15000);
             const storeContainer = document.getElementById('storeCourierOptionContainer');
-            if(tarifKurirToko > 0) {
-                storeContainer.innerHTML = `<label class="ongkir-option"><input type="radio" name="roService" value="${tarifKurirToko}" data-service="Kurir Toko (Manual Penjual)" onchange="selectOngkir(this)"> <div style="display:flex; justify-content:space-between; align-items:center;"><span><b>🛵 Kurir Toko</b> (Pengiriman langsung oleh toko)</span> <span style="color:var(--primary); font-weight:800;">${formatRp(tarifKurirToko)}</span></div></label>`;
-                storeContainer.style.display = 'block';
-            } else {
-                storeContainer.innerHTML = "";
-                storeContainer.style.display = 'none';
-            }
+            storeContainer.innerHTML = `<label class="ongkir-option"><input type="radio" name="roService" value="${tarifKurirToko}" data-service="Kurir Toko (Antar Langsung)" onchange="selectOngkir(this)"> <div style="display:flex; justify-content:space-between; align-items:center;"><span><b>🛵 Kurir Toko</b> (Antar langsung oleh toko)</span> <span style="color:var(--primary); font-weight:800;">${formatRp(tarifKurirToko)}</span></div></label>`;
 
             const hasRek = storeSettings.Info_Rekening && storeSettings.Info_Rekening.trim() !== "";
             const hasQris = storeSettings.QRIS_URL && storeSettings.QRIS_URL.trim() !== "";
@@ -862,7 +856,6 @@
         }
 
         async function calculateRoCost() {
-            // Uncheck store courier if user chooses external courier
             const storeRadio = document.querySelector('#storeCourierOptionContainer input[name="roService"]');
             if(storeRadio) storeRadio.checked = false;
 
@@ -880,9 +873,11 @@
         function selectOngkir(r) { 
             ongkosKirim = parseInt(r.value); 
             currKurirLayanan = r.getAttribute("data-service"); 
-            // Jika memilih kurir toko, uncheck ekspedisi eksternal
             if(r.name === "roService" && r.getAttribute("data-service").includes("Kurir Toko")) {
                 document.querySelectorAll('#roServicesResult input').forEach(inp => inp.checked = false);
+            } else {
+                const storeRadio = document.querySelector('#storeCourierOptionContainer input[name="roService"]');
+                if(storeRadio) storeRadio.checked = false;
             }
             updateCheckoutTotal(); 
         }
@@ -984,7 +979,7 @@
                 document.getElementById('setNamaToko').value = res.data.settings.Nama_Toko || ""; 
                 document.getElementById('setWaAdmin').value = res.data.settings.WhatsApp_Admin || ""; 
                 document.getElementById('setLogoUrl').value = res.data.settings.Logo_URL || "";
-                document.getElementById('setTarifKurirToko').value = res.data.settings.Tararif_Kurir_Toko || res.data.settings.Tarif_Kurir_Toko || 0;
+                document.getElementById('setTarifKurirToko').value = res.data.settings.Tararif_Kurir_Toko || res.data.settings.Tarif_Kurir_Toko || 15000;
                 document.getElementById('setRoKey').value = res.data.settings.RajaOngkir_Key || ""; 
                 document.getElementById('setRoOrigin').value = res.data.settings.RajaOngkir_Origin || "";
                 document.getElementById('setInfoRekening').value = res.data.settings.Info_Rekening || "";
