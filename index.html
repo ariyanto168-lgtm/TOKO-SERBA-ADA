@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Serba Ada - Setup Tahap 1</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #0f172a;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        h2 { margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        button:hover { background-color: #1d4ed8; }
+        .loading {
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        #logArea {
+            background: #1e293b;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Tahap 1: Test Fondasi REST API</h2>
+        
+        <div class="form-group">
+            <label for="gasUrl">Masukkan URL Web App GAS (GAS_URL):</label>
+            <input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+
+        <button onclick="testConnection('ping')">1. Test Ping Koneksi (GET)</button>
+        <button onclick="testConnection('setup_database')">2. Auto Generate Database Sheets (POST)</button>
+        
+        <div id="loadingBox" class="loading">Memproses data ke server...</div>
+        
+        <h4>Log Respons Backend:</h4>
+        <div id="logArea">Belum ada aktivitas...</div>
+    </div>
+
+    <script>
+        /**
+         * FUNGSI CORE FETCH API UNTUK FAST-UI
+         * Menggunakan fetch() standar, dipisahkan logic-nya agar rapi
+         */
+        async function fetchAPI(url, action, method = 'GET', data = {}) {
+            // Setup loading state
+            document.getElementById('loadingBox').style.display = 'block';
+            document.getElementById('logArea').innerText = "Menunggu respons server...";
+
+            try {
+                let fetchUrl = url;
+                let options = { method: method };
+
+                if (method === 'GET') {
+                    fetchUrl = `${url}?action=${action}`;
+                } else if (method === 'POST') {
+                    // TRICK CORS APPS SCRIPT: Gunakan text/plain agar browser tidak mengirim Preflight OPTIONS
+                    options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+                    
+                    let payload = { action: action, data: data };
+                    options.body = JSON.stringify(payload);
+                }
+
+                // Call REST API
+                const response = await fetch(fetchUrl, options);
+                
+                // Parse JSON
+                const result = await response.json();
+                
+                // Print hasil
+                document.getElementById('logArea').innerText = JSON.stringify(result, null, 2);
+                
+                return result;
+
+            } catch (error) {
+                const errorMsg = "ERROR FETCH: " + error.message;
+                document.getElementById('logArea').innerText = errorMsg;
+                // Notifikasi gagal yang jelas
+                alert("Koneksi gagal. Pastikan URL GAS benar dan internet stabil.");
+            } finally {
+                // Matikan loading state
+                document.getElementById('loadingBox').style.display = 'none';
+            }
+        }
+
+        // Fungsi Trigger dari Tombol
+        function testConnection(action) {
+            const urlInput = document.getElementById('gasUrl').value.trim();
+            if(!urlInput) {
+                alert("https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec ");
+                return;
+            }
+
+            // Simpan sementara di localStorage agar tidak repot copas saat refresh
+            localStorage.setItem("TEMP_GAS_URL", urlInput);
+
+            // Jika ping gunakan GET, jika setup_database gunakan POST sebagai contoh variasi
+            let method = action === 'ping' ? 'GET' : 'POST';
+            
+            fetchAPI(urlInput, action, method);
+        }
+
+        // Auto load URL dari localStorage jika ada
+        window.onload = () => {
+            const savedUrl = localStorage.getItem("TEMP_GAS_URL");
+            if(savedUrl) document.getElementById('gasUrl').value = savedUrl;
+        }
+    </script>
+</body>
+</html>
