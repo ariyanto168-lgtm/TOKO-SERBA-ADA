@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.0</title>
+    <title>Toko Serba Ada - v1.0.1</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -227,9 +227,9 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.0). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.1). All Rights Reserved.<br>
             Powered by Ari GPM<br>
-            <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Penjual: tambahkan <b>#admin</b> di akhir alamat link web ini</span>
+            <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
 
         <!-- BOTTOM NAVIGATION BAR (KHUSUS PELANGGAN - TANPA TOMBOL ADMIN) -->
@@ -331,7 +331,7 @@
     <!-- ADMIN (PANEL PENJUAL DENGAN TEMA ELEGANT GELAP) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.0</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.1</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -392,7 +392,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.0
+            Powered by Ari GPM &bull; v1.0.1
         </div>
     </div>
     
@@ -548,8 +548,14 @@
         document.addEventListener("DOMContentLoaded", () => { 
             updateCartBadge(); 
             initApp(); 
-            if (window.location.hash === "#admin") {
-                openAdminLogin();
+            
+            // Periksa apakah sesi admin aktif atau link diakses dengan #admin
+            if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
+                document.getElementById('userView').style.display = 'none'; 
+                document.getElementById('adminView').style.display = 'block'; 
+                loadAdminData();
+            } else if (window.location.hash === "#admin") {
+                setTimeout(openAdminLogin, 250);
             }
         });
 
@@ -562,7 +568,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.0";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.1";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -755,6 +761,8 @@
         function submitAdminPin() {
             const pin = document.getElementById('adminPinInput').value;
             if (pin === ADMIN_PIN) {
+                sessionStorage.setItem("isAdminLoggedIn", "true");
+                window.location.hash = "#admin";
                 closeModal('adminPinModal');
                 document.getElementById('userView').style.display = 'none'; 
                 document.getElementById('adminView').style.display = 'block'; 
@@ -766,7 +774,9 @@
         }
 
         function closeAdmin() { 
+            sessionStorage.removeItem("isAdminLoggedIn");
             window.location.hash = "";
+            window.history.replaceState({}, document.title, window.location.pathname);
             document.getElementById('adminView').style.display = 'none'; 
             document.getElementById('userView').style.display = 'block'; 
             initApp(); 
