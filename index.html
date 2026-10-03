@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.7</title>
+    <title>Toko Serba Ada - v1.0.8</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -77,12 +77,13 @@
         .banner-item img { width: 100%; height: 170px; object-fit: cover; display: block; }
         @media (min-width: 768px) { .banner-item img { height: 300px; } }
 
-        /* CATEGORIES CHIPS */
-        .categories-wrapper { padding: 18px 20px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; max-width: 1200px; margin: 0 auto; }
-        .categories-wrapper::-webkit-scrollbar { display: none; }
-        .category-chip { display: inline-block; padding: 9px 20px; background: white; border: 1.5px solid var(--border); border-radius: 22px; margin-right: 10px; font-size: 13px; cursor: pointer; font-weight: 600; color: var(--text-muted); box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.25s; }
-        .category-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
-        .category-chip.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+        /* VERTICAL CATEGORY LAYOUT (PELANGGAN) */
+        .categories-wrapper { padding: 18px 20px; max-width: 1200px; margin: 0 auto; }
+        .category-list-vertical { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        @media (min-width: 768px) { .category-list-vertical { grid-template-columns: repeat(4, 1fr); } }
+        .category-card-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: white; border: 1.5px solid var(--border); border-radius: 16px; cursor: pointer; font-weight: 600; color: var(--text-muted); box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.25s; }
+        .category-card-item:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+        .category-card-item.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
         
         .container { padding: 0 20px; max-width: 1200px; margin: 0 auto; }
         
@@ -204,10 +205,8 @@
             <div class="banner-slider" id="bannerContainer"></div>
         </div>
 
-        <!-- KATEGORI CHIPS -->
-        <div class="categories-wrapper" id="categoryContainer">
-            <div class="category-chip active">Semua</div>
-        </div>
+        <!-- KATEGORI VERTIKAL (PELANGGAN) -->
+        <div class="categories-wrapper" id="categoryContainer"></div>
 
         <!-- KATALOG UTAMA -->
         <main class="container">
@@ -233,7 +232,7 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.7). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.8). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
@@ -344,7 +343,7 @@
             <div class="ongkir-box" id="roWrapper" style="display:block;">
                 <h4 style="margin-bottom:12px; font-weight: 700;">Opsi Pengiriman</h4>
                 
-                <!-- KURIR TOKO (Otomatis tampil jika penjual mengisi tarif > 0) -->
+                <!-- KURIR TOKO -->
                 <div id="storeCourierOptionContainer" style="margin-bottom: 12px;"></div>
 
                 <div class="form-group"><label>Provinsi (Ekspedisi Lain)</label><select id="roProv" onchange="loadRoCities()"><option value="">Memuat...</option></select></div>
@@ -379,7 +378,7 @@
     <!-- ADMIN (PANEL PENJUAL DENGAN TEMA ELEGANT GELAP) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.7</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.8</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -396,6 +395,13 @@
 
         <div class="admin-container admin-tab-content" id="adminTab_produk">
             <button class="btn btn-primary" style="width:100%; margin-bottom: 20px;" onclick="openProductModal()">+ Tambah Produk Baru</button>
+            
+            <!-- KARTU DASHBOARD KATEGORI DI ADMIN -->
+            <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: #cbd5e1; margin-bottom: 10px;">Filter Kategori (Kartu Dashboard)</h4>
+                <div id="adminCategoryDashboard" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;"></div>
+            </div>
+
             <div id="adminProductList">Memuat...</div>
         </div>
         
@@ -443,7 +449,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.7
+            Powered by Ari GPM &bull; v1.0.8
         </div>
     </div>
     
@@ -475,7 +481,8 @@
         const ADMIN_PIN = "123456"; 
         
         let allProducts = [], allBanners = [], storeSettings = {}, cart = JSON.parse(localStorage.getItem("TokoCart_v1")) || [];
-        let activeCategory = "Semua"; let subtotalCart = 0, ongkosKirim = 0, currKurirLayanan = "";
+        let activeCategory = "Semua", adminActiveCategory = "Semua"; 
+        let subtotalCart = 0, ongkosKirim = 0, currKurirLayanan = "";
         let currentHistoryFilter = "Semua", cachedCustomerOrders = [];
         document.getElementById('footerYear').innerText = new Date().getFullYear();
 
@@ -707,15 +714,24 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.7";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.8";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
+        
+        // RENDER KATEGORI VERTIKAL (PELANGGAN)
         function renderCategories() {
-            const c = document.getElementById('categoryContainer'); let h = `<div class="category-chip ${activeCategory === 'Semua' ? 'active' : ''}" onclick="filterCategory('Semua')">Semua</div>`;
-            [...new Set(allProducts.map(p => p.Kategori))].filter(Boolean).forEach(cat => { h += `<div class="category-chip ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`; });
+            const c = document.getElementById('categoryContainer');
+            let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
+            let h = `<div style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--text-muted);">Kategori Produk</div><div class="category-list-vertical">`;
+            cats.forEach(cat => {
+                let count = cat === "Semua" ? allProducts.length : allProducts.filter(p => p.Kategori === cat).length;
+                h += `<div class="category-card-item ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')"><span>${cat}</span> <span style="font-size:11px; opacity:0.8; font-weight:700;">(${count})</span></div>`;
+            });
+            h += `</div>`;
             c.innerHTML = h;
         }
+
         function filterCategory(cat) { activeCategory = cat; renderCategories(); document.getElementById('searchInput').value = ""; document.getElementById('sectionTitle').innerText = cat === "Semua" ? "Katalog Pilihan" : "Kategori: " + cat; renderKatalogVisitor(cat === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === cat)); }
         
         function renderKatalogVisitor(products) {
@@ -811,7 +827,6 @@
             let html = ""; cart.forEach(i => html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.qty}x ${i.nama}</span><span>${formatRp(i.harga*i.qty)}</span></div>`);
             document.getElementById('checkoutSummary').innerHTML = html;
             
-            // Selalu tampilkan opsi Kurir Toko (jika tarif diset > 0, atau tampilkan default aktif dengan tarif tersimpan)
             const tarifKurirToko = Number(storeSettings.Tarif_Kurir_Toko || storeSettings.Tararif_Kurir_Toko || 15000);
             const storeContainer = document.getElementById('storeCourierOptionContainer');
             storeContainer.innerHTML = `<label class="ongkir-option"><input type="radio" name="roService" value="${tarifKurirToko}" data-service="Kurir Toko (Antar Langsung)" onchange="selectOngkir(this)"> <div style="display:flex; justify-content:space-between; align-items:center;"><span><b>🛵 Kurir Toko</b> (Antar langsung oleh toko)</span> <span style="color:var(--primary); font-weight:800;">${formatRp(tarifKurirToko)}</span></div></label>`;
@@ -952,10 +967,31 @@
 
         function switchAdminTab(t) { document.querySelectorAll('.admin-tab-btn').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
+        // FILTER ADMIN PRODUK BERDASARKAN KARTU DASHBOARD KATEGORI
+        function filterAdminCategory(cat) {
+            adminActiveCategory = cat;
+            loadAdminData();
+        }
+
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "GET");
             if (res.status === "success") {
-                document.getElementById('adminProductList').innerHTML = res.data.products.length ? res.data.products.map(p => `<div class="admin-card"><img src="${p.Foto_URL||'https://via.placeholder.com/50'}" style="width:50px;height:50px;object-fit:cover;border-radius:10px; border:1px solid #334155;"><div style="flex:1; margin-left:12px;"><b>${p.Nama_Produk}</b><br><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> <span style="font-size:12px; color:#94a3b8; font-weight:600;">Stok: ${p.Stok} | ${formatRp(p.Harga_Normal)}</span></div><div style="display:flex;flex-direction:column;gap:6px;"><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick='editProduct(${JSON.stringify(p)})'>Edit</button> <button class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="deleteItem('delete_product','${p.ID_Produk}')">Hapus</button></div></div>`).join('') : '<p style="color:#94a3b8;">Belum ada produk.</p>';
+                let allProds = res.data.products;
+                
+                // RENDER KARTU DASHBOARD KATEGORI DI ADMIN
+                let cats = [...new Set(allProds.map(p => p.Kategori))].filter(Boolean);
+                let catCardHtml = `<div onclick="filterAdminCategory('Semua')" style="background:${adminActiveCategory==='Semua'?'rgba(99,102,241,0.25)':'#1e293b'}; border:1.5px solid ${adminActiveCategory==='Semua'?'#818cf8':'#334155'}; border-radius:14px; padding:14px; cursor:pointer; text-align:center; transition:0.2s;"><b style="font-size:13px;">Semua</b><div style="font-size:12px; color:#94a3b8; margin-top:2px;">${allProds.length} Produk</div></div>`;
+                cats.forEach(cat => {
+                    let cnt = allProds.filter(p => p.Kategori === cat).length;
+                    let isSel = adminActiveCategory === cat;
+                    catCardHtml += `<div onclick="filterAdminCategory('${cat}')" style="background:${isSel?'rgba(99,102,241,0.25)':'#1e293b'}; border:1.5px solid ${isSel?'#818cf8':'#334155'}; border-radius:14px; padding:14px; cursor:pointer; text-align:center; transition:0.2s;"><b style="font-size:13px; display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${cat}</b><div style="font-size:12px; color:#94a3b8; margin-top:2px;">${cnt} Produk</div></div>`;
+                });
+                document.getElementById('adminCategoryDashboard').innerHTML = catCardHtml;
+
+                let filteredProds = adminActiveCategory === "Semua" ? allProds : allProds.filter(p => p.Kategori === adminActiveCategory);
+
+                document.getElementById('adminProductList').innerHTML = filteredProds.length ? filteredProds.map(p => `<div class="admin-card"><img src="${p.Foto_URL||'https://via.placeholder.com/50'}" style="width:50px;height:50px;object-fit:cover;border-radius:10px; border:1px solid #334155;"><div style="flex:1; margin-left:12px;"><b>${p.Nama_Produk}</b><br><span style="font-size:11px; background:#334155; padding:2px 8px; border-radius:8px; color:#cbd5e1; display:inline-block; margin-top:3px;">${p.Kategori}</span> <span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> <span style="font-size:12px; color:#94a3b8; font-weight:600;">Stok: ${p.Stok} | ${formatRp(p.Harga_Normal)}</span></div><div style="display:flex;flex-direction:column;gap:6px;"><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick='editProduct(${JSON.stringify(p)})'>Edit</button> <button class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="deleteItem('delete_product','${p.ID_Produk}')">Hapus</button></div></div>`).join('') : '<p style="color:#94a3b8; text-align:center; padding:20px;">Tidak ada produk dalam kategori ini.</p>';
+                
                 document.getElementById('adminBannerList').innerHTML = res.data.banners.length ? res.data.banners.map(b => `<div class="admin-card"><img src="${b.Foto_URL}" style="width:80px;height:40px;object-fit:cover;border-radius:8px; border:1px solid #334155;"><div style="flex:1; margin-left:12px;"><b>Banner Promosi</b><br><span class="badge ${b.Status==='Aktif'?'aktif':'nonaktif'}">${b.Status}</span></div><button class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="deleteItem('delete_banner','${b.ID_Banner}')">Hapus</button></div>`).join('') : '<p style="color:#94a3b8;">Belum ada banner.</p>';
                 
                 document.getElementById('adminOrderList').innerHTML = res.data.orders.length ? res.data.orders.map(o => {
