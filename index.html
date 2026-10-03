@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.13</title>
+    <title>Toko Serba Ada - v1.0.14</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -114,33 +114,35 @@
         
         .container { padding: 0 20px; max-width: 1200px; margin: 0 auto; }
         
-        /* PRODUCT GRID & CARD */
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
+        /* PRODUCT GRID & CARD: 3 KOLOM HORISONTAL */
+        .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
         
-        .product-card { background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
-        .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: #c7d2fe; }
+        .product-card { background: var(--surface); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: #c7d2fe; }
         
-        .product-img-wrapper { position: relative; width: 100%; height: 170px; background: #f1f5f9; overflow: hidden; }
+        .product-img-wrapper { position: relative; width: 100%; height: 120px; background: #f1f5f9; overflow: hidden; }
         body.dark-theme .product-img-wrapper { background: #334155; }
-        @media (min-width: 768px) { .product-img-wrapper { height: 210px; } }
+        @media (min-width: 768px) { .product-img-wrapper { height: 180px; } }
         .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .product-card:hover .product-img { transform: scale(1.08); }
         
-        .discount-badge { position: absolute; top: 12px; left: 12px; background: var(--danger); color: white; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 10px; box-shadow: 0 3px 10px rgba(239,68,68,0.35); z-index: 2; }
-        .wishlist-btn { position: absolute; top: 12px; right: 12px; background: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; z-index: 2; }
+        .discount-badge { position: absolute; top: 8px; left: 8px; background: var(--danger); color: white; font-size: 9px; font-weight: 800; padding: 3px 6px; border-radius: 8px; box-shadow: 0 2px 8px rgba(239,68,68,0.35); z-index: 2; }
+        .wishlist-btn { position: absolute; top: 8px; right: 8px; background: white; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; z-index: 2; font-size: 12px; }
         body.dark-theme .wishlist-btn { background: #1e293b; color: white; }
         .wishlist-btn:hover { transform: scale(1.1); }
         
-        .product-info { padding: 16px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-        .product-title { font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--text-main); margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-info { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+        .product-title { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--text-main); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        @media (min-width: 768px) { .product-title { font-size: 14px; } }
         
-        .rating-stars { font-size: 11px; color: var(--secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
-        .price-box { margin-bottom: 8px; }
-        .price-normal { font-size: 11px; color: var(--text-muted); text-decoration: line-through; display: block; }
-        .price-final { font-size: 16px; font-weight: 800; color: var(--primary); letter-spacing: -0.3px; }
+        .rating-stars { font-size: 10px; color: var(--secondary); margin-bottom: 4px; display: flex; align-items: center; gap: 3px; }
+        .price-box { margin-bottom: 6px; }
+        .price-normal { font-size: 10px; color: var(--text-muted); text-decoration: line-through; display: block; }
+        .price-final { font-size: 13px; font-weight: 800; color: var(--primary); letter-spacing: -0.3px; }
+        @media (min-width: 768px) { .price-final { font-size: 16px; } }
         
-        .stock-info { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; font-weight: 500; }
+        .stock-info { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
         .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted); background: white; border-radius: 20px; border: 1.5px dashed var(--border); }
         
         /* TRUST SIGNALS & FOOTER */
@@ -217,7 +219,6 @@
                     <img id="uiLogoImg" src="" alt="Logo">
                     <span id="uiStoreName">Toko<span>Ku</span></span>
                 </div>
-                <!-- TOMBOL ATAS DIRAPIKAN: HANYA TEMA & SHARE, WISHLIST & KERANJANG PINDAH KE BAWAH -->
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="toggleTheme()" title="Ganti Tema Terang/Gelap" id="themeToggleBtn">
                         <i>🌙</i>
@@ -241,11 +242,11 @@
         <!-- KATEGORI VERTIKAL -->
         <div class="categories-wrapper" id="categoryContainer"></div>
 
-        <!-- KATALOG UTAMA -->
+        <!-- KATALOG UTAMA (3 KOLOM HORISONTAL) -->
         <main class="container">
             <h2 id="sectionTitle" style="font-size:18px; font-weight: 800; margin-bottom: 16px; color: var(--text-main); letter-spacing: -0.3px;">Katalog Pilihan</h2>
             <div class="product-grid" id="productGrid">
-                <div class="product-card" style="height:250px; background:#e2e8f0; animation: pulse 1.5s infinite;"></div>
+                <div class="product-card" style="height:220px; background:#e2e8f0; animation: pulse 1.5s infinite;"></div>
             </div>
         </main>
 
@@ -253,7 +254,7 @@
         <div class="trust-section">
             <div class="trust-grid">
                 <div class="trust-item">
-                    <i>🛡️️</i> 100% Aman & Terpercaya
+                    <i>🛡</i> 100% Aman & Terpercaya
                 </div>
                 <div class="trust-item">
                     <i>⚡</i> Pengiriman Cepat
@@ -265,12 +266,12 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.13). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.14). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR (NAVIGASI BAWAH YANG LENGKAP & STABIL) -->
+        <!-- BOTTOM NAVIGATION BAR -->
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="scrollToTop()">
                 <i>🏠</i> Beranda
@@ -456,7 +457,7 @@
     <!-- ADMIN (PANEL PENJUAL) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.13</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.14</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -526,7 +527,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.13
+            Powered by Ari GPM &bull; v1.0.14
         </div>
     </div>
     
@@ -584,7 +585,7 @@
 
         function mockFetchAPI(action, data) {
             let db = JSON.parse(localStorage.getItem("TokoMock_DB_v1"));
-            if (!db) {
+            if (!db || !db.products || db.products.length === 0) {
                 db = {
                     products: [
                         { ID_Produk: "PRD1", Nama_Produk: "Kemeja Flanel Casual Premium", Kategori: "Pakaian", Deskripsi: "Kemeja flanel bahan adem berkualitas tinggi.", Harga_Normal: 150000, Harga_Promo: 120000, Stok: 25, Status: "Aktif", Foto_URL: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400" },
@@ -875,12 +876,16 @@
             updateCartBadge(); 
             updateWishlistBadge();
             initApp(); 
-            if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
-                document.getElementById('userView').style.display = 'none'; 
-                document.getElementById('adminView').style.display = 'block'; 
-                loadAdminData();
-            } else if (window.location.hash === "#admin") {
-                setTimeout(openAdminLogin, 250);
+            
+            // Perbaikan penanganan admin login & hash
+            if (sessionStorage.getItem("isAdminLoggedIn") === "true" || window.location.hash === "#admin") {
+                if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
+                    document.getElementById('userView').style.display = 'none'; 
+                    document.getElementById('adminView').style.display = 'block'; 
+                    loadAdminData();
+                } else {
+                    setTimeout(openAdminLogin, 250);
+                }
             }
         });
 
@@ -893,7 +898,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.13";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.14";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -926,8 +931,8 @@
                 const rat = getProductRating(p.ID_Produk);
 
                 const harga = p.Harga_Promo ? `<span class="price-normal">${formatRp(p.Harga_Normal)}</span> <div class="price-final">${formatRp(p.Harga_Promo)}</div>` : `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`;
-                const stokText = Number(p.Stok) <= 0 ? `<div style="color:var(--danger); font-size:11px; font-weight:700;">Stok Habis</div>` : `<div class="stock-info">Stok: ${p.Stok}</div>`;
-                const btnAction = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="opacity:0.6; cursor:not-allowed;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:10px 12px; font-size:13px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Keranjang</button>`;
+                const stokText = Number(p.Stok) <= 0 ? `<div style="color:var(--danger); font-size:10px; font-weight:700;">Stok Habis</div>` : `<div class="stock-info">Stok: ${p.Stok}</div>`;
+                const btnAction = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; opacity:0.6; cursor:not-allowed;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size:11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Keranjang</button>`;
                 
                 grid.innerHTML += `
                     <div class="product-card" onclick="openProductDetail('${p.ID_Produk}')">
@@ -939,7 +944,7 @@
                         <div class="product-info">
                             <div>
                                 <div class="product-title">${p.Nama_Produk}</div>
-                                <div class="rating-stars">⭐ ${rat.avg} <span style="color:var(--text-muted); font-size:10px;">(${rat.count})</span></div>
+                                <div class="rating-stars">⭐ ${rat.avg}</div>
                                 <div class="price-box">${harga}</div>
                             </div>
                             <div>
@@ -959,12 +964,12 @@
             const isWishlisted = wishlist.includes(p.ID_Produk);
             const rat = getProductRating(p.ID_Produk);
             
-            const related = allProducts.filter(x => x.Kategori === p.Kategori && x.ID_Produk !== p.ID_Produk).slice(0, 4);
+            const related = allProducts.filter(x => x.Kategori === p.Kategori && x.ID_Produk !== p.ID_Produk).slice(0, 3);
             let relatedHtml = "";
             if (related.length > 0) {
-                relatedHtml += `<div style="margin-top:24px; border-top:1px solid var(--border); padding-top:16px;"><h4 style="font-weight:800; font-size:15px; margin-bottom:12px;">Produk Terkait (${p.Kategori})</h4><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">`;
+                relatedHtml += `<div style="margin-top:24px; border-top:1px solid var(--border); padding-top:16px;"><h4 style="font-weight:800; font-size:15px; margin-bottom:12px;">Produk Terkait (${p.Kategori})</h4><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">`;
                 related.forEach(r => {
-                    relatedHtml += `<div class="product-card" style="cursor:pointer;" onclick="openProductDetail('${r.ID_Produk}')"><img src="${r.Foto_URL}" style="width:100%; height:110px; object-fit:cover;"><div style="padding:10px;"><div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.Nama_Produk}</div><div style="font-size:13px; color:var(--primary); font-weight:800;">${formatRp(r.Harga_Promo||r.Harga_Normal)}</div></div></div>`;
+                    relatedHtml += `<div class="product-card" style="cursor:pointer;" onclick="openProductDetail('${r.ID_Produk}')"><img src="${r.Foto_URL}" style="width:100%; height:90px; object-fit:cover;"><div style="padding:8px;"><div style="font-size:11px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.Nama_Produk}</div><div style="font-size:12px; color:var(--primary); font-weight:800;">${formatRp(r.Harga_Promo||r.Harga_Normal)}</div></div></div>`;
                 });
                 relatedHtml += `</div></div>`;
             }
@@ -1277,7 +1282,7 @@
                                 <div style="font-size:11px; color:#94a3b8; margin-top:2px;">${cnt} Produk</div>
                             </div>
                             <div style="margin-top:8px; display:flex; justify-content:flex-end;">
-                                <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; color:#818cf8; border-color:#818cf8;" onclick="openEditCategoryModal('${cat}')" title="Ubah Nama Kategori">✏️️ Edit</button>
+                                <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; color:#818cf8; border-color:#818cf8;" onclick="openEditCategoryModal('${cat}')" title="Ubah Nama Kategori">✏ Edit</button>
                             </div>
                         </div>`;
                 });
