@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.12</title>
+    <title>Toko Serba Ada - v1.0.13</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -80,10 +80,9 @@
         .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; letter-spacing: -0.5px; }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .logo img { height: 36px; border-radius: 10px; display: none; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header-actions { display: flex; align-items: center; gap: 6px; }
+        .header-actions { display: flex; align-items: center; gap: 8px; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1px solid #c7d2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: 0.25s; position: relative; font-size: 14px; }
         .action-icon-btn:hover { background: var(--primary); color: white; transform: scale(1.05); }
-        .badge-count { position: absolute; top: -3px; right: -3px; background: var(--danger); color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; border: 2px solid white; box-shadow: 0 2px 5px rgba(239,68,68,0.4); }
         
         .search-box { position: relative; }
         .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
@@ -95,7 +94,7 @@
         .nav-item i { font-size: 18px; margin-bottom: 4px; font-style: normal; transition: 0.25s; }
         .nav-item.active, .nav-item:hover { color: var(--primary); }
         .nav-item.active i { transform: translateY(-3px) scale(1.1); }
-        .nav-badge { position: absolute; top: -2px; right: 15%; background: var(--danger); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 10px; border: 2px solid white; }
+        .nav-badge { position: absolute; top: -2px; right: 20%; background: var(--danger); color: white; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 10px; border: 2px solid white; }
 
         /* BANNER SLIDER */
         .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
@@ -218,18 +217,13 @@
                     <img id="uiLogoImg" src="" alt="Logo">
                     <span id="uiStoreName">Toko<span>Ku</span></span>
                 </div>
+                <!-- TOMBOL ATAS DIRAPIKAN: HANYA TEMA & SHARE, WISHLIST & KERANJANG PINDAH KE BAWAH -->
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="toggleTheme()" title="Ganti Tema Terang/Gelap" id="themeToggleBtn">
                         <i>🌙</i>
                     </div>
                     <div class="action-icon-btn" onclick="sharePublicLink()" title="Bagikan Toko">
                         <i>🔗</i>
-                    </div>
-                    <div class="action-icon-btn" onclick="openWishlist()" title="Wishlist">
-                        <i>❤️</i> <span class="badge-count" id="wishlistBadge">0</span>
-                    </div>
-                    <div class="action-icon-btn" onclick="openCart()" title="Keranjang Belanja">
-                        <i>🛒</i> <span class="badge-count" id="cartBadge">0</span>
                     </div>
                 </div>
             </div>
@@ -259,7 +253,7 @@
         <div class="trust-section">
             <div class="trust-grid">
                 <div class="trust-item">
-                    <i>🛡️</i> 100% Aman & Terpercaya
+                    <i>🛡️️</i> 100% Aman & Terpercaya
                 </div>
                 <div class="trust-item">
                     <i>⚡</i> Pengiriman Cepat
@@ -271,12 +265,12 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.12). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.13). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="opacity: 0.3; margin-top:15px; display:inline-block; font-size:11px;">Akses Admin: gunakan link <b>#admin</b> di akhir alamat</span>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR -->
+        <!-- BOTTOM NAVIGATION BAR (NAVIGASI BAWAH YANG LENGKAP & STABIL) -->
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="scrollToTop()">
                 <i>🏠</i> Beranda
@@ -462,7 +456,7 @@
     <!-- ADMIN (PANEL PENJUAL) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.12</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.13</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -532,7 +526,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.12
+            Powered by Ari GPM &bull; v1.0.13
         </div>
     </div>
     
@@ -544,7 +538,6 @@
             <div class="form-group"><label>Foto Produk</label><input type="file" accept="image/*" onchange="handleImageUpload(event, 'formFotoBase64', 'imagePreview')"><img id="imagePreview" class="image-preview" style="display:block;"></div>
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama"></div>
             
-            <!-- KATEGORI SEBAGAI MENU DROPDOWN DARI KATEGORI YANG SUDAH ADA -->
             <div class="form-group"><label>Kategori*</label><select id="formKategori"></select></div>
 
             <div class="form-group"><label>Stok Awal*</label><input type="number" id="formStok" value="100"></div>
@@ -900,7 +893,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.12";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.13";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -1254,7 +1247,6 @@
             }
         }
 
-        // POPULATE CATEGORY DROPDOWN DI FORM PRODUK
         function populateCategoryDropdown(selectedCat = "") {
             let cats = [...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
             let selectEl = document.getElementById('formKategori');
@@ -1270,7 +1262,7 @@
             const res = await fetchAPI("get_admin_data", "GET");
             if (res.status === "success") {
                 let allProds = res.data.products;
-                allProducts = allProds; // sync
+                allProducts = allProds; 
                 
                 let cats = [...new Set(allProds.map(p => p.Kategori))].filter(Boolean);
                 let catCardHtml = `<div style="background:${adminActiveCategory==='Semua'?'rgba(99,102,241,0.25)':'#1e293b'}; border:1.5px solid ${adminActiveCategory==='Semua'?'#818cf8':'#334155'}; border-radius:14px; padding:12px; cursor:pointer; text-align:center; transition:0.2s;"><b onclick="filterAdminCategory('Semua')" style="font-size:13px; display:block;">Semua</b><div onclick="filterAdminCategory('Semua')" style="font-size:12px; color:#94a3b8; margin-top:2px;">${allProds.length} Produk</div></div>`;
@@ -1285,7 +1277,7 @@
                                 <div style="font-size:11px; color:#94a3b8; margin-top:2px;">${cnt} Produk</div>
                             </div>
                             <div style="margin-top:8px; display:flex; justify-content:flex-end;">
-                                <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; color:#818cf8; border-color:#818cf8;" onclick="openEditCategoryModal('${cat}')" title="Ubah Nama Kategori">✏️ Edit</button>
+                                <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; color:#818cf8; border-color:#818cf8;" onclick="openEditCategoryModal('${cat}')" title="Ubah Nama Kategori">✏️️ Edit</button>
                             </div>
                         </div>`;
                 });
