@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.17</title>
+    <title>Toko Serba Ada - v1.0.18</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -219,7 +219,6 @@
                     <img id="uiLogoImg" src="" alt="Logo">
                     <span id="uiStoreName">Toko<span>Ku</span></span>
                 </div>
-                <!-- TOMBOL UNGU ADMIN DI HEADER TELAH DIHAPUS -->
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="toggleTheme()" title="Ganti Tema Terang/Gelap" id="themeToggleBtn">
                         <i>🌙</i>
@@ -268,7 +267,7 @@
 
         <!-- FOOTER BERSIH TANPA LINK ADMIN -->
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.17). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.18). All Rights Reserved.<br>
             Powered by Ari GPM
         </div>
 
@@ -458,7 +457,7 @@
     <!-- ADMIN (PANEL PENJUAL) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.17</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.18</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -528,7 +527,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.17
+            Powered by Ari GPM &bull; v1.0.18
         </div>
     </div>
     
@@ -877,16 +876,23 @@
             updateCartBadge(); 
             updateWishlistBadge();
             initApp(); 
-            
-            if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
-                document.getElementById('userView').style.display = 'none'; 
-                document.getElementById('adminView').style.display = 'block'; 
-                loadAdminData();
-            } else if (window.location.hash === "#admin") {
-                document.getElementById('userView').style.display = 'none';
-                setTimeout(openAdminLogin, 200);
-            }
+            checkAdminHash();
         });
+
+        window.addEventListener("hashchange", checkAdminHash);
+
+        function checkAdminHash() {
+            if (window.location.hash.includes("admin")) {
+                if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
+                    document.getElementById('userView').style.display = 'none'; 
+                    document.getElementById('adminView').style.display = 'block'; 
+                    loadAdminData();
+                } else {
+                    document.getElementById('userView').style.display = 'none';
+                    openAdminLogin();
+                }
+            }
+        }
 
         async function initApp() {
             const res = await fetchAPI("get_catalog", "GET");
@@ -897,7 +903,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.17";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.18";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -1189,6 +1195,7 @@
         }
 
         function openAdminLogin() { 
+            document.getElementById('userView').style.display = 'none';
             document.getElementById('adminPinInput').value = '';
             document.getElementById('adminPinModal').style.display = 'flex';
             setTimeout(() => document.getElementById('adminPinInput').focus(), 150);
