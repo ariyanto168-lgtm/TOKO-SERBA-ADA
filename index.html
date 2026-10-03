@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.15</title>
+    <title>Toko Serba Ada - v1.0.16</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -219,7 +219,6 @@
                     <img id="uiLogoImg" src="" alt="Logo">
                     <span id="uiStoreName">Toko<span>Ku</span></span>
                 </div>
-                <!-- TOMBOL AKSES ADMIN DITAMBAHKAN LANGSUNG DI HEADER -->
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="openAdminLogin()" title="Login Penjual / Admin">
                         <i>🔐</i>
@@ -270,7 +269,7 @@
         </div>
 
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.15). All Rights Reserved.<br>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.16). All Rights Reserved.<br>
             Powered by Ari GPM<br>
             <span style="margin-top:15px; display:inline-block; font-size:12px;">
                 <a href="#admin" onclick="openAdminLogin(); return false;" style="color:var(--primary); font-weight:bold; text-decoration:underline;">🔐 Buka Panel Penjual (Admin)</a>
@@ -357,7 +356,7 @@
                 <input type="password" id="adminPinInput" placeholder="Masukkan PIN (Default: 123456)" style="text-align: center; font-size: 16px; letter-spacing: 2px;" onkeydown="if(event.key==='Enter') submitAdminPin()">
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('adminPinModal')">Batal</button>
+                <button class="btn btn-secondary" style="flex:1;" onclick="cancelAdminLogin()">Batal</button>
                 <button class="btn btn-primary" style="flex:1;" onclick="submitAdminPin()">Masuk</button>
             </div>
         </div>
@@ -463,7 +462,7 @@
     <!-- ADMIN (PANEL PENJUAL) -->
     <div id="adminView">
         <div class="admin-header">
-            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.15</strong>
+            <strong style="font-size: 16px;">⚡ Panel Penjual (Admin) - v1.0.16</strong>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-success" style="padding:8px 14px; font-size:12px;" onclick="sharePublicLink()">💬 Share Link Toko</button>
                 <button class="btn btn-outline" style="padding:8px 14px; color:white; border-color:rgba(255,255,255,0.3); font-size:12px;" onclick="closeAdmin()">Keluar Toko</button>
@@ -533,7 +532,7 @@
         </div>
 
         <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">
-            Powered by Ari GPM &bull; v1.0.15
+            Powered by Ari GPM &bull; v1.0.16
         </div>
     </div>
     
@@ -888,6 +887,7 @@
                 document.getElementById('adminView').style.display = 'block'; 
                 loadAdminData();
             } else if (window.location.hash === "#admin") {
+                document.getElementById('userView').style.display = 'none';
                 setTimeout(openAdminLogin, 250);
             }
         });
@@ -901,7 +901,7 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.15";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.16";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
@@ -1196,6 +1196,14 @@
             document.getElementById('adminPinInput').value = '';
             document.getElementById('adminPinModal').style.display = 'flex';
             setTimeout(() => document.getElementById('adminPinInput').focus(), 150);
+        }
+
+        function cancelAdminLogin() {
+            closeModal('adminPinModal');
+            window.location.hash = "";
+            window.history.replaceState({}, document.title, window.location.pathname);
+            document.getElementById('userView').style.display = 'block';
+            initApp();
         }
 
         function submitAdminPin() {
