@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.20</title>
+    <title>Toko Serba Ada - v1.0.23</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
@@ -99,7 +99,7 @@
         .banner-item img { width: 100%; height: 170px; object-fit: cover; display: block; }
         @media (min-width: 768px) { .banner-item img { height: 300px; } }
 
-        /* NEW: TAB MENU KATEGORI (TEXT ONLY) */
+        /* TAB MENU KATEGORI */
         .categories-wrapper { padding: 25px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
         .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; -ms-overflow-style: none; }
         .category-menu-scroll::-webkit-scrollbar { display: none; }
@@ -115,7 +115,7 @@
 
         .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
         
-        /* PRODUCT GRID: 3 KOLOM HORISONTAL */
+        /* PRODUCT GRID */
         .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
         
@@ -127,8 +127,10 @@
         .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         
         .discount-badge { position: absolute; top: 8px; left: 8px; background: var(--danger); color: white; font-size: 9px; font-weight: 800; padding: 3px 6px; border-radius: 8px; z-index: 2; }
-        .wishlist-btn { position: absolute; top: 8px; right: 8px; background: white; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; z-index: 2; font-size: 12px; }
-        body.dark-theme .wishlist-btn { background: #1e293b; color: white; }
+        
+        .wishlist-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 2; font-size: 14px; backdrop-filter: blur(4px); transition: transform 0.2s, background 0.2s; }
+        .wishlist-btn:active { transform: scale(0.9); }
+        body.dark-theme .wishlist-btn { background: rgba(30, 41, 59, 0.95); color: white; }
         
         .product-info { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
         .product-title { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--text-main); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -145,7 +147,7 @@
         .trust-item { font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .trust-item i { font-size: 20px; color: var(--primary); font-style: normal; }
 
-        /* FOOTER & ADMIN LOGIN TRIGGER */
+        /* FOOTER */
         .footer { text-align: center; padding: 35px 20px; font-size: 12px; color: var(--text-muted); line-height: 1.8; }
         
         /* MODALS */
@@ -160,7 +162,6 @@
         
         .modal-drag-handle { width: 45px; height: 5px; background: #cbd5e1; border-radius: 5px; margin: -12px auto 20px auto; cursor: pointer; }
         
-        /* NEW: TOMBOL TUTUP SUDUT KANAN ATAS MODAL */
         .modal-close-btn { position: absolute; top: 20px; right: 20px; background: var(--bg); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 1.5px solid var(--border); font-size: 14px; transition: 0.2s; z-index: 10; }
         .modal-close-btn:hover { background: var(--danger); color: white; border-color: var(--danger); }
         body.dark-theme .modal-close-btn { background: #0f172a; border-color: #334155; }
@@ -247,7 +248,7 @@
             <div class="banner-slider" id="bannerContainer"></div>
         </div>
 
-        <!-- NEW: TAB MENU KATEGORI BEBAS KOTAK -->
+        <!-- TAB MENU KATEGORI BEBAS KOTAK -->
         <div class="categories-wrapper">
             <div class="category-menu-scroll" id="categoryContainer"></div>
         </div>
@@ -268,10 +269,11 @@
             </div>
         </div>
 
-        <!-- FOOTER: TOMBOL LOGIN ADMIN JELAS -->
+        <!-- FOOTER: TOMBOL LOGIN ADMIN DISEMBUNYIKAN (Klik Teks Versi) -->
         <div class="footer">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> (v1.0.20)<br>
-            Powered by Ari GPM &bull; <span onclick="openAdminLogin()" style="cursor:pointer; color:var(--primary); font-weight:800; text-decoration:underline;">Panel Penjual</span>
+            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span> 
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.23)</span><br>
+            Powered by Ari GPM
         </div>
 
         <nav class="bottom-nav">
@@ -395,7 +397,6 @@
     <div class="modal-overlay" id="checkoutModal" onclick="if(event.target===this) closeModal('checkoutModal')">
         <div class="modal-content">
             <div class="modal-drag-handle" onclick="closeModal('checkoutModal')"></div>
-            <!-- NEW: TOMBOL TUTUP CHECKOUT -->
             <div class="modal-close-btn" onclick="closeModal('checkoutModal')">✕</div>
             
             <h2 style="margin-bottom: 16px; font-weight: 800; letter-spacing: -0.5px; padding-right: 35px;">Checkout Pesanan</h2>
@@ -486,16 +487,27 @@
         
         <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat...</div></div>
         
+        <!-- NEW TAB LAPORAN (DENGAN ANALITIK PENGUNJUNG) -->
         <div class="admin-container admin-tab-content" id="adminTab_laporan" style="display:none;">
-            <h3 style="margin-bottom: 16px; font-weight: 800;">Ringkasan Keuangan</h3>
+            <h3 style="margin-bottom: 16px; font-weight: 800;">Ringkasan & Analitik Toko</h3>
             <div class="report-grid">
+                <div class="report-box"><div style="font-size:12px; color:#94a3b8; font-weight:600;">Total Pengunjung</div><div class="report-value" id="repTotalPengunjung" style="color:#38bdf8;">0</div></div>
+                <div class="report-box"><div style="font-size:12px; color:#94a3b8; font-weight:600;">Pengunjung Hari Ini</div><div class="report-value" id="repPengunjungHariIni" style="color:#34d399;">0</div></div>
+                
                 <div class="report-box"><div style="font-size:12px; color:#94a3b8; font-weight:600;">Pendapatan (Sukses)</div><div class="report-value" id="repTotalOmzet">Rp0</div></div>
                 <div class="report-box"><div style="font-size:12px; color:#94a3b8; font-weight:600;">Total Pesanan</div><div class="report-value" id="repTotalPesanan" style="color:#f8fafc;">0</div></div>
+                
                 <div class="report-box"><div style="font-size:12px; color:#94a3b8; font-weight:600;">Pesanan Selesai</div><div class="report-value" id="repPesananSelesai" style="color:var(--success);">0</div></div>
                 <div class="report-box"><div style="font-size:12px; color:#94a3b8; font-weight:600;">Produk Terjual</div><div class="report-value" id="repItemTerjual" style="color:var(--secondary);">0 Pcs</div></div>
             </div>
+            
+            <div style="background:#1e293b; padding:20px; border-radius:18px; box-shadow:0 4px 15px rgba(0,0,0,0.2); border: 1px solid #334155; margin-bottom: 24px;">
+                <h4 style="margin-bottom:12px; font-weight: 800;">Histori Pengunjung Terbaru 👀</h4>
+                <div id="repVisitorHistory">Memuat data pengunjung...</div>
+            </div>
+
             <div style="background:#1e293b; padding:20px; border-radius:18px; box-shadow:0 4px 15px rgba(0,0,0,0.2); border: 1px solid #334155;">
-                <h4 style="margin-bottom:12px; font-weight: 800;">Rincian Produk Terlaris</h4>
+                <h4 style="margin-bottom:12px; font-weight: 800;">Rincian Produk Terlaris 🏆</h4>
                 <div id="repTopProduk">Memuat data produk...</div>
             </div>
         </div>
@@ -526,7 +538,7 @@
                 <button class="btn btn-primary" style="width:100%; margin-top:24px; font-size:16px;" onclick="saveSettings()">Simpan Pengaturan</button>
             </div>
         </div>
-        <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">Powered by Ari GPM &bull; v1.0.20</div>
+        <div style="text-align: center; padding: 20px; font-size: 11px; color: #94a3b8;">Powered by Ari GPM &bull; v1.0.23</div>
     </div>
     
     <!-- Modals Admin Form Produk -->
@@ -587,7 +599,7 @@
             document.getElementById("themeIcon").innerText = isDark ? "☀️" : "🌙";
         }
 
-        // MOCK API LOGIC
+        // MOCK API LOGIC & VISITOR TRACKING
         function mockFetchAPI(action, data) {
             let db = JSON.parse(localStorage.getItem("TokoMock_DB_v1"));
             if (!db || !db.products || db.products.length === 0) {
@@ -599,14 +611,26 @@
                         { ID_Produk: "PRD4", Nama_Produk: "Celana Chino Panjang Pria", Kategori: "Pakaian", Deskripsi: "Celana chino slim fit bahan stretch.", Harga_Normal: 175000, Harga_Promo: 150000, Stok: 20, Status: "Aktif", Foto_URL: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400" }
                     ],
                     banners: [{ ID_Banner: "BNR1", Foto_URL: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800", Status: "Aktif" }],
-                    orders: [], orderDetails: [],
+                    orders: [], orderDetails: [], visitors: [],
                     settings: { Nama_Toko: "Toko Serba Ada", WhatsApp_Admin: "6281234567890", Logo_URL: "", Tarif_Kurir_Toko: 15000, Info_Rekening: "BCA: 1234567890\nDANA: 081234567890", QRIS_URL: "", RajaOngkir_Key: "mock_key", RajaOngkir_Origin: "399" }
                 };
                 localStorage.setItem("TokoMock_DB_v1", JSON.stringify(db));
             }
+            if(!db.visitors) db.visitors = [];
+
+            if (action === "record_visit") {
+                let today = new Date().toLocaleDateString("id-ID");
+                let existing = db.visitors.find(v => v.visitorId === data.visitorId && v.date === today);
+                if (!existing) {
+                    let nowTime = new Date().toLocaleTimeString("id-ID", {hour: '2-digit', minute:'2-digit'});
+                    db.visitors.push({ visitorId: data.visitorId, date: today, time: nowTime, device: data.device });
+                    localStorage.setItem("TokoMock_DB_v1", JSON.stringify(db));
+                }
+                return { status: "success" };
+            }
 
             if (action === "get_catalog") { let sSafe = { ...db.settings }; delete sSafe.RajaOngkir_Key; return { status: "success", data: { categories: [], products: db.products.filter(p => p.Status === "Aktif"), banners: db.banners.filter(b => b.Status === "Aktif"), settings: sSafe } }; }
-            if (action === "get_admin_data") return { status: "success", data: { products: db.products, banners: db.banners, orders: db.orders, orderDetails: db.orderDetails, settings: db.settings } };
+            if (action === "get_admin_data") return { status: "success", data: { products: db.products, banners: db.banners, orders: db.orders, orderDetails: db.orderDetails, settings: db.settings, visitors: db.visitors } };
             if (action === "get_customer_orders") {
                 let wa = String(data.wa || "").trim(); let matchedOrders = db.orders.filter(o => { let cleanOrdWa = String(o.WhatsApp).replace(/['"]/g, '').trim(); return cleanOrdWa.includes(wa) || wa.includes(cleanOrdWa); });
                 let orderIds = matchedOrders.map(o => o.ID_Pesanan); let details = db.orderDetails.filter(d => orderIds.includes(d.ID_Pesanan));
@@ -649,14 +673,17 @@
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3000);
         }
 
-        async function fetchAPI(action, method = 'POST', data = {}) {
-            showLoading(true);
+        async function fetchAPI(action, method = 'POST', data = {}, silent = false) {
+            if(!silent) showLoading(true);
             try {
-                if (GAS_URL === "LOCAL_PREVIEW") { await new Promise(r => setTimeout(r, 200)); return mockFetchAPI(action, data); }
+                if (GAS_URL === "LOCAL_PREVIEW") { 
+                    if(!silent) await new Promise(r => setTimeout(r, 200)); 
+                    return mockFetchAPI(action, data); 
+                }
                 let options = { method: method }; if (method === 'POST') { options.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; options.body = JSON.stringify({ action, data }); }
                 const response = await fetch(method === 'GET' ? (GAS_URL.includes("?") ? `${GAS_URL}&action=${action}` : `${GAS_URL}?action=${action}`) : GAS_URL, options);
                 return await response.json();
-            } catch (error) { return { status: "error", message: "Network Error" }; } finally { showLoading(false); }
+            } catch (error) { return { status: "error", message: "Network Error" }; } finally { if(!silent) showLoading(false); }
         }
 
         function showLoading(show) { const b = document.getElementById('loadingBar'); if(show) { b.style.display = 'block'; setTimeout(() => b.style.width = '70%', 10); } else { b.style.width = '100%'; setTimeout(() => { b.style.display = 'none'; b.style.width = '0%'; }, 300); } }
@@ -664,6 +691,20 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
         
+        // SISTEM PELACAKAN PENGUNJUNG
+        function trackVisitor() {
+            if (window.location.hash.includes("#admin") || sessionStorage.getItem("isAdminLoggedIn") === "true") return;
+            
+            let visitorId = localStorage.getItem("TokoVisitorId_v1");
+            if (!visitorId) {
+                let randomNum = Math.floor(Math.random() * 9000) + 1000;
+                visitorId = "VIS" + randomNum;
+                localStorage.setItem("TokoVisitorId_v1", visitorId);
+            }
+            let isMobile = /Mobile|Android|iP(hone|od|ad)/i.test(navigator.userAgent);
+            fetchAPI("record_visit", "POST", { visitorId: visitorId, device: isMobile ? "Mobile" : "Desktop" }, true);
+        }
+
         // RATING HELPER
         function getProductRating(productId) {
             let revs = reviewsData[productId] || [];
@@ -688,9 +729,11 @@
         // WISHLIST LOGIC
         function toggleWishlist(id) {
             const index = wishlist.indexOf(id);
-            if (index > -1) { wishlist.splice(index, 1); showToast("Dihapus dari Wishlist"); } else { wishlist.push(id); showToast("Ditambahkan ke Wishlist ❤️"); }
+            if (index > -1) { wishlist.splice(index, 1); showToast("Dihapus dari Wishlist"); } else { wishlist.push(id); showToast("Ditambahkan ke Wishlist ❤"); }
             localStorage.setItem("TokoWishlist_v1", JSON.stringify(wishlist)); updateWishlistBadge();
-            if (document.getElementById('wishlistModal').style.display === 'flex') { openWishlist(); } else { renderKatalogVisitor(activeCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === activeCategory)); }
+            if (document.getElementById('wishlistModal').style.display === 'flex') { openWishlist(); }
+            if (document.getElementById('detailModal').style.display === 'flex') { openProductDetail(id); }
+            renderKatalogVisitor(activeCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === activeCategory));
         }
         function updateWishlistBadge() { const count = wishlist.length; document.getElementById('navWishlistBadge').innerText = count; }
         
@@ -737,8 +780,11 @@
         // --- SISTEM INISIALISASI & ADMIN LOGIN ROBUST ---
         document.addEventListener("DOMContentLoaded", async () => { 
             updateCartBadge(); updateWishlistBadge(); 
-            try { await initApp(); } catch(e) { console.error(e); }
-            checkAdminAccess();
+            try { 
+                await initApp(); 
+                checkAdminAccess();
+                trackVisitor(); 
+            } catch(e) { console.error(e); }
         });
 
         window.addEventListener("hashchange", checkAdminAccess);
@@ -750,9 +796,7 @@
                     document.getElementById('userView').style.display = 'none'; 
                     document.getElementById('adminView').style.display = 'block'; 
                     loadAdminData();
-                } else {
-                    openAdminLogin();
-                }
+                } else { openAdminLogin(); }
             } else {
                 document.getElementById('adminView').style.display = 'none';
                 document.getElementById('userView').style.display = 'block';
@@ -760,17 +804,13 @@
         }
 
         function openAdminLogin() { 
-            showLoading(false); 
-            document.getElementById('userView').style.display = 'none';
-            const pinInput = document.getElementById('adminPinInput');
-            pinInput.value = '';
-            document.getElementById('adminPinModal').style.display = 'flex';
-            setTimeout(() => pinInput.focus(), 150);
+            showLoading(false); document.getElementById('userView').style.display = 'none';
+            const pinInput = document.getElementById('adminPinInput'); pinInput.value = '';
+            document.getElementById('adminPinModal').style.display = 'flex'; setTimeout(() => pinInput.focus(), 150);
         }
 
         function cancelAdminLogin() {
-            closeModal('adminPinModal');
-            window.location.hash = "";
+            closeModal('adminPinModal'); window.location.hash = "";
             window.history.replaceState({}, document.title, window.location.pathname);
             document.getElementById('userView').style.display = 'block';
         }
@@ -778,24 +818,15 @@
         function submitAdminPin() {
             const pin = document.getElementById('adminPinInput').value;
             if (pin === ADMIN_PIN) {
-                sessionStorage.setItem("isAdminLoggedIn", "true");
-                window.location.hash = "#admin";
-                closeModal('adminPinModal');
-                document.getElementById('userView').style.display = 'none'; 
-                document.getElementById('adminView').style.display = 'block'; 
-                loadAdminData(); 
-            } else {
-                showToast("PIN Admin salah!", "error");
-                document.getElementById('adminPinInput').focus();
-            }
+                sessionStorage.setItem("isAdminLoggedIn", "true"); window.location.hash = "#admin"; closeModal('adminPinModal');
+                document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; loadAdminData(); 
+            } else { showToast("PIN Admin salah!", "error"); document.getElementById('adminPinInput').focus(); }
         }
 
         function closeAdmin() { 
-            sessionStorage.removeItem("isAdminLoggedIn");
-            window.location.hash = "";
+            sessionStorage.removeItem("isAdminLoggedIn"); window.location.hash = "";
             window.history.replaceState({}, document.title, window.location.pathname);
-            document.getElementById('adminView').style.display = 'none'; 
-            document.getElementById('userView').style.display = 'block'; 
+            document.getElementById('adminView').style.display = 'none'; document.getElementById('userView').style.display = 'block'; 
             initApp(); 
         }
 
@@ -808,12 +839,11 @@
         }
 
         function applySettings() {
-            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.20";
+            const n = storeSettings.Nama_Toko || "Toko Serba Ada"; document.getElementById('uiStoreName').innerHTML = n; document.getElementById('footerName').innerText = n; document.title = n + " - v1.0.23";
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
         }
         function renderBanners() { const c = document.getElementById('bannerContainer'); if(allBanners.length === 0) { c.style.display = "none"; return; } c.style.display = "flex"; c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(''); }
         
-        // NEW: TAB MENU KATEGORI RENDER (Tanpa Kotak)
         function renderCategoriesMenu() {
             const c = document.getElementById('categoryContainer');
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
@@ -826,14 +856,8 @@
         }
 
         function filterCategory(cat) { 
-            activeCategory = cat; 
-            renderCategoriesMenu(); // Update status aktif di menu
-            document.getElementById('searchInput').value = ""; 
-            
-            // Ubah Judul Bagian Berdasarkan Kategori
+            activeCategory = cat; renderCategoriesMenu(); document.getElementById('searchInput').value = ""; 
             document.getElementById('sectionTitle').innerText = cat === "Semua" ? "Semua Produk" : "Kategori: " + cat; 
-            
-            // Render ulang isi katalog HANYA dengan produk di kategori tersebut
             renderKatalogVisitor(cat === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === cat)); 
         }
         
@@ -864,7 +888,14 @@
             let revs = reviewsData[p.ID_Produk] || []; let revsHtml = `<div style="margin-top:24px; border-top:1px solid var(--border); padding-top:16px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h4 style="font-weight:800; font-size:15px;">Ulasan (${rat.count})</h4><button class="btn btn-outline" style="padding:6px 12px; font-size:12px;" onclick="submitProductReview('${p.ID_Produk}')">+ Tulis Ulasan</button></div>`;
             if(revs.length === 0) { revsHtml += `<p style="font-size:12px; color:var(--text-muted);">Belum ada ulasan.</p>`; } else { revs.forEach(rv => { let stars = "⭐".repeat(Number(rv.rating)); revsHtml += `<div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;"><span>${rv.name}</span><span style="color:var(--text-muted);">${rv.date}</span></div><div style="font-size:12px; margin-bottom:4px;">${stars}</div><div style="font-size:13px; color:var(--text-muted);">${rv.comment || '-'}</div></div>`; }); } revsHtml += `</div>`;
 
-            document.getElementById('detailContent').innerHTML = `<div style="position:relative;"><img src="${p.Foto_URL || 'https://via.placeholder.com/300'}" class="detail-img"><button class="wishlist-btn" style="top:16px; right:16px; width:40px; height:40px; font-size:18px;" onclick="toggleWishlist('${p.ID_Produk}')">${isWishlisted ? '❤' : '🤍'}</button></div><div class="detail-title">${p.Nama_Produk}</div><div style="font-size:13px; color:var(--secondary); margin-bottom:8px; font-weight:700;">⭐ ${rat.avg} (${rat.count} ulasan)</div>${harga}<div style="font-size:12px; color:var(--text-muted); margin-bottom:12px; font-weight:500;">Stok tersedia: ${p.Stok}</div><button class="btn btn-outline" style="width:100%; margin-bottom:15px; border-color:var(--success); color:var(--success);" onclick="shareProduct('${p.ID_Produk}')"><i class="fab fa-whatsapp"></i> Bagikan Produk Ini</button><div class="detail-desc">${p.Deskripsi || "Tidak ada deskripsi produk."}</div>${relatedHtml}${revsHtml}<div class="sticky-bottom-bar">${isHabis ? '<button class="btn btn-secondary" style="width:100%;" disabled>Stok Habis</button>' : '<button class="btn btn-outline" style="flex:1;" onclick="addToCart(\''+p.ID_Produk+'\', 1)">+ Keranjang</button><button class="btn btn-primary" style="flex:1;" onclick="addToCart(\''+p.ID_Produk+'\', 1); openCart();">Beli Langsung</button>'}</div>`;
+            const btnWishlistTeks = isWishlisted ? '❤️ Hapus Wishlist' : '🤍 Simpan Wishlist';
+
+            document.getElementById('detailContent').innerHTML = `<div style="position:relative;"><img src="${p.Foto_URL || 'https://via.placeholder.com/300'}" class="detail-img"></div><div class="detail-title">${p.Nama_Produk}</div><div style="font-size:13px; color:var(--secondary); margin-bottom:8px; font-weight:700;">⭐ ${rat.avg} (${rat.count} ulasan)</div>${harga}<div style="font-size:12px; color:var(--text-muted); margin-bottom:12px; font-weight:500;">Stok tersedia: ${p.Stok}</div>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn btn-outline" style="flex:1; border-color:var(--success); color:var(--success); padding:8px 12px; font-size:13px;" onclick="shareProduct('${p.ID_Produk}')">💬 Bagikan</button>
+                <button class="btn btn-outline" style="flex:1; border-color:var(--danger); color:var(--danger); padding:8px 12px; font-size:13px;" onclick="toggleWishlist('${p.ID_Produk}')">${btnWishlistTeks}</button>
+            </div>
+            <div class="detail-desc">${p.Deskripsi || "Tidak ada deskripsi produk."}</div>${relatedHtml}${revsHtml}<div class="sticky-bottom-bar">${isHabis ? '<button class="btn btn-secondary" style="width:100%;" disabled>Stok Habis</button>' : '<button class="btn btn-outline" style="flex:1;" onclick="addToCart(\''+p.ID_Produk+'\', 1)">+ Keranjang</button><button class="btn btn-primary" style="flex:1;" onclick="addToCart(\''+p.ID_Produk+'\', 1); openCart();">Beli Langsung</button>'}</div>`;
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -1017,11 +1048,31 @@
                     return `<div class="admin-card" style="flex-direction:column; align-items:flex-start;"><div style="width:100%; display:flex; justify-content:space-between; margin-bottom:6px;"><b>${o.ID_Pesanan}</b> <span class="badge ${o.Status_Pesanan.toLowerCase()}">${o.Status_Pesanan}</span></div><div style="font-size:13px; margin-bottom:12px; line-height:1.5;"><b>${o.Nama_Pembeli}</b> (${o.WhatsApp})<br><span style="color:#94a3b8">${o.Tanggal}</span><br><span style="color:#818cf8; font-weight:800; font-size:15px;">Total: ${formatRp(o.Total)}</span></div>${btnBukti}<select style="width:100%; padding:10px; border-radius:12px;" onchange="updateStatus('${o.ID_Pesanan}', this.value)"><option disabled selected>Ubah Status Pesanan...</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div>`
                 }).join('') : '<p style="color:#94a3b8;">Belum ada pesanan masuk.</p>';
 
+                // Kalkulasi Laporan & Pengunjung
                 let totalOmzet = 0; let pesananSelesaiCount = 0; let totalItemTerjual = 0; let produkTerjualMap = {};
                 res.data.orders.forEach(o => { if (o.Status_Pesanan === "Selesai") { totalOmzet += Number(o.Total) || 0; pesananSelesaiCount++; } });
                 res.data.orderDetails.forEach(d => { let qty = Number(d.Jumlah) || 0; totalItemTerjual += qty; produkTerjualMap[d.Nama_Produk] = (produkTerjualMap[d.Nama_Produk] || 0) + qty; });
 
+                let visitors = res.data.visitors || [];
+                let todayStr = new Date().toLocaleDateString("id-ID");
+                let todayVis = visitors.filter(v => v.date === todayStr).length;
+
                 document.getElementById('repTotalOmzet').innerText = formatRp(totalOmzet); document.getElementById('repTotalPesanan').innerText = res.data.orders.length; document.getElementById('repPesananSelesai').innerText = pesananSelesaiCount; document.getElementById('repItemTerjual').innerText = totalItemTerjual + " Pcs";
+                document.getElementById('repTotalPengunjung').innerText = visitors.length + " Org";
+                document.getElementById('repPengunjungHariIni').innerText = todayVis + " Org";
+
+                // Render Histori Pengunjung
+                let visHtml = "";
+                let recentVis = visitors.slice().reverse().slice(0, 8); // 8 Pengunjung Terakhir
+                if(recentVis.length > 0) {
+                    recentVis.forEach(v => {
+                        let icon = v.device === "Mobile" ? "📱" : "💻";
+                        visHtml += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #334155; font-size:12px; color:#cbd5e1;"><span>${icon} ${v.visitorId}</span><span style="color:#94a3b8;">${v.date} &bull; ${v.time}</span></div>`;
+                    });
+                } else {
+                    visHtml = "<p style='font-size:13px; color:#94a3b8;'>Belum ada histori pengunjung.</p>";
+                }
+                document.getElementById('repVisitorHistory').innerHTML = visHtml;
 
                 let topHtml = ""; let sortedTop = Object.entries(produkTerjualMap).sort((a,b) => b[1] - a[1]);
                 if(sortedTop.length > 0) { sortedTop.forEach(([nama, qty]) => { topHtml += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #334155; font-size:13px;"><span style="font-weight:600;">${nama}</span><b style="color:#818cf8;">${qty} terjual</b></div>`; }); } else { topHtml = "<p style='font-size:13px; color:#94a3b8;'>Belum ada data penjualan.</p>"; }
