@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - 2026 Pro Edition</title>
+    <title>Toko Serba Ada - v1.0.26 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -204,7 +204,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v2026.Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.26 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -792,7 +792,7 @@
                 <div>Penerima: ${order.Nama_Pembeli}</div>
                 <div style="font-size:11px;">Alamat: ${order.Alamat.replace(/\n/g, ', ')}</div>
                 <div class="center" style="margin-top: 15px;">Terima Kasih Atas<br>Kunjungan Anda!</div>
-                <script>window.onload = function() { window.print(); window.close(); }</script>
+                <script>window.onload = function() { window.print(); window.close(); }<\/script>
             </body></html>`;
             w.document.write(html); w.document.close();
         }
