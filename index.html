@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.38 Pro</title>
+    <title>Toko Serba Ada - v1.0.39 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -39,7 +39,6 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } /* Perbaikan Icon Error */
         .header-actions { display: flex; gap: 8px; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid #c7d2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
@@ -115,7 +114,10 @@
     <div id="userView">
         <header class="header">
             <div class="header-top">
-                <div class="logo" onclick="location.reload()"><img id="uiLogoImg" src="" alt="Logo"><span id="uiStoreName">Toko<span>Ku</span></span></div>
+                <div class="logo" onclick="location.reload()">
+                    <img id="uiLogoImg" src="" alt="Logo" style="display:none; width:36px; height:36px; border-radius:10px; object-fit:cover; flex-shrink:0;">
+                    <span id="uiStoreName">Toko<span>Ku</span></span>
+                </div>
                 <div class="header-actions"><div class="action-icon-btn" onclick="toggleTheme()"><i id="themelcon">🌙</i></div></div>
             </div>
             <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari produk..." oninput="handleSearch()"></div>
@@ -136,7 +138,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.38 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.39 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -261,12 +263,17 @@
     <div class="modal-overlay center" id="proofModal" onclick="if(event.target===this) closeModal('proofModal')"><div class="modal-content" style="max-width: 400px;"><div class="modal-close-btn" onclick="closeModal('proofModal')">X</div><img id="proofImageElement" style="width:100%;border-radius:14px;"></div></div>
 
     <script>
-        // -------------------------------------------------------------
-        // WAAAJJIIIBB DIGANTI DENGAN URL WEB APP BARU ANDA !!
-        // -------------------------------------------------------------
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
+        // =========================================================================================
+        // ⚠️⚠️ SANGAT PENTING: GANTI TEKS DI BAWAH INI DENGAN URL WEB APP ANDA YANG BARU!! ⚠️⚠️
+        // =========================================================================================
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec "; 
+        // =========================================================================================
         
-        let allProducts = [], storeSettings = {}, cart = JSON.parse(localStorage.getItem("TokoCart_v2")) || [], wishlist = JSON.parse(localStorage.getItem("TokoWishlist_v2")) || [], activeCategory = "Semua", currentSort = "terbaru";
+        let allProducts = [], storeSettings = {};
+        let cart = [], wishlist = [];
+        try { cart = JSON.parse(localStorage.getItem("TokoCart_v2")) || []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
+        try { wishlist = JSON.parse(localStorage.getItem("TokoWishlist_v2")) || []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
+        let activeCategory = "Semua", currentSort = "terbaru";
 
         document.getElementById('footerYear').innerText = new Date().getFullYear();
         if (localStorage.getItem("TokoTheme_v2") === "dark") { document.body.classList.add("dark-theme"); document.getElementById("themelcon").innerText = "☀️"; }
@@ -292,8 +299,7 @@
                 if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) closeAdmin();
                 return resData;
             } catch (e) { 
-                console.error("Fetch Error:", e);
-                return { status: "error" }; 
+                throw e; 
             } finally { document.getElementById('loadingBar').style.display = 'none'; }
         }
 
@@ -304,19 +310,35 @@
         document.addEventListener("DOMContentLoaded", async () => { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); });
 
         async function initApp() {
-            const res = await fetchAPI("get_catalog", "GET");
-            if (res.status === "success") {
-                allProducts = res.data.products || []; storeSettings = res.data.settings || {};
-                document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
-                if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
-                renderCategoriesMenu(); renderKatalogVisitor(allProducts);
-            } else {
-                // PESAN ERROR JIKA KONEKSI DATABASE GAGAL
+            try {
+                const res = await fetchAPI("get_catalog", "GET");
+                if (res && res.status === "success" && res.data && Array.isArray(res.data.products)) {
+                    allProducts = res.data.products; 
+                    storeSettings = res.data.settings || {};
+                    document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
+                    if(storeSettings.Logo_URL) { 
+                        document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; 
+                        document.getElementById('uiLogoImg').style.display = "block"; 
+                    }
+                    renderCategoriesMenu(); 
+                    renderKatalogVisitor(allProducts);
+                } else {
+                    throw new Error("Data katalog tidak valid atau kosong.");
+                }
+            } catch (err) {
+                // TAMPILAN SMART ERROR (JIKA LUPA GANTI URL)
                 document.getElementById('productGrid').innerHTML = `
-                    <div style="grid-column: span 3; text-align:center; padding: 30px 20px; background:#1e293b; color:#f87171; border-radius:16px; border: 1px solid #ef4444;">
-                        <i class="fas fa-exclamation-triangle" style="font-size:35px; margin-bottom:12px;"></i><br>
-                        <b style="font-size:16px;">Koneksi ke Database Google Sheet Gagal!</b><br><br>
-                        <span style="font-size:13px; color:#cbd5e1;"><b>Cara Memperbaiki:</b><br>1. Salin <b>URL Web App TERBARU</b> (dari hasil <i>New Deployment</i> Google Apps Script).<br>2. Tempelkan/Paste URL tersebut ke variabel <b style="color:#fff;">GAS_URL</b> di kode <b>index.html</b> Anda.<br>3. Pastikan akses deployment diset ke <b style="color:#fff;">"Anyone" (Siapa Saja)</b>.</span>
+                    <div style="grid-column: span 3; text-align:center; padding: 30px 20px; background:var(--surface); border-radius:16px; border: 1px solid var(--danger);">
+                        <i class="fas fa-plug" style="font-size:35px; margin-bottom:12px; color:var(--danger);"></i><br>
+                        <b style="font-size:16px; color:var(--danger);">Koneksi Aplikasi & Server Terputus!</b><br><br>
+                        <span style="font-size:13px; color:var(--text-main); line-height:1.6; display:block; text-align:left;">
+                            <b>Penyebab:</b><br>Anda masih menggunakan Link (GAS_URL) template bawaan, atau link Google Sheet Anda tidak bisa diakses.<br><br>
+                            <b>Cara Memperbaiki (Hanya 1 Menit):</b><br>
+                            1. Buka file <b>index.html</b> Anda.<br>
+                            2. Cari baris nomor 199 <code>const GAS_URL = "ISI_DENGAN_URL_WEB_APP_ANDA_DISINI";</code><br>
+                            3. Ganti teks tersebut dengan URL Google Apps Script milik Anda sendiri.<br>
+                            4. (Penting) Pastikan Akses Deploy di Google Script diset ke <b>"Anyone" (Siapa Saja)</b>.
+                        </span>
                     </div>`;
             }
         }
@@ -484,7 +506,6 @@
             }
         }
 
-        // --- ADMIN AREA ---
         window.addEventListener("hashchange", checkAdminAccess);
         function checkAdminAccess() {
             if (window.location.hash.includes("#admin")) {
