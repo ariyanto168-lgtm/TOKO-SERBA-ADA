@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.26 Pro</title>
+    <title>Toko Serba Ada - v1.0.27 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -143,7 +143,7 @@
         .badge.baru { background: var(--primary); } .badge.diproses { background: var(--secondary); } .badge.dikirim { background: #0284c7; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
         
-        /* RECEIPT PRINTING STYLES (Only applied when printing window is open) */
+        /* RECEIPT PRINTING STYLES */
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
@@ -204,7 +204,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.26 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.27 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -442,7 +442,10 @@
                 }
                 
                 let options = { method: method }; 
-                if (method === 'POST') { options.headers = { 'Content-Type': 'text/plain; charset=utf-8' }; options.body = JSON.stringify({ action, data }); }
+                if (method === 'POST') { 
+                    options.headers = { 'Content-Type': 'text/plain; charset=utf-8' }; 
+                    options.body = JSON.stringify({ action, data }); 
+                }
                 const url = method === 'GET' ? `${GAS_URL}?action=${action}` : GAS_URL;
                 const response = await fetch(url, options);
                 const resData = await response.json();
@@ -829,7 +832,9 @@
         }
 
         async function loadAdminData() {
-            const res = await fetchAPI("get_admin_data", "GET");
+            // FIX: Menggunakan POST agar PIN Admin ikut terkirim ke server untuk divalidasi
+            const res = await fetchAPI("get_admin_data", "POST");
+            
             if (res.status === "success") {
                 allProducts = res.data.products; 
                 
