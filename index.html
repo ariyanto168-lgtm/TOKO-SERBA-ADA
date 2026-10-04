@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.0 Final</title>
+    <title>Toko Serba Ada - v2.1 Final</title>
     <!-- Library untuk Cetak Struk Gambar -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -35,7 +35,6 @@
         input[type="file"] { background: var(--surface); color: var(--text-main); border: 2px dashed var(--primary); padding: 10px; border-radius: 12px; cursor: pointer; }
         input[type="file"]::file-selector-button { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-right: 10px; }
 
-        /* FIX CSS TOAST NOTIFICATION */
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 380px; pointer-events: none; }
         .toast { color: #ffffff !important; padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideDown 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
         .toast.success { background-color: #10b981 !important; border-left: 4px solid #047857 !important; } 
@@ -163,7 +162,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v2.0 Final)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v2.1 Final)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -201,22 +200,6 @@
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('wishlistModal')">X</div><h2 style="margin-bottom: 20px;">Produk Favorit</h2><div id="wishlistContent"></div></div>
     </div>
     
-    <!-- MODAL STRUK (CETAK GAMBAR HTML2CANVAS) -->
-    <div class="modal-overlay center" id="strukModal" onclick="if(event.target===this) closeModal('strukModal')">
-        <div class="modal-content" style="max-width: 380px; text-align: center; background: #e2e8f0; color: black; border-radius: 12px; padding: 20px;">
-            <div class="modal-close-btn" onclick="closeModal('strukModal')" style="border: 1px solid #94a3b8; color: #333;">X</div>
-            
-            <div id="areaCetakStruk" style="background: white; padding: 20px; border-radius: 8px; text-align: left; border: 1px dashed #64748b; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <!-- Konten struk masuk kesini -->
-            </div>
-            
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('strukModal')">Tutup</button>
-                <button class="btn btn-primary" style="flex:1;" id="btnUnduhStruk"><i class="fas fa-download"></i> Unduh Struk</button>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL CHECKOUT -->
     <div class="modal-overlay" id="checkoutModal" onclick="if(event.target===this) closeModal('checkoutModal')">
         <div class="modal-content">
@@ -310,7 +293,7 @@
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: Toko Berkah"></div>
                 <div class="form-group"><label>Warna Tema Utama</label><input type="color" id="setWarnaTema" style="height: 50px; padding: 5px;"></div>
                 <div class="form-group"><label>Biaya Kirim Kurir Toko (Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
-                <div class="form-group"><label>WA Admin (Gunakan 62)</label><input type="number" id="setWaAdmin" placeholder="Contoh: 6281234567"></div>
+                <div class="form-group"><label>WA Admin (Boleh pakai 08 / 62 / 85)</label><input type="number" id="setWaAdmin" placeholder="Contoh: 081234567"></div>
                 <div class="form-group"><label>Link URL Logo Toko</label><input type="text" id="setLogoUrl" placeholder="https://..."></div>
                 <div class="form-group"><label>Info Rekening Bank</label><textarea id="setInfoRekening" rows="2" placeholder="BCA 12345 a/n Toko"></textarea></div>
                 <div class="form-group"><label>Link URL Gambar QRIS</label><input type="text" id="setQrisUrl" placeholder="https://..."></div>
@@ -364,13 +347,13 @@
 
     <!-- MODAL CEK STATUS & RIWAYAT PESANAN PEMBELI -->
     <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
-        <div class="modal-content">
+        <div class="modal-content" style="max-height: 95vh; padding-bottom: 40px;">
             <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div>
             <h2 style="margin-bottom:12px;"><i class="fas fa-receipt" style="color:var(--primary);"></i> Riwayat Pesanan Saya</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Masukkan No. WhatsApp Anda untuk melacak status pesanan.</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Masukkan No. WhatsApp Anda untuk melacak pesanan.</p>
             
             <div style="display:flex;gap:10px;margin-bottom:16px;">
-                <input type="number" id="checkWaInput" placeholder="No. WA Anda (08... / 628...)">
+                <input type="number" id="checkWaInput" placeholder="No. WA (cth: 0812...)">
                 <button class="btn btn-primary" onclick="fetchCustomerOrders()"><i class="fas fa-search"></i> Cek</button>
             </div>
             <div id="customerOrdersResult"></div>
@@ -469,7 +452,7 @@
             if(savedWa) { fetchCustomerOrders(); }
         }
 
-        // FUNGSI MUAT RIWAYAT DENGAN ANTI-CRASH DI FRONTEND
+        // FUNGSI MUAT RIWAYAT - MENAMPILKAN DETAIL LANGSUNG & FIX KODE NEGARA WA ADMIN
         async function fetchCustomerOrders() {
             let wa = document.getElementById('checkWaInput').value; 
             if(!wa || wa.length < 5) { showToast("Masukkan No WA minimal 5 angka!", "error"); return; }
@@ -479,13 +462,30 @@
             if(res.status === 'success') {
                 customerOrdersCache = res.data.orders || [];
                 
-                // MENCEGAH CRASH KARENA GOOGLE SHEET MENYIMPAN WA ADMIN SEBAGAI ANGKA
+                // MENCEGAH CRASH & FIX KODE NEGARA
                 let waAdminSettings = storeSettings.WhatsApp_Admin || "628000";
                 let waAdmin = String(waAdminSettings).replace(/[^0-9]/g, ''); 
-                if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
+                
+                // FORCE KODE NEGARA INDONESIA (62) JIKA DIAWALI 0 ATAU 8
+                if(waAdmin.startsWith('0')) { waAdmin = '62' + waAdmin.slice(1); }
+                else if(waAdmin.startsWith('8')) { waAdmin = '62' + waAdmin; }
                 
                 document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o, idx) => {
                     let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
+                    
+                    // Render Item Detail Langsung
+                    let htmlItems = "";
+                    if(o.items && o.items.length > 0) {
+                        htmlItems = o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; color:var(--text-main);"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
+                    } else {
+                        htmlItems = `<div style="font-size:12px; color:var(--text-muted); font-style:italic;">Detail produk tidak ditemukan/kosong.</div>`;
+                    }
+
+                    // Tentukan Total yang benar
+                    let displayTotal = 0;
+                    if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } 
+                    else if(o.items && o.items.length > 0) { displayTotal = o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
+
                     let chatText = encodeURIComponent(`Halo Admin, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
                     let chatUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}`;
                     
@@ -495,13 +495,24 @@
                             <b style="font-size:13px;">${o.ID_Pesanan}</b>
                             <span class="badge" style="background:${statusBg};">${o.Status_Pesanan || 'Baru'}</span>
                         </div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><i class="far fa-clock"></i> ${o.Tanggal}</div>
-                        <div style="font-weight:bold; color:var(--primary); margin-bottom:10px;">Total: ${formatRp(o.Total)}</div>
-                        
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Lihat Struk</button>
-                            <a href="${chatUrl}" target="_blank" class="btn btn-success" style="flex:1; padding:8px; font-size:12px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat Admin</a>
+                        <div style="font-size:12px; color:var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;">
+                            <i class="far fa-clock"></i> ${o.Tanggal}<br>
+                            <i class="fas fa-truck" style="margin-top:4px;"></i> ${o.Metode_Pengiriman || 'Ambil di Toko'}
                         </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-bottom:4px;">DETAIL PRODUK:</div>
+                            ${htmlItems}
+                        </div>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px dashed var(--border); padding-top: 10px; margin-bottom:12px;">
+                            <span style="font-size:14px; font-weight:bold;">Total Bayar:</span>
+                            <span style="font-size:16px; font-weight:800; color:var(--primary);">${formatRp(displayTotal)}</span>
+                        </div>
+                        
+                        <a href="${chatUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:10px; font-size:13px; text-decoration:none;">
+                            <i class="fab fa-whatsapp" style="font-size:16px;"></i> Chat Admin
+                        </a>
                     </div>`;
                 }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ada pesanan untuk nomor tersebut.</div>";
             } else {
@@ -757,12 +768,13 @@
                     
                     let waAdminSettings = storeSettings.WhatsApp_Admin || "628000";
                     let waAdmin = String(waAdminSettings).replace(/[^0-9]/g, ''); 
-                    if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
+                    if(waAdmin.startsWith('0')) { waAdmin = '62' + waAdmin.slice(1); }
+                    else if(waAdmin.startsWith('8')) { waAdmin = '62' + waAdmin; }
                     
                     let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
                     let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
                     
-                    // Gunakan URL Direct (Bypass adblocker / popup blocker jika ditekan manual)
+                    // Gunakan URL Direct
                     let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
                     
                     cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
@@ -848,7 +860,11 @@
                     let items = orderDetails.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let itemsHtml = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
                     let statusColor = o.Status_Pesanan === 'Selesai' ? 'aktif' : (o.Status_Pesanan === 'Dibatalkan' ? 'nonaktif' : 'aktif');
-                    let fixedTotal = formatRp(o.Total);
+                    
+                    // Hitung total dengan benar untuk panel admin
+                    let displayTotal = 0;
+                    if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } 
+                    else if(items && items.length > 0) { displayTotal = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
                     
                     return `
                     <div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;">
@@ -868,7 +884,7 @@
                             ${itemsHtml}
                             <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;">
                                 <span>Total Bayar:</span>
-                                <span style="color:#818cf8;">${fixedTotal}</span>
+                                <span style="color:#818cf8;">${formatRp(displayTotal)}</span>
                             </div>
                         </div>
                         
@@ -883,7 +899,6 @@
                                 <option value="Selesai">Selesai</option>
                                 <option value="Dibatalkan">Dibatalkan</option>
                             </select>
-                            <button class="btn btn-primary" style="padding:8px 14px;" onclick="cetakNotaAdmin(${JSON.stringify(o).replace(/'/g, "&apos;")})" title="Cetak Nota"><i class="fas fa-print"></i></button>
                         </div>
                     </div>`;
                 }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px; width:100%;'>Belum ada pesanan masuk.</div>";
@@ -951,46 +966,6 @@
             };
             const r = await fetchAPI("save_settings", "POST", s);
             if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
-        }
-
-        // SISTEM UNDUH GAMBAR STRUK (Solusi untuk bug window.print di Android/iOS)
-        function cetakNotaUser(index) { let order = customerOrdersCache[index]; if(order) showStrukModal(order); }
-        function cetakNotaAdmin(order) { showStrukModal(order); }
-
-        function showStrukModal(o) {
-            let htmlItems = o.items ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px; color:black;"><span>${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : "";
-            
-            let printContent = `
-                <h2 style="text-align:center; margin-bottom:5px; font-size: 18px; color:black;">${storeSettings.Nama_Toko || "TokoKu"}</h2>
-                <div style="text-align:center; font-size:11px; margin-bottom:15px; border-bottom:1px solid #000; padding-bottom:10px; color:black;">NOTA PEMBAYARAN</div>
-                <div style="font-size:12px; margin-bottom:15px; line-height:1.6; color:black;">
-                    <div>No: <b>${o.ID_Pesanan}</b></div>
-                    <div>Tgl: ${o.Tanggal}</div>
-                    <div>Nama: ${o.Nama_Pembeli}</div>
-                    <div>Kurir: ${o.Metode_Pengiriman || "Ambil di Toko"}</div>
-                </div>
-                <div style="border-bottom:1px dashed #000; padding-bottom:10px; margin-bottom:10px;">${htmlItems}</div>
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; margin-bottom:20px; color:black;"><span>TOTAL:</span><span>${formatRp(o.Total)}</span></div>
-                <div style="text-align:center; font-size:11px; font-style:italic; color:black;">Terima Kasih Telah Berbelanja!</div>`;
-            
-            document.getElementById('areaCetakStruk').innerHTML = printContent;
-            document.getElementById('strukModal').style.display = 'flex';
-
-            // Event listener untuk tombol unduh gambar
-            document.getElementById('btnUnduhStruk').onclick = function() {
-                const elementToCapture = document.getElementById('areaCetakStruk');
-                let originalBtnText = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-                
-                html2canvas(elementToCapture, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
-                    let link = document.createElement('a');
-                    link.download = `Struk_${o.ID_Pesanan}.jpg`;
-                    link.href = canvas.toDataURL("image/jpeg", 0.9);
-                    link.click();
-                    this.innerHTML = '<i class="fas fa-check"></i> Unduh Berhasil';
-                    setTimeout(() => { this.innerHTML = originalBtnText; }, 2000);
-                });
-            };
         }
 
         document.addEventListener("DOMContentLoaded", async function() {
