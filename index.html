@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.33 Pro</title>
+    <title>Toko Serba Ada - v1.0.34 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -98,7 +98,6 @@
         body.dark-theme .product-img-wrapper { background: #334155; }
         @media (min-width: 768px) { .product-img-wrapper { height: 180px; } }
         .product-img { width: 100%; height: 100%; object-fit: cover; }
-        .discount-badge { position: absolute; top: 8px; left: 8px; background: var(--danger); color: white; font-size: 9px; font-weight: 800; padding: 3px 6px; border-radius: 8px; z-index: 2; }
         .wishlist-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 2; font-size: 14px; backdrop-filter: blur(4px); transition: transform 0.2s; }
         body.dark-theme .wishlist-btn { background: rgba(30, 41, 59, 0.95); color: white; }
         .product-info { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
@@ -203,7 +202,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.33 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.34 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -433,7 +432,7 @@
             document.body.classList.toggle("dark-theme");
             let isDark = document.body.classList.contains("dark-theme");
             localStorage.setItem("TokoTheme_v2", isDark ? "dark" : "light");
-            document.getElementById("themelcon").innerText = isDark ? "☀️" : "🌙";
+            document.getElementById("themelcon").innerText = isDark ? "☀️️" : "🌙";
         }
 
         function showToast(msg, type = "success") {
@@ -561,7 +560,6 @@
                 let hasGrosir = p.Harga_Grosir && Number(p.Harga_Grosir) > 0;
                 
                 if (hasGrosir) {
-                    // Harga grosir nampak duluan di depan
                     hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)} <span style="font-size:9px; color:var(--success); font-weight:700;">(Grosir ≥5)</span></div>
                                <span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`;
                 } else {
@@ -618,9 +616,12 @@
             let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
             if (currentQty > Number(p.Stok)) { showToast("Gagal: Stok tidak mencukupi!", "error"); return; }
             
-            let finalHarga = Number(p.Harga_Normal);
-            if (currentQty >= 5 && p.Harga_Grosir && Number(p.Harga_Grosir) > 0) {
-                finalHarga = Number(p.Harga_Grosir);
+            const hargaGrosir = Number(p.Harga_Grosir || 0);
+            const hargaNormal = Number(p.Harga_Normal || 0);
+            
+            let finalHarga = hargaNormal;
+            if (currentQty >= 5 && hargaGrosir > 0) {
+                finalHarga = hargaGrosir;
             }
 
             if (idx > -1) {
@@ -643,10 +644,13 @@
             
             if (cart[i]) {
                 cart[i].qty = newQty;
-                if (newQty >= 5 && p.Harga_Grosir && Number(p.Harga_Grosir) > 0) {
-                    cart[i].harga = Number(p.Harga_Grosir);
+                const hargaGrosir = Number(p.Harga_Grosir || 0);
+                const hargaNormal = Number(p.Harga_Normal || 0);
+                
+                if (newQty >= 5 && hargaGrosir > 0) {
+                    cart[i].harga = hargaGrosir;
                 } else {
-                    cart[i].harga = Number(p.Harga_Normal);
+                    cart[i].harga = hargaNormal;
                 }
             }
             localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); openCart(); updateCartBadge(); 
@@ -659,7 +663,7 @@
                 subtotalCart = 0; 
                 c.innerHTML = cart.map((item, i) => { 
                     subtotalCart += (item.harga * item.qty); 
-                    let noteGrosir = item.qty >= 5 ? `<span style="font-size:10px; color:var(--success); font-weight:700; display:block;">🔥 Harga Grosir Aktif</span>` : `<span style="font-size:10px; color:var(--text-muted); display:block;">Harga Eceran (Beli ≥5 dapat grosir)</span>`;
+                    let noteGrosir = item.qty >= 5 ? `<span style="font-size:10px; color:var(--success); font-weight:700; display:block;">🔥 Harga Grosir Aktif (${formatRp(item.harga)}/pcs)</span>` : `<span style="font-size:10px; color:var(--text-muted); display:block;">Eceran: ${formatRp(item.harga)} (Beli ≥5 dapat grosir)</span>`;
                     return `<div class="cart-item">
                                 <img src="${item.foto}" style="width:55px;height:55px;border-radius:12px;object-fit:cover;">
                                 <div style="flex: 1; margin-left:14px;"><div style="font-weight:700; font-size:14px;">${item.nama}</div><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)} /pcs</div>${noteGrosir}</div>
