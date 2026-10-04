@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.45 Ultimate Pro</title>
+    <title>Toko Serba Ada - v1.0.47 Ultimate Stable</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            /* Tema dinamis akan ditimpa JS */
             --primary: #6366f1; 
             --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%);
             --primary-light: rgba(99, 102, 241, 0.1); 
@@ -109,7 +108,6 @@
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        /* CETAK NOTA STYLES (Hanya tampil saat print) */
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
@@ -120,11 +118,8 @@
 <body>
     <div class="toast-container" id="toastContainer"></div>
     <div class="loading-bar" id="loadingBar"></div>
-
-    <!-- AREA CETAK NOTA (Thermal/A4) -->
     <div id="printArea" style="display:none;"></div>
 
-    <!-- TAMPILAN KONSUMEN -->
     <div id="userView">
         <header class="header">
             <div class="header-top">
@@ -142,15 +137,12 @@
             </div>
         </header>
 
-        <!-- BANNER SLIDER -->
         <div class="banner-container-wrapper" id="bannerWrapper">
             <div class="banner-slider" id="bannerContainer"></div>
         </div>
 
-        <!-- KATEGORI -->
         <div class="categories-wrapper"><div class="category-menu-scroll" id="categoryContainer"></div></div>
 
-        <!-- DAFTAR PRODUK & FILTER -->
         <main class="container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
                 <h2 id="sectionTitle" style="font-size: 16px; font-weight: 800;">Semua Produk</h2>
@@ -168,7 +160,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.45 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.47 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -179,7 +171,7 @@
         </nav>
     </div>
 
-    <!-- MODAL LOGIN ADMIN -->
+    <!-- MODAL ADMIN LOGIN -->
     <div class="modal-overlay center" id="adminPinModal" onclick="if(event.target===this) closeModal('adminPinModal')">
         <div class="modal-content" style="max-width: 300px; text-align: center;">
             <h3 style="margin-bottom:16px;">Verifikasi Penjual</h3>
@@ -188,10 +180,9 @@
         </div>
     </div>
 
-    <!-- MODAL DETAIL PRODUK + TOMBOL SHARE -->
+    <!-- MODAL DETAIL PRODUK -->
     <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div>
-            <!-- Ikon Share di Kanan Atas -->
             <div id="btnShareProduct" class="modal-close-btn" style="right: 60px; border-color: var(--primary); color: var(--primary);" title="Bagikan Produk"><i class="fas fa-share-alt"></i></div>
             <div id="detailContent"></div>
         </div>
@@ -207,7 +198,7 @@
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('wishlistModal')">X</div><h2 style="margin-bottom: 20px;">Produk Favorit</h2><div id="wishlistContent"></div></div>
     </div>
 
-    <!-- MODAL CHECKOUT PENGIRIMAN (ONGKIR TOKO) -->
+    <!-- MODAL CHECKOUT -->
     <div class="modal-overlay" id="checkoutModal" onclick="if(event.target===this) closeModal('checkoutModal')">
         <div class="modal-content">
             <div class="modal-close-btn" onclick="closeModal('checkoutModal')">X</div><h2>Informasi Pengiriman</h2>
@@ -218,10 +209,10 @@
             </div>
             
             <div class="form-group">
-                <label>Pilih Metode Pengambilan/Pengiriman*</label>
+                <label>Pilih Metode Pengiriman*</label>
                 <select id="checkoutMetode" onchange="calculateOngkir()">
                     <option value="Ambil di Toko">Ambil Sendiri di Toko (Gratis)</option>
-                    <option value="Kurir Toko">Kirim via Kurir Toko (+Biaya Kirim)</option>
+                    <option value="Kurir Toko">Kirim via Kurir Toko</option>
                 </select>
             </div>
             
@@ -246,7 +237,7 @@
         </div>
     </div>
 
-    <!-- PANEL ADMIN ULTIMATE -->
+    <!-- PANEL ADMIN -->
     <div id="adminView">
         <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
         <div class="admin-tabs">
@@ -257,12 +248,11 @@
             <div class="admin-tab-btn" id="tabBtn_pengaturan" onclick="switchAdminTab('pengaturan')"><i class="fas fa-cog"></i> Tema/Set</div>
         </div>
 
-        <!-- TAB LAPORAN (INFO PENGUNJUNG & PENJUALAN) -->
         <div class="admin-container admin-tab-content" id="adminTab_laporan">
-            <h3 style="margin-bottom:16px;">Ringkasan Penjualan</h3>
+            <h3 style="margin-bottom:16px;">Ringkasan Penjualan & Pengunjung</h3>
             <div class="form-row" style="margin-bottom:16px;">
-                <div style="background:var(--primary); padding:16px; border-radius:16px; text-align:center;">
-                    <div style="font-size:12px; opacity:0.8;">Total Pendapatan</div>
+                <div style="background:var(--primary); color:white; padding:16px; border-radius:16px; text-align:center;">
+                    <div style="font-size:12px; opacity:0.9;">Total Pendapatan</div>
                     <div style="font-size:18px; font-weight:bold;" id="repPendapatan">Rp0</div>
                 </div>
                 <div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:16px; text-align:center;">
@@ -282,27 +272,23 @@
             </div>
         </div>
 
-        <!-- TAB PRODUK (DENGAN SHARE LINK ADMIN) -->
         <div class="admin-container admin-tab-content" id="adminTab_produk" style="display:none;">
             <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="openProductModal()">+ Tambah Produk Baru</button>
             <div id="adminProductList">Memuat data produk...</div>
         </div>
         
-        <!-- TAB PESANAN (DENGAN CETAK NOTA) -->
         <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat pesanan masuk...</div></div>
         
-        <!-- TAB BANNER -->
         <div class="admin-container admin-tab-content" id="adminTab_banner" style="display:none;">
             <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="openBannerModal()">+ Tambah Banner Promosi</button>
             <div id="adminBannerList">Memuat data banner...</div>
         </div>
 
-        <!-- TAB PENGATURAN (DENGAN WARNA TEMA & ONGKIR) -->
         <div class="admin-container admin-tab-content" id="adminTab_pengaturan" style="display:none;">
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: Toko Berkah"></div>
                 <div class="form-group"><label>Warna Tema Utama</label><input type="color" id="setWarnaTema" style="height: 50px; padding: 5px;"></div>
-                <div class="form-group"><label>Biaya Kirim Kurir Toko (Flat/Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
+                <div class="form-group"><label>Biaya Kirim Kurir Toko (Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
                 <div class="form-group"><label>WA Admin (Gunakan 62)</label><input type="number" id="setWaAdmin" placeholder="Contoh: 6281234567"></div>
                 <div class="form-group"><label>Link URL Logo Toko</label><input type="text" id="setLogoUrl" placeholder="https://..."></div>
                 <div class="form-group"><label>Info Rekening Bank</label><textarea id="setInfoRekening" rows="2" placeholder="BCA 12345 a/n Toko"></textarea></div>
@@ -312,7 +298,7 @@
         </div>
     </div>
 
-    <!-- MODAL FORM TAMBAH/EDIT PRODUK -->
+    <!-- MODAL PRODUK -->
     <div class="modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
         <div class="modal-content" style="background:#1e293b; color:white; border-top-left-radius: 28px; border-top-right-radius: 28px;">
             <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white; border-color:#334155;">X</div>
@@ -323,7 +309,7 @@
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama" placeholder="Contoh: Kemeja Polos"></div>
             <div class="form-row">
                 <div class="form-group"><label>Kategori*</label><input type="text" id="formKategori" placeholder="Contoh: Pakaian"></div>
-                <div class="form-group"><label>Satuan Barang</label><input type="text" id="formSatuan" value="pcs" placeholder="pcs, kg, liter"></div>
+                <div class="form-group"><label>Satuan Barang</label><input type="text" id="formSatuan" value="pcs" placeholder="pcs, kg"></div>
             </div>
             
             <div class="form-row">
@@ -336,26 +322,26 @@
             </div>
             
             <div class="form-row">
-                <div class="form-group"><label>Teks Label (Misal: Diskon 50%)</label><input type="text" id="formLabelPromo" placeholder="Muncul merah di sudut"></div>
+                <div class="form-group"><label>Teks Label Promo</label><input type="text" id="formLabelPromo" placeholder="Contoh: Diskon 50%"></div>
                 <div class="form-group">
-                    <label>Pita Badge Emas/Hijau</label>
+                    <label>Pita Badge</label>
                     <select id="formBadge">
                         <option value="">Tidak Ada</option>
-                        <option value="Terlaris">Terlaris (Kuning)</option>
-                        <option value="Terbaru">Terbaru (Hijau)</option>
-                        <option value="Unggulan">Unggulan (Biru)</option>
+                        <option value="Terlaris">Terlaris</option>
+                        <option value="Terbaru">Terbaru</option>
+                        <option value="Unggulan">Unggulan</option>
                     </select>
                 </div>
             </div>
 
-            <div class="form-group"><label>Deskripsi Produk</label><textarea id="formDeskripsi" rows="3" placeholder="Jelaskan detail produk Anda"></textarea></div>
-            <div class="form-group"><label>Status Penayangan</label><select id="formStatus"><option value="Aktif">Aktif (Tampil di Toko)</option><option value="Nonaktif">Nonaktif (Sembunyikan)</option></select></div>
+            <div class="form-group"><label>Deskripsi Produk</label><textarea id="formDeskripsi" rows="3" placeholder="Jelaskan detail produk"></textarea></div>
+            <div class="form-group"><label>Status Penayangan</label><select id="formStatus"><option value="Aktif">Aktif (Tampil)</option><option value="Nonaktif">Nonaktif (Sembunyikan)</option></select></div>
             
             <button class="btn btn-primary" style="width: 100%; margin-top:16px; padding: 14px;" onclick="submitProduct()"><i class="fas fa-check"></i> Simpan Data Produk</button>
         </div>
     </div>
 
-    <!-- MODAL CEK PESANAN KONSUMEN (DENGAN CETAK NOTA) -->
+    <!-- MODAL CEK PESANAN -->
     <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
         <div class="modal-content">
             <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div><h2 style="margin-bottom:16px;">Cek Status Pesanan</h2>
@@ -367,16 +353,12 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA - ULTIMATE -->
     <script>
-        // =========================================================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
-        // =========================================================================================
         
         let allProducts = [], storeSettings = {}, customerOrdersCache = [];
         let cart = [], wishlist = [];
-        let tarifKurir = 0;
-        let globalSubtotal = 0;
+        let tarifKurir = 0, globalSubtotal = 0;
         
         try { let c = JSON.parse(localStorage.getItem("TokoCart_v2")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
         try { let w = JSON.parse(localStorage.getItem("TokoWishlist_v2")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
@@ -397,7 +379,6 @@
             document.getElementById("themelcon").innerText = document.body.classList.contains("dark-theme") ? "☀" : "🌙";
         }
 
-        // Terapkan Warna Tema dari Admin
         function applyStoreTheme(hexColor) {
             if (hexColor && hexColor !== "") {
                 document.documentElement.style.setProperty('--primary', hexColor);
@@ -410,7 +391,6 @@
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
         }
 
-        // Fungsi Copy Link Share
         function shareLink(idProduk) {
             let url = window.location.href.split('?')[0] + "?product=" + idProduk;
             navigator.clipboard.writeText(url).then(() => { showToast("Link Produk Disalin!"); });
@@ -445,10 +425,10 @@
 
         function openWishlist() {
             closeModal('detailModal'); const c = document.getElementById('wishlistContent');
-            if (wishlist.length === 0) c.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Belum ada produk favorit. Klik ikon hati pada produk.</div>';
+            if (wishlist.length === 0) c.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Belum ada produk favorit.</div>';
             else c.innerHTML = wishlist.map((item) => {
                 if(!item) return "";
-                return `<div class="cart-item"><img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();"><i class="fas fa-shopping-cart"></i></button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
+                return `<div class="cart-item"><img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
             }).join("");
             document.getElementById('wishlistModal').style.display = 'flex';
         }
@@ -457,7 +437,7 @@
 
         async function fetchCustomerOrders() {
             let wa = document.getElementById('checkWaInput').value; if(!wa) { showToast("Masukkan No WA!", "error"); return; }
-            document.getElementById('customerOrdersResult').innerHTML = "Mencari data pesanan...";
+            document.getElementById('customerOrdersResult').innerHTML = "Mencari...";
             try {
                 const res = await fetchAPI("get_customer_orders", "POST", {wa: wa});
                 if(res.status === 'success') {
@@ -468,7 +448,7 @@
                             <span style="font-size:12px; color:var(--text-muted);">${o.Tanggal}</span><br>
                             <div style="margin-top:8px; font-weight:bold; color:var(--primary);">Total: ${formatRp(o.Total)}</div>
                             <button class="btn btn-outline" style="width:100%; margin-top:10px; padding:6px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Cetak Struk/Nota</button>
-                        </div>`).join("") : "<div style='margin-top:10px;'>Tidak ada pesanan ditemukan.</div>";
+                        </div>`).join("") : "<div style='margin-top:10px;'>Tidak ada pesanan.</div>";
                 }
             } catch (e) { document.getElementById('customerOrdersResult').innerHTML = "Gagal memuat data."; }
         }
@@ -478,12 +458,11 @@
             const container = document.getElementById('bannerContainer');
             if (!banners || banners.length === 0) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
-            container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner Promosi"></div>`).join('');
+            container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner"></div>`).join('');
         }
 
-        // INIT APP (PLUS PING VISITOR & DEEP LINKING)
         async function initApp() {
-            // Ping Visitor (Mode Info Pengunjung)
+            // Ping visitor untuk fitur mode info pengunjung
             if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
             
             const res = await fetchAPI("get_catalog", "GET");
@@ -496,21 +475,16 @@
                 document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
                 if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
                 
-                // Terapkan Tema Warna dari database
                 if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
-                
-                // Tarif Kurir
                 tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
                 
                 renderCategoriesMenu(); 
                 renderKatalogVisitor(allProducts);
                 
-                // Fitur Share URL (Deep Linking) - Buka produk otomatis jika ada parameter di URL
+                // Deep Linking
                 let params = new URLSearchParams(window.location.search);
                 let productIdUrl = params.get('product');
-                if (productIdUrl) {
-                    setTimeout(() => openProductDetail(productIdUrl), 500);
-                }
+                if (productIdUrl) { setTimeout(() => openProductDetail(productIdUrl), 500); }
             } else { throw new Error("Gagal mengambil data dari Google Sheet."); }
         }
 
@@ -580,7 +554,7 @@
             let hargaHtml = "";
             
             if (Number(p.Harga_Promo) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>`; } 
-            else if (Number(p.Harga_Grosir) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Harga Grosir)</span></div><div style="font-size:13px; color:var(--text-muted);">Harga Satuan (Ecer): ${formatRp(p.Harga_Normal)}</div>`; } 
+            else if (Number(p.Harga_Grosir) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Grosir)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>`; } 
             else { hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`; }
             
             let labelBadge = p.Label_Promo ? `<span style="background:var(--danger); color:white; padding: 4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-right:8px;">${p.Label_Promo}</span>` : "";
@@ -590,15 +564,13 @@
                 <div style="margin-bottom:8px;">${labelBadge}</div>
                 <div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${p.Nama_Produk}</div>
                 <div style="margin-bottom: 12px;">${hargaHtml}</div>
-                <div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;"><i class="fas fa-box"></i> Stok Gudang: ${p.Stok}</div>
-                <div style="white-space: pre-wrap; margin-bottom:20px; font-size:14px; background:var(--bg); padding:16px; border-radius:12px; border: 1px solid var(--border); line-height: 1.8;">${p.Deskripsi || "Tidak ada deskripsi produk."}</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;"><i class="fas fa-box"></i> Stok: ${p.Stok}</div>
+                <div style="white-space: pre-wrap; margin-bottom:20px; font-size:14px; background:var(--bg); padding:16px; border-radius:12px; border: 1px solid var(--border); line-height: 1.8;">${p.Deskripsi || "Tidak ada deskripsi."}</div>
                 <div class="sticky-bottom-bar">
                     ${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1); openCart();">Beli Sekarang</button>`}
                 </div>`;
             
-            // Set Onclick Button Share
             document.getElementById('btnShareProduct').onclick = function() { shareLink(p.ID_Produk); };
-            
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -616,47 +588,43 @@
             if (currentQty > Number(p.Stok)) { showToast("Stok tidak mencukupi!", "error"); return; }
             
             let finalHarga = getFinalPrice(p, currentQty);
-
             if (idx > -1) { cart[idx].qty = currentQty; cart[idx].harga = finalHarga; } 
             else { cart.push({ id: p.ID_Produk, nama: p.Nama_Produk, harga: finalHarga, foto: p.Foto_URL, qty: qty, satuan: p.Satuan||'pcs' }); }
             
-            localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); updateCartBadge(); showToast("Berhasil dimasukkan ke keranjang");
+            localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); updateCartBadge(); showToast("Masuk keranjang");
         }
         
         function updateQty(i, d) { 
             const cartItem = cart[i]; if(!cartItem) return;
             const p = allProducts.find(x => x && x.ID_Produk === cartItem.id); if(!p) return;
             let newQty = cartItem.qty + d;
-            if(d > 0 && newQty > Number(p.Stok)) { showToast("Stok maksimal tercapai", "error"); return; }
-            if (newQty <= 0) { if(confirm("Hapus dari keranjang?")) cart.splice(i, 1); else newQty = 1; } 
+            if(d > 0 && newQty > Number(p.Stok)) { showToast("Stok maksimal", "error"); return; }
+            if (newQty <= 0) { if(confirm("Hapus?")) cart.splice(i, 1); else newQty = 1; } 
             if (cart[i]) { cart[i].qty = newQty; cart[i].harga = getFinalPrice(p, newQty); }
             localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); openCart(); updateCartBadge(); 
         }
 
         function openCart() {
             closeModal('detailModal'); const c = document.getElementById('cartContent');
-            if (cart.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted);"><i class="fas fa-shopping-cart" style="font-size:40px; margin-bottom:16px; opacity:0.5;"></i><br>Keranjang Anda masih kosong.</div>`; } 
+            if (cart.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted);">Keranjang kosong.</div>`; } 
             else {
                 globalSubtotal = 0; 
                 c.innerHTML = cart.map((item, i) => { 
                     if(!item) return "";
                     globalSubtotal += (item.harga * item.qty); 
                     const p = allProducts.find(x => x && x.ID_Produk === item.id) || {};
-                    let note = "";
-                    if (Number(p.Harga_Promo) > 0) note = `<span style="font-size:10px; color:var(--danger); font-weight:bold;">Harga Promo Aktif!</span>`;
-                    else if (item.qty >= 5 && Number(p.Harga_Grosir) > 0) note = `<span style="font-size:10px; color:var(--success); font-weight:bold;">Harga Grosir Aktif!</span>`;
+                    let note = Number(p.Harga_Promo) > 0 ? `<span style="font-size:10px; color:var(--danger);">Promo</span>` : "";
                     
                     return `<div class="cart-item">
-                                <img src="${item.foto}" style="width:60px;height:60px;border-radius:12px;object-fit:cover; border:1px solid var(--border);">
-                                <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800; margin-top:4px;">${formatRp(item.harga)} <span style="font-size:11px; font-weight:normal; color:var(--text-main);">/${item.satuan || 'pcs'}</span></div>${note}</div>
-                                <div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><b style="width:24px;text-align:center; font-size:14px;">${item.qty}</b><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div>
+                                <img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;">
+                                <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div>${note}</div>
+                                <div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><b style="width:20px;text-align:center;">${item.qty}</b><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div>
                              </div>`; 
-                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:12px; font-size:16px;"><b>Total Belanja:</b> <b style="color:var(--primary); font-size:18px;">${formatRp(globalSubtotal)}</b></div><button class="btn btn-success" style="width: 100%; padding:14px;" onclick="prepareCheckout()">Lanjutkan Checkout <i class="fas fa-arrow-right"></i></button></div>`;
+                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;"><b>Total:</b> <b style="color:var(--primary);">${formatRp(globalSubtotal)}</b></div><button class="btn btn-success" style="width: 100%;" onclick="prepareCheckout()">Checkout</button></div>`;
             }
             document.getElementById('cartModal').style.display = 'flex';
         }
 
-        // FUNGSI ONGKIR OTOMATIS
         function calculateOngkir() {
             let mt = document.getElementById('checkoutMetode').value;
             let ok = mt === "Kurir Toko" ? tarifKurir : 0;
@@ -668,7 +636,7 @@
             closeModal('cartModal'); 
             document.getElementById('checkoutSubtotal').innerText = formatRp(globalSubtotal);
             document.getElementById('checkoutMetode').value = "Ambil di Toko";
-            calculateOngkir(); // reset ongkir ke 0 pada awalnya
+            calculateOngkir();
             
             document.getElementById('checkoutNama').value = localStorage.getItem('TokoUser_Nama') || ""; 
             document.getElementById('checkoutWA').value = localStorage.getItem('TokoUser_WA') || ""; 
@@ -684,26 +652,22 @@
             let finalTotal = globalSubtotal + ok;
             
             let n = document.getElementById('checkoutNama').value, w = document.getElementById('checkoutWA').value, a = document.getElementById('checkoutAlamat').value, b64 = document.getElementById('checkoutBuktiBase64').value;
-            if(!n || !w || !a || !b64) { showToast("Mohon lengkapi alamat dan upload bukti transfer!", "error"); return; }
+            if(!n || !w || !a || !b64) { showToast("Lengkapi data & bukti transfer!", "error"); return; }
             
             localStorage.setItem('TokoUser_Nama', n); localStorage.setItem('TokoUser_WA', w); localStorage.setItem('TokoUser_Alamat', a);
             
             const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
             if(res.status === 'success') {
                 let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
-                
                 let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
-                let txt = `*PESANAN BARU (${res.orderId})*\n\n*Nama:* ${n}\n*WA:* ${w}\n*Alamat:* ${a}\n*Pengiriman:* ${mt}\n\n*Rincian Pesanan:*\n${orderItems}\nOngkos Kirim: ${formatRp(ok)}\n\n*TOTAL BAYAR: ${formatRp(finalTotal)}*\n\n_(Sistem Antrean Aman - Bukti transfer tersimpan di database)_`;
+                let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
                 
                 cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
                 window.open(`https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`, '_blank'); 
                 location.reload();
-            } else { showToast(res.message || "Terjadi kesalahan saat memproses.", "error"); }
+            } else { showToast(res.message || "Gagal memproses pesanan.", "error"); }
         }
 
-        // ==========================================
-        // PANEL ADMIN PENJUAL (DENGAN LAPORAN & TEMA)
-        // ==========================================
         window.addEventListener("hashchange", checkAdminAccess);
         function checkAdminAccess() {
             if (window.location.hash.includes("#admin")) {
@@ -716,15 +680,13 @@
             const p = document.getElementById('adminPinInput').value; 
             const r = await fetchAPI("verify_pin", "POST", { pin: p });
             if (r.status === 'success') { sessionStorage.setItem("Toko_AdminToken", p); window.location.hash = "#admin"; closeModal('adminPinModal'); document.getElementById('userView').style.display='none'; document.getElementById('adminView').style.display='block'; loadAdminData(); } 
-            else { showToast("PIN yang Anda masukkan salah", "error"); }
+            else { showToast("PIN Salah", "error"); }
         }
         function switchAdminTab(t) { document.querySelectorAll('.admin-tab-btn').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
-                
-                // RENDER LAPORAN PENJUALAN & PENGUNJUNG
                 if (res.data.laporan) {
                     document.getElementById('repPendapatan').innerText = formatRp(res.data.laporan.pendapatan);
                     document.getElementById('repSelesai').innerText = res.data.laporan.pesananSelesai;
@@ -732,54 +694,37 @@
                     document.getElementById('repPengunjung').innerText = res.data.laporan.pengunjung;
                 }
 
-                // RENDER LIST PRODUK (DENGAN TOMBOL SHARE LINK DI ADMIN)
                 allProducts = res.data.products || []; 
                 document.getElementById('adminProductList').innerHTML = allProducts.map(p => `
                     <div class="admin-card">
-                        <img src="${p.Foto_URL}" style="width:60px; height: 60px; object-fit:cover;border-radius: 12px; border:1px solid #334155;">
-                        <div style="flex:1; margin-left: 12px; line-height:1.4;">
-                            <b style="font-size:13px;">${p.Nama_Produk}</b><br>
-                            <span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> 
-                            <span style="font-size:11px; color:#94a3b8; margin-left:4px;">Stok: ${p.Stok}</span><br>
-                            <span style="font-size:13px; color:#818cf8; font-weight:bold;">${formatRp(p.Harga_Normal)}</span>
-                        </div>
-                        <div style="display:flex; flex-direction:column; gap:6px;">
-                            <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="shareLink('${p.ID_Produk}')"><i class="fas fa-share"></i> Share</button>
-                            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteProductAdmin('${p.ID_Produk}')"><i class="fas fa-trash"></i></button>
+                        <img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:cover;border-radius: 10px;">
+                        <div style="flex:1; margin-left: 12px;"><b>${p.Nama_Produk}</b><br><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> <span style="font-size:12px;">${formatRp(p.Harga_Normal)}</span></div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn btn-primary" style="padding:6px;" onclick="shareLink('${p.ID_Produk}')"><i class="fas fa-share"></i></button>
+                            <button class="btn btn-secondary" style="padding:6px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger" style="padding:6px;" onclick="deleteProductAdmin('${p.ID_Produk}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>`).join("");
                 
-                // RENDER LIST BANNER
                 let banners = res.data.banners || [];
                 document.getElementById('adminBannerList').innerHTML = banners.length ? banners.map(b => `
                     <div class="admin-card">
-                        <img src="${b.Foto_URL}" style="width:140px; height: 60px; object-fit:cover;border-radius: 8px; border:1px solid #334155;">
-                        <button class="btn btn-danger" style="padding:8px 12px;" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i> Hapus</button>
-                    </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner terpasang.</div>";
+                        <img src="${b.Foto_URL}" style="width:120px; height: 50px; object-fit:cover;border-radius: 8px;">
+                        <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
+                    </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
-                // RENDER PESANAN ADMIN (BISA CETAK NOTA)
                 let orders = res.data.orders || [];
                 document.getElementById('adminOrderList').innerHTML = orders.map((o, idx) => `
                     <div class="admin-card" style="flex-direction:column; align-items:flex-start;">
-                        <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:8px;">
-                            <b>${o.ID_Pesanan}</b> <span style="color:#94a3b8; font-size:12px;">${o.Tanggal}</span>
-                        </div>
-                        <div><i class="fas fa-user"></i> ${o.Nama_Pembeli} (${o.WhatsApp})</div>
+                        <b>${o.ID_Pesanan}</b><div>${o.Nama_Pembeli} - ${formatRp(o.Total)}</div>
                         <div style="font-size:12px; color:#94a3b8;">${o.Metode_Pengiriman || "Ambil di Toko"}</div>
-                        <div style="color:#818cf8; font-weight:bold; margin-top:4px;">${formatRp(o.Total)}</div>
-                        ${o.Bukti_Transfer ? `<a href="${o.Bukti_Transfer}" target="_blank" style="color:var(--success); font-size:12px; margin-top:6px; display:inline-block;"><i class="fas fa-image"></i> Lihat Bukti Transfer</a>` : ""}
+                        ${o.Bukti_Transfer ? `<a href="${o.Bukti_Transfer}" target="_blank" style="color:var(--success); font-size:12px; margin-top:4px;">Lihat Bukti Transfer</a>` : ""}
                         <div style="display:flex; gap:10px; width:100%; margin-top:10px;">
-                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569;">
-                                <option disabled selected>${o.Status_Pesanan}</option>
-                                <option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option>
-                                <option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option>
-                            </select>
+                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white;"><option disabled selected>${o.Status_Pesanan}</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select>
                             <button class="btn btn-primary" onclick="cetakNotaAdmin(${JSON.stringify(o).replace(/'/g, "&apos;")})"><i class="fas fa-print"></i></button>
                         </div>
                     </div>`).join("");
                 
-                // RENDER SETTING
                 let s = res.data.settings || {};
                 document.getElementById('setNamaToko').value = s.Nama_Toko || ""; 
                 document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || "";
@@ -791,11 +736,11 @@
             }
         }
         
-        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status pesanan diubah!"); }
+        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); }
 
-        function openBannerModal() { let url = prompt("Masukkan Link URL Foto Banner Promosi Baru (Saran Rasio 16:9):"); if (url && url.trim() !== "") submitBannerAdmin(url.trim()); }
-        async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner promosi berhasil ditambahkan"); } }
-        async function deleteBannerAdmin(id) { if(!confirm("Anda yakin ingin menghapus banner ini?")) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner dihapus"); } }
+        function openBannerModal() { let url = prompt("URL Banner:"); if (url) submitBannerAdmin(url); }
+        async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner ditambah"); } }
+        async function deleteBannerAdmin(id) { if(!confirm("Hapus?")) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); } }
 
         function openProductModal() {
             ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formDeskripsi', 'formHargaPromo', 'formLabelPromo', 'formHargaNormal', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = "");
@@ -824,62 +769,46 @@
                 Terbaru: badgeVal === "Terbaru" ? "Ya" : "", Terlaris: badgeVal === "Terlaris" ? "Ya" : "", Unggulan: badgeVal === "Unggulan" ? "Ya" : "",
                 Status: document.getElementById('formStatus').value, Foto_URL: document.getElementById('formFotoUrl').value 
             };
-            if(!p.Nama_Produk || !p.Harga_Normal || !p.Kategori || !p.Foto_URL) { showToast("Lengkapi Nama, Harga, Kategori & Foto!", "error"); return; }
+            if(!p.Nama_Produk || !p.Harga_Normal || !p.Kategori || !p.Foto_URL) { showToast("Lengkapi data wajib!", "error"); return; }
             const r = await fetchAPI("save_product", "POST", p);
-            if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Data Produk Berhasil Disimpan"); }
+            if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
         }
         
         async function deleteProductAdmin(id) {
-            if(!confirm("Hapus produk ini selamanya?")) return;
+            if(!confirm("Hapus?")) return;
             const r = await fetchAPI("delete_product", "POST", {id: id});
-            if(r.status === 'success') { loadAdminData(); initApp(); showToast("Produk berhasil dihapus"); }
+            if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); }
         }
 
         async function saveSettings() {
             const s = { 
-                Nama_Toko: document.getElementById('setNamaToko').value, 
-                WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
-                Logo_URL: document.getElementById('setLogoUrl').value, 
-                Info_Rekening: document.getElementById('setInfoRekening').value, 
-                QRIS_URL: document.getElementById('setQrisUrl').value,
-                Warna_Tema: document.getElementById('setWarnaTema').value,
-                Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
+                Nama_Toko: document.getElementById('setNamaToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
+                Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value,
+                Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
             };
             const r = await fetchAPI("save_settings", "POST", s);
-            if (r.status === 'success') { showToast("Pengaturan Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
+            if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
         }
 
-        // FUNGSI CETAK NOTA KONSUMEN
-        function cetakNotaUser(index) {
-            let order = customerOrdersCache[index]; if(!order) return;
-            generateHTMLCetak(order);
-        }
-
-        // FUNGSI CETAK NOTA ADMIN
+        function cetakNotaUser(index) { let order = customerOrdersCache[index]; if(order) generateHTMLCetak(order); }
         function cetakNotaAdmin(order) { generateHTMLCetak(order); }
 
         function generateHTMLCetak(o) {
-            let htmlItems = o.items ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : "<div><i>Detail item disembunyikan/tidak dimuat</i></div>";
-            
+            let htmlItems = o.items ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : "<div><i>Detail item</i></div>";
             let printContent = `
                 <div style="max-width:300px; margin:0 auto; padding:20px; border:1px dashed #ccc;">
                     <h2 style="text-align:center; margin-bottom:5px;">${storeSettings.Nama_Toko || "TokoKu"}</h2>
-                    <div style="text-align:center; font-size:10px; margin-bottom:15px; border-bottom:1px solid #000; padding-bottom:10px;">BUKTI PEMBAYARAN</div>
+                    <div style="text-align:center; font-size:10px; margin-bottom:15px; border-bottom:1px solid #000; padding-bottom:10px;">NOTA PEMBAYARAN</div>
                     <div style="font-size:11px; margin-bottom:15px;">
                         <div>No: <b>${o.ID_Pesanan}</b></div>
                         <div>Tgl: ${o.Tanggal}</div>
-                        <div>Kepada: ${o.Nama_Pembeli}</div>
-                        <div>Kiriman: ${o.Metode_Pengiriman || "Ambil di Toko"}</div>
+                        <div>Nama: ${o.Nama_Pembeli}</div>
+                        <div>Kurir: ${o.Metode_Pengiriman || "Ambil di Toko"}</div>
                     </div>
-                    <div style="border-bottom:1px dashed #000; padding-bottom:10px; margin-bottom:10px; font-size:12px;">
-                        ${htmlItems}
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom:20px;">
-                        <span>TOTAL:</span><span>${formatRp(o.Total)}</span>
-                    </div>
-                    <div style="text-align:center; font-size:10px;">Terima kasih telah berbelanja!</div>
-                </div>
-            `;
+                    <div style="border-bottom:1px dashed #000; padding-bottom:10px; margin-bottom:10px; font-size:12px;">${htmlItems}</div>
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom:20px;"><span>TOTAL:</span><span>${formatRp(o.Total)}</span></div>
+                    <div style="text-align:center; font-size:10px;">Terima Kasih!</div>
+                </div>`;
             document.getElementById('printArea').innerHTML = printContent;
             window.print();
         }
@@ -903,8 +832,8 @@
                 updateCartBadge(); updateWishlistBadge();
                 await initApp(); checkAdminAccess();
             } catch(e) {
-                console.error("Critical Init Error: ", e);
-                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`;
+                console.error("Init Error: ", e);
+                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Periksa izin deploy apps script Anda.</b></div>`;
             }
         });
     </script>
