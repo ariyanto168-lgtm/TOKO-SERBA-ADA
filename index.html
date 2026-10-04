@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.54 Ultimate Fix</title>
+    <title>Toko Serba Ada - v1.0.55</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -33,9 +33,12 @@
         input[type="file"] { background: var(--surface); color: var(--text-main); border: 2px dashed var(--primary); padding: 10px; border-radius: 12px; cursor: pointer; }
         input[type="file"]::file-selector-button { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-right: 10px; }
 
+        /* FIX WARNA NOTIFIKASI TOAST AGAR SELALU TERBACA DI SEMUA MODE */
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 380px; pointer-events: none; }
-        .toast { background: var(--text-main); color: white; padding: 14px 20px; border-radius: 16px; font-size: 14px; display: flex; align-items: center; gap: 12px; animation: slideDown 0.3s; }
-        .toast.success { border-left: 4px solid var(--success); } .toast.error { border-left: 4px solid var(--danger); }
+        .toast { color: #ffffff !important; padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideDown 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+        .toast.success { background-color: #10b981 !important; border-left: 4px solid #047857; } 
+        .toast.error { background-color: #ef4444 !important; border-left: 4px solid #b91c1c; }
+        .toast i { font-size: 18px; }
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1;}}
         
         #userView { padding-bottom: 110px; }
@@ -99,12 +102,16 @@
         .qty-control { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: 22px; padding: 4px; border: 1.5px solid var(--border); }
         .qty-btn { width: 30px; height: 30px; border-radius: 50%; background: white; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; color: #0f172a; }
         
-        /* ADMIN PANEL */
-        #adminView { display: none; background: #0f172a; min-height: 100vh; padding-bottom: 60px; color: #f8fafc; }
+        /* ADMIN PANEL - NEW BOTTOM NAV UI */
+        #adminView { display: none; background: #0f172a; min-height: 100vh; padding-bottom: 85px; color: #f8fafc; }
         .admin-header { background: #1e293b; color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
-        .admin-tabs { display: flex; background: #1e293b; border-bottom: 1px solid #334155; overflow-x: auto; scrollbar-width: none; }
-        .admin-tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 700; color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; min-width: 80px; font-size:13px; }
-        .admin-tab-btn.active { color: #818cf8; border-bottom: 3px solid #818cf8; background: rgba(99,102,241,0.12); }
+        
+        .admin-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 12px 0 20px 0; z-index: 101; }
+        .admin-nav-item { display: flex; flex-direction: column; align-items: center; color: #64748b; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .admin-nav-item i { font-size: 18px; margin-bottom: 4px; }
+        .admin-nav-item.active { color: #6366f1; }
+        .admin-nav-item.active i { transform: scale(1.15); }
+        
         .admin-container { padding: 24px 20px; max-width: 800px; margin: 0 auto; }
         .admin-card { background: #1e293b; border-radius: 18px; padding: 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #334155; color: #f8fafc; }
         .badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; color: white; font-weight: 700; display: inline-block; }
@@ -164,7 +171,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.54 Ultimate)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.55 Master)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -200,6 +207,19 @@
     <!-- MODAL WISHLIST -->
     <div class="modal-overlay" id="wishlistModal" onclick="if(event.target===this) closeModal('wishlistModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('wishlistModal')">X</div><h2 style="margin-bottom: 20px;">Produk Favorit</h2><div id="wishlistContent"></div></div>
+    </div>
+    
+    <!-- MODAL STRUK (CETAK) -->
+    <div class="modal-overlay center" id="strukModal" onclick="if(event.target===this) closeModal('strukModal')">
+        <div class="modal-content" style="max-width: 380px; text-align: center; background: white; color: black; border-radius: 12px; padding: 20px;">
+            <div class="modal-close-btn" onclick="closeModal('strukModal')" style="border: 1px solid #ccc; color: #333;">X</div>
+            <div id="strukContent" style="margin-bottom: 20px; text-align: left;"></div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('strukModal')">Tutup</button>
+                <button class="btn btn-primary" style="flex:1;" onclick="window.print()"><i class="fas fa-print"></i> Print Struk</button>
+            </div>
+            <div style="font-size:11px; color:#666; margin-top:10px;">*Bisa juga dengan melakukan Screenshot pada layar HP Anda.</div>
+        </div>
     </div>
 
     <!-- MODAL CHECKOUT -->
@@ -245,13 +265,15 @@
     <!-- PANEL ADMIN -->
     <div id="adminView">
         <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
-        <div class="admin-tabs">
-            <div class="admin-tab-btn active" id="tabBtn_laporan" onclick="switchAdminTab('laporan')"><i class="fas fa-chart-line"></i> Info</div>
-            <div class="admin-tab-btn" id="tabBtn_produk" onclick="switchAdminTab('produk')"><i class="fas fa-box"></i> Produk</div>
-            <div class="admin-tab-btn" id="tabBtn_pesanan" onclick="switchAdminTab('pesanan')"><i class="fas fa-receipt"></i> Order</div>
-            <div class="admin-tab-btn" id="tabBtn_banner" onclick="switchAdminTab('banner')"><i class="fas fa-image"></i> Banner</div>
-            <div class="admin-tab-btn" id="tabBtn_pengaturan" onclick="switchAdminTab('pengaturan')"><i class="fas fa-cog"></i> Tema/Set</div>
-        </div>
+        
+        <!-- NAVIGASI BAWAH BARU UNTUK ADMIN -->
+        <nav class="admin-bottom-nav">
+            <div class="admin-nav-item active" id="tabBtn_laporan" onclick="switchAdminTab('laporan')"><i class="fas fa-chart-pie"></i> Dasbor</div>
+            <div class="admin-nav-item" id="tabBtn_produk" onclick="switchAdminTab('produk')"><i class="fas fa-box-open"></i> Produk</div>
+            <div class="admin-nav-item" id="tabBtn_pesanan" onclick="switchAdminTab('pesanan')"><i class="fas fa-clipboard-list"></i> Order</div>
+            <div class="admin-nav-item" id="tabBtn_banner" onclick="switchAdminTab('banner')"><i class="fas fa-images"></i> Banner</div>
+            <div class="admin-nav-item" id="tabBtn_pengaturan" onclick="switchAdminTab('pengaturan')"><i class="fas fa-sliders-h"></i> Setting</div>
+        </nav>
 
         <div class="admin-container admin-tab-content" id="adminTab_laporan">
             <h3 style="margin-bottom:16px;">Ringkasan Penjualan & Pengunjung</h3>
@@ -354,7 +376,7 @@
             <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Masukkan No. WhatsApp Anda untuk melacak status pesanan.</p>
             
             <div style="display:flex;gap:10px;margin-bottom:16px;">
-                <input type="number" id="checkWaInput" placeholder="No. WA Anda (628...)">
+                <input type="number" id="checkWaInput" placeholder="No. WA Anda (08... / 628...)">
                 <button class="btn btn-primary" onclick="fetchCustomerOrders()"><i class="fas fa-search"></i> Cek</button>
             </div>
             <div id="customerOrdersResult"></div>
@@ -393,9 +415,12 @@
             }
         }
 
+        // SISTEM NOTIFIKASI BARU (ANTI-WARNA TENGGELAM)
         function showToast(msg, type = "success") {
             const c = document.getElementById("toastContainer"); const t = document.createElement("div"); 
-            t.className = `toast ${type}`; t.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
+            t.className = `toast ${type}`; 
+            let icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            t.innerHTML = `<span>${icon}</span> <span>${msg || "Terjadi kesalahan"}</span>`;
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
         }
 
@@ -412,7 +437,9 @@
                 const resData = await res.json();
                 if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) closeAdmin();
                 return resData;
-            } catch (e) { throw e; } finally { document.getElementById('loadingBar').style.display = 'none'; }
+            } catch (e) { 
+                return { status: "error", message: "Koneksi terputus. Silakan coba lagi." };
+            } finally { document.getElementById('loadingBar').style.display = 'none'; }
         }
 
         function formatRp(angka) { return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(Number(angka) || 0); }
@@ -449,37 +476,40 @@
             if(savedWa) { fetchCustomerOrders(); }
         }
 
+        // FUNGSI MUAT RIWAYAT DENGAN ERROR HANDLING YANG LEBIH BAIK
         async function fetchCustomerOrders() {
-            let wa = document.getElementById('checkWaInput').value; if(!wa) { showToast("Masukkan No WA!", "error"); return; }
+            let wa = document.getElementById('checkWaInput').value; 
+            if(!wa || wa.length < 5) { showToast("Masukkan No WA minimal 5 angka!", "error"); return; }
             document.getElementById('customerOrdersResult').innerHTML = "<div style='text-align:center; padding:20px;'><i class='fas fa-circle-notch fa-spin'></i> Memuat riwayat pesanan...</div>";
-            try {
-                const res = await fetchAPI("get_customer_orders", "POST", {wa: wa});
-                if(res.status === 'success') {
-                    customerOrdersCache = res.data.orders;
-                    let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
+            
+            const res = await fetchAPI("get_customer_orders", "POST", {wa: wa});
+            if(res.status === 'success') {
+                customerOrdersCache = res.data.orders || [];
+                let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
+                
+                document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o, idx) => {
+                    let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
+                    let chatText = encodeURIComponent(`Halo Admin, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
+                    let chatUrl = `https://wa.me/${waAdmin}?text=${chatText}`;
                     
-                    document.getElementById('customerOrdersResult').innerHTML = res.data.orders.length ? res.data.orders.map((o, idx) => {
-                        let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
-                        let chatText = encodeURIComponent(`Halo Admin, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
-                        let chatUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}`;
+                    return `
+                    <div style="background:var(--bg); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <b style="font-size:13px;">${o.ID_Pesanan}</b>
+                            <span class="badge" style="background:${statusBg};">${o.Status_Pesanan || 'Baru'}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><i class="far fa-clock"></i> ${o.Tanggal}</div>
+                        <div style="font-weight:bold; color:var(--primary); margin-bottom:10px;">Total: ${formatRp(o.Total)}</div>
                         
-                        return `
-                        <div style="background:var(--bg); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                <b style="font-size:13px;">${o.ID_Pesanan}</b>
-                                <span class="badge" style="background:${statusBg};">${o.Status_Pesanan || 'Baru'}</span>
-                            </div>
-                            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><i class="far fa-clock"></i> ${o.Tanggal}</div>
-                            <div style="font-weight:bold; color:var(--primary); margin-bottom:10px;">Total: ${formatRp(o.Total)}</div>
-                            
-                            <div style="display:flex; gap:8px;">
-                                <button class="btn btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Struk</button>
-                                <a href="${chatUrl}" target="_blank" class="btn btn-success" style="flex:1; padding:8px; font-size:12px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat WA</a>
-                            </div>
-                        </div>`;
-                    }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ditemukan riwayat pesanan dengan No. WA tersebut.</div>";
-                }
-            } catch (e) { document.getElementById('customerOrdersResult').innerHTML = "<div style='text-align:center; padding:10px; color:var(--danger);'>Gagal memuat data pesanan.</div>"; }
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Lihat Struk</button>
+                            <a href="${chatUrl}" target="_blank" class="btn btn-success" style="flex:1; padding:8px; font-size:12px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat Admin</a>
+                        </div>
+                    </div>`;
+                }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ada pesanan untuk nomor tersebut.</div>";
+            } else {
+                document.getElementById('customerOrdersResult').innerHTML = `<div style='text-align:center; padding:10px; color:var(--danger); font-weight:bold;'>${res.message || "Gagal memuat data."}</div>`; 
+            }
         }
 
         function renderBanners(banners) {
@@ -705,6 +735,7 @@
             }
         }
 
+        // SISTEM AUTO-REDIRECT WHATSAPP AGAR ANTI-GAGAL
         async function processCheckout() {
             let submitBtn = document.getElementById('btnSubmitOrder');
             if (submitBtn.disabled) return;
@@ -716,7 +747,7 @@
             let n = document.getElementById('checkoutNama').value, w = document.getElementById('checkoutWA').value, a = document.getElementById('checkoutAlamat').value, b64 = document.getElementById('checkoutBuktiBase64').value;
             
             if(!n || !w || !a) { showToast("Lengkapi nama, WA, dan alamat!", "error"); return; }
-            if(!b64) { showToast("Mohon tunggu sebentar, gambar sedang diproses / belum dipilih!", "error"); return; }
+            if(!b64) { showToast("Bukti Transfer belum dipilih!", "error"); return; }
             
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Menyimpan Pesanan...`;
@@ -730,26 +761,29 @@
                     let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
                     let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
                     
-                    let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
+                    let waUrl = `https://wa.me/${waAdmin}?text=${encodeURIComponent(txt)}`;
                     
                     cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
                     
                     document.getElementById('detailContent').innerHTML = `
                         <div style="text-align:center; padding:10px;">
                             <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
-                            <h3 style="margin-bottom:6px;">Pesanan Berhasil Disimpan!</h3>
-                            <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b><br>Silakan ketuk tombol WhatsApp untuk konfirmasi ke Admin.</p>
-                            <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center;">
-                                <i class="fab fa-whatsapp" style="font-size:20px;"></i> Share ke WhatsApp Admin
+                            <h3 style="margin-bottom:6px;">Pesanan Berhasil!</h3>
+                            <p style="color:var(--text-muted); font-size:13px; margin-bottom:10px;">ID: <b>${res.orderId}</b></p>
+                            <div style="font-size:11px; background:#f1f5f9; padding:8px; border-radius:8px; color:var(--text-main); margin-bottom:16px;">
+                                Sedang mengalihkan ke WhatsApp Admin secara otomatis...
+                            </div>
+                            <a href="${waUrl}" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center;">
+                                <i class="fab fa-whatsapp" style="font-size:20px;"></i> Chat WA Manual
                             </a>
-                            <button class="btn btn-primary" style="width:100%; padding:14px; justify-content:center;" onclick="location.reload()">
-                                <i class="fas fa-check"></i> Selesai / Belanja Lagi
+                            <button class="btn btn-outline" style="width:100%; padding:14px; justify-content:center;" onclick="location.reload()">
+                                <i class="fas fa-arrow-left"></i> Belanja Lagi
                             </button>
                         </div>`;
                     document.getElementById('detailModal').style.display = 'flex';
                     
-                    // Trigger buka WhatsApp secara otomatis agar tidak perlu diklik manual jika browser mendukung
-                    window.open(waUrl, '_blank');
+                    // Auto Redirect aman bypass Popup Blocker
+                    setTimeout(() => { window.location.href = waUrl; }, 2500);
                 } else { 
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
@@ -776,7 +810,7 @@
             if (r.status === 'success') { sessionStorage.setItem("Toko_AdminToken", p); window.location.hash = "#admin"; closeModal('adminPinModal'); document.getElementById('userView').style.display='none'; document.getElementById('adminView').style.display='block'; loadAdminData(); } 
             else { showToast("PIN Salah", "error"); }
         }
-        function switchAdminTab(t) { document.querySelectorAll('.admin-tab-btn').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
+        function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
@@ -809,6 +843,9 @@
 
                 let orders = res.data.orders || [];
                 let orderDetails = res.data.orderDetails || [];
+                
+                // Urutkan order admin dari yang terbaru
+                orders.reverse();
                 
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = orderDetails.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
@@ -919,27 +956,31 @@
             if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
         }
 
-        function cetakNotaUser(index) { let order = customerOrdersCache[index]; if(order) generateHTMLCetak(order); }
-        function cetakNotaAdmin(order) { generateHTMLCetak(order); }
+        // SISTEM CETAK STRUK BARU MELALUI MODAL (Bisa Screenhsot)
+        function cetakNotaUser(index) { let order = customerOrdersCache[index]; if(order) showStrukModal(order); }
+        function cetakNotaAdmin(order) { showStrukModal(order); }
 
-        function generateHTMLCetak(o) {
-            let htmlItems = o.items ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : "<div><i>Detail item</i></div>";
+        function showStrukModal(o) {
+            let htmlItems = o.items ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;"><span>${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : "";
+            
             let printContent = `
-                <div style="max-width:300px; margin:0 auto; padding:20px; border:1px dashed #ccc;">
-                    <h2 style="text-align:center; margin-bottom:5px;">${storeSettings.Nama_Toko || "TokoKu"}</h2>
-                    <div style="text-align:center; font-size:10px; margin-bottom:15px; border-bottom:1px solid #000; padding-bottom:10px;">NOTA PEMBAYARAN</div>
-                    <div style="font-size:11px; margin-bottom:15px;">
+                <div id="areaCetakStruk" style="border: 1px dashed #666; padding: 20px; text-align: left;">
+                    <h2 style="text-align:center; margin-bottom:5px; font-size: 18px;">${storeSettings.Nama_Toko || "TokoKu"}</h2>
+                    <div style="text-align:center; font-size:11px; margin-bottom:15px; border-bottom:1px solid #000; padding-bottom:10px;">NOTA PEMBAYARAN</div>
+                    <div style="font-size:12px; margin-bottom:15px; line-height:1.6;">
                         <div>No: <b>${o.ID_Pesanan}</b></div>
                         <div>Tgl: ${o.Tanggal}</div>
                         <div>Nama: ${o.Nama_Pembeli}</div>
                         <div>Kurir: ${o.Metode_Pengiriman || "Ambil di Toko"}</div>
                     </div>
-                    <div style="border-bottom:1px dashed #000; padding-bottom:10px; margin-bottom:10px; font-size:12px;">${htmlItems}</div>
-                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom:20px;"><span>TOTAL:</span><span>${formatRp(o.Total)}</span></div>
-                    <div style="text-align:center; font-size:10px;">Terima Kasih!</div>
+                    <div style="border-bottom:1px dashed #000; padding-bottom:10px; margin-bottom:10px;">${htmlItems}</div>
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; margin-bottom:20px;"><span>TOTAL:</span><span>${formatRp(o.Total)}</span></div>
+                    <div style="text-align:center; font-size:11px; font-style:italic;">Terima Kasih Telah Berbelanja!</div>
                 </div>`;
-            document.getElementById('printArea').innerHTML = printContent;
-            window.print();
+            
+            document.getElementById('strukContent').innerHTML = printContent;
+            document.getElementById('printArea').innerHTML = printContent; // Simpan juga untuk window.print() asli
+            document.getElementById('strukModal').style.display = 'flex';
         }
 
         document.addEventListener("DOMContentLoaded", async function() {
