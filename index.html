@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.50 Ultimate Fix</title>
+    <title>Toko Serba Ada - v1.0.51 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -164,7 +164,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.50 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.51 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -346,12 +346,15 @@
         </div>
     </div>
 
-    <!-- MODAL CEK PESANAN -->
+    <!-- MODAL CEK STATUS & RIWAYAT PESANAN PEMBELI -->
     <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
         <div class="modal-content">
-            <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div><h2 style="margin-bottom:16px;">Cek Status Pesanan</h2>
+            <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div>
+            <h2 style="margin-bottom:12px;"><i class="fas fa-receipt" style="color:var(--primary);"></i> Riwayat Pesanan Saya</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Masukkan No. WhatsApp Anda untuk melacak status pesanan.</p>
+            
             <div style="display:flex;gap:10px;margin-bottom:16px;">
-                <input type="number" id="checkWaInput" placeholder="Masukkan No. WA Anda (62x)">
+                <input type="number" id="checkWaInput" placeholder="No. WA Anda (628...)">
                 <button class="btn btn-primary" onclick="fetchCustomerOrders()"><i class="fas fa-search"></i> Cek</button>
             </div>
             <div id="customerOrdersResult"></div>
@@ -438,24 +441,46 @@
             document.getElementById('wishlistModal').style.display = 'flex';
         }
 
-        function openCustomerOrdersModal() { document.getElementById('customerOrdersModal').style.display='flex'; }
+        // BUKA RIWAYAT PESANAN PEMBELI (AUTO-LOAD JIKA NOMOR WA SUDAH TERSIMPAN)
+        function openCustomerOrdersModal() {
+            let savedWa = localStorage.getItem('TokoUser_WA') || "";
+            document.getElementById('checkWaInput').value = savedWa;
+            document.getElementById('customerOrdersResult').innerHTML = "";
+            document.getElementById('customerOrdersModal').style.display = 'flex';
+            if(savedWa) { fetchCustomerOrders(); }
+        }
 
         async function fetchCustomerOrders() {
             let wa = document.getElementById('checkWaInput').value; if(!wa) { showToast("Masukkan No WA!", "error"); return; }
-            document.getElementById('customerOrdersResult').innerHTML = "Mencari...";
+            document.getElementById('customerOrdersResult').innerHTML = "<div style='text-align:center; padding:20px;'><i class='fas fa-circle-notch fa-spin'></i> Memuat riwayat pesanan...</div>";
             try {
                 const res = await fetchAPI("get_customer_orders", "POST", {wa: wa});
                 if(res.status === 'success') {
                     customerOrdersCache = res.data.orders;
-                    document.getElementById('customerOrdersResult').innerHTML = res.data.orders.length ? res.data.orders.map((o, idx) => `
-                        <div style="background:var(--bg); padding:16px; border-radius:12px; margin-top:10px; border:1px solid var(--border);">
-                            <b>Order: ${o.ID_Pesanan}</b> <span class="badge" style="background:var(--primary); float:right;">${o.Status_Pesanan}</span><br>
-                            <span style="font-size:12px; color:var(--text-muted);">${o.Tanggal}</span><br>
-                            <div style="margin-top:8px; font-weight:bold; color:var(--primary);">Total: ${formatRp(o.Total)}</div>
-                            <button class="btn btn-outline" style="width:100%; margin-top:10px; padding:6px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Cetak Struk/Nota</button>
-                        </div>`).join("") : "<div style='margin-top:10px;'>Tidak ada pesanan.</div>";
+                    let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
+                    
+                    document.getElementById('customerOrdersResult').innerHTML = res.data.orders.length ? res.data.orders.map((o, idx) => {
+                        let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
+                        let chatText = encodeURIComponent(`Halo Admin, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
+                        let chatUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}`;
+                        
+                        return `
+                        <div style="background:var(--bg); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <b style="font-size:13px;">${o.ID_Pesanan}</b>
+                                <span class="badge" style="background:${statusBg};">${o.Status_Pesanan || 'Baru'}</span>
+                            </div>
+                            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><i class="far fa-clock"></i> ${o.Tanggal}</div>
+                            <div style="font-weight:bold; color:var(--primary); margin-bottom:10px;">Total: ${formatRp(o.Total)}</div>
+                            
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-outline" style="flex:1; padding:8px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Struk</button>
+                                <a href="${chatUrl}" target="_blank" class="btn btn-success" style="flex:1; padding:8px; font-size:12px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat WA</a>
+                            </div>
+                        </div>`;
+                    }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ditemukan riwayat pesanan dengan No. WA tersebut.</div>";
                 }
-            } catch (e) { document.getElementById('customerOrdersResult').innerHTML = "Gagal memuat data."; }
+            } catch (e) { document.getElementById('customerOrdersResult').innerHTML = "<div style='text-align:center; padding:10px; color:var(--danger);'>Gagal memuat data pesanan.</div>"; }
         }
 
         function renderBanners(banners) {
@@ -655,7 +680,6 @@
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
-        // PROSES UPLOAD BUKTI DENGAN INDIKATOR STATUS JELAS
         function handleImageUpload(e, base64Id, previewId) {
             const file = e.target.files[0]; if (!file) return; 
             const statusEl = document.getElementById('uploadStatusText');
@@ -678,6 +702,7 @@
             }
         }
 
+        // SETELAH KLIK BUAT PESANAN SEKARANG: TAMPILKAN TOMBOL SHARE WA & SELESAI
         async function processCheckout() {
             let mt = document.getElementById('checkoutMetode').value;
             let ok = mt === "Kurir Toko" ? tarifKurir : 0;
@@ -704,11 +729,13 @@
                     <div style="text-align:center; padding:10px;">
                         <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
                         <h3 style="margin-bottom:6px;">Pesanan Berhasil Disimpan!</h3>
-                        <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b><br>Ketuk tombol di bawah untuk mengirim konfirmasi ke WhatsApp Admin.</p>
+                        <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b><br>Silakan ketuk tombol WhatsApp untuk konfirmasi ke Admin.</p>
                         <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center;">
-                            <i class="fab fa-whatsapp" style="font-size:20px;"></i> Konfirmasi Pesanan ke WhatsApp Admin
+                            <i class="fab fa-whatsapp" style="font-size:20px;"></i> Share ke WhatsApp Admin
                         </a>
-                        <button class="btn btn-secondary" style="width:100%; padding:12px;" onclick="location.reload()">Selesai / Belanja Lagi</button>
+                        <button class="btn btn-primary" style="width:100%; padding:14px; justify-content:center;" onclick="location.reload()">
+                            <i class="fas fa-check"></i> Selesai / Belanja Lagi
+                        </button>
                     </div>`;
                 document.getElementById('detailModal').style.display = 'flex';
             } else { showToast(res.message || "Gagal memproses pesanan.", "error"); }
