@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.37 Pro</title>
+    <title>Toko Serba Ada - v1.0.38 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -39,6 +39,7 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } /* Perbaikan Icon Error */
         .header-actions { display: flex; gap: 8px; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid #c7d2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
@@ -65,9 +66,8 @@
         .product-img { width: 100%; height: 100%; object-fit: cover; }
         .wishlist-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 2; font-size: 14px; }
         
-        /* CSS BADGE BARU */
         .badge-katalog { position: absolute; top: 8px; left: 8px; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; z-index: 2; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .badge-katalog.bg-promo { background: var(--danger); top: 32px; } /* Turun dikit jika ada 2 badge */
+        .badge-katalog.bg-promo { background: var(--danger); top: 32px; } 
         .badge-katalog.bg-terbaru { background: var(--success); }
         .badge-katalog.bg-terlaris { background: var(--secondary); }
         .badge-katalog.bg-unggulan { background: var(--primary); }
@@ -104,8 +104,6 @@
         .badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; color: white; font-weight: 700; display: inline-block; }
         .badge.aktif { background: var(--success); } .badge.nonaktif { background: var(--danger); }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
-        
-        /* Grid untuk Admin Form agar rapi */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
@@ -138,7 +136,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.37 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.38 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -163,7 +161,7 @@
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div><div id="detailContent"></div></div>
     </div>
 
-    <!-- KERANJANG & CHECKOUT MODAL (Ringkas) -->
+    <!-- KERANJANG & CHECKOUT MODAL -->
     <div class="modal-overlay" id="cartModal" onclick="if(event.target===this) closeModal('cartModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('cartModal')">X</div><h2 style="margin-bottom: 20px;">Keranjang</h2><div id="cartContent"></div></div>
     </div>
@@ -258,12 +256,15 @@
         </div>
     </div>
 
-    <!-- Modal Orders Customer, Proof, dll (Simplified) -->
+    <!-- Modal Orders Customer, Proof, dll -->
     <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')"><div class="modal-content"><div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div><h2>Cek Pesanan</h2><div style="display:flex;gap:10px;margin-bottom:16px;"><input type="number" id="checkWaInput" placeholder="No. WA Anda"><button class="btn btn-primary" onclick="fetchCustomerOrders()">Cek</button></div><div id="customerOrdersResult"></div></div></div>
     <div class="modal-overlay center" id="proofModal" onclick="if(event.target===this) closeModal('proofModal')"><div class="modal-content" style="max-width: 400px;"><div class="modal-close-btn" onclick="closeModal('proofModal')">X</div><img id="proofImageElement" style="width:100%;border-radius:14px;"></div></div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; // GANTI JIKA URL BERUBAH
+        // -------------------------------------------------------------
+        // WAAAJJIIIBB DIGANTI DENGAN URL WEB APP BARU ANDA !!
+        // -------------------------------------------------------------
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
         
         let allProducts = [], storeSettings = {}, cart = JSON.parse(localStorage.getItem("TokoCart_v2")) || [], wishlist = JSON.parse(localStorage.getItem("TokoWishlist_v2")) || [], activeCategory = "Semua", currentSort = "terbaru";
 
@@ -273,7 +274,7 @@
         function toggleTheme() {
             document.body.classList.toggle("dark-theme");
             localStorage.setItem("TokoTheme_v2", document.body.classList.contains("dark-theme") ? "dark" : "light");
-            document.getElementById("themelcon").innerText = document.body.classList.contains("dark-theme") ? "☀️️" : "🌙";
+            document.getElementById("themelcon").innerText = document.body.classList.contains("dark-theme") ? "☀" : "🌙";
         }
 
         function showToast(msg, type = "success") {
@@ -288,10 +289,12 @@
                 if(sessionStorage.getItem("Toko_AdminToken")) data.admin_pin = sessionStorage.getItem("Toko_AdminToken");
                 const res = await fetch(method==='GET' ? `${GAS_URL}?action=${action}` : GAS_URL, { method: method, ...(method==='POST' && { headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action,data}) }) });
                 const resData = await res.json();
-                if(resData.status === 'error' && resData.message.includes("Sesi Admin")) closeAdmin();
+                if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) closeAdmin();
                 return resData;
-            } catch (e) { return { status: "error" }; } 
-            finally { document.getElementById('loadingBar').style.display = 'none'; }
+            } catch (e) { 
+                console.error("Fetch Error:", e);
+                return { status: "error" }; 
+            } finally { document.getElementById('loadingBar').style.display = 'none'; }
         }
 
         function formatRp(angka) { return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka || 0); }
@@ -307,6 +310,14 @@
                 document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
                 if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
                 renderCategoriesMenu(); renderKatalogVisitor(allProducts);
+            } else {
+                // PESAN ERROR JIKA KONEKSI DATABASE GAGAL
+                document.getElementById('productGrid').innerHTML = `
+                    <div style="grid-column: span 3; text-align:center; padding: 30px 20px; background:#1e293b; color:#f87171; border-radius:16px; border: 1px solid #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:35px; margin-bottom:12px;"></i><br>
+                        <b style="font-size:16px;">Koneksi ke Database Google Sheet Gagal!</b><br><br>
+                        <span style="font-size:13px; color:#cbd5e1;"><b>Cara Memperbaiki:</b><br>1. Salin <b>URL Web App TERBARU</b> (dari hasil <i>New Deployment</i> Google Apps Script).<br>2. Tempelkan/Paste URL tersebut ke variabel <b style="color:#fff;">GAS_URL</b> di kode <b>index.html</b> Anda.<br>3. Pastikan akses deployment diset ke <b style="color:#fff;">"Anyone" (Siapa Saja)</b>.</span>
+                    </div>`;
             }
         }
 
@@ -322,12 +333,11 @@
             let filtered = activeCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === activeCategory);
             
             let sorted = [...filtered];
-            // Sort logic yang memperhitungkan Harga Promo, lalu Grosir, lalu Normal
             sorted.sort((a, b) => {
                 let getEffectivePrice = (p) => Number(p.Harga_Promo) > 0 ? Number(p.Harga_Promo) : (Number(p.Harga_Grosir) > 0 ? Number(p.Harga_Grosir) : Number(p.Harga_Normal));
                 if(currentSort === "termurah") return getEffectivePrice(a) - getEffectivePrice(b);
                 if(currentSort === "termahal") return getEffectivePrice(b) - getEffectivePrice(a);
-                return -1; // terbaru
+                return 0; 
             });
             renderKatalogVisitor(sorted);
         }
@@ -336,25 +346,20 @@
             renderKatalogVisitor(allProducts.filter(p => p.Nama_Produk && p.Nama_Produk.toLowerCase().includes(k))); 
         }
 
-        // FUNGSI UTAMA RENDER KATALOG DENGAN FITUR BARU
         function renderKatalogVisitor(products) {
             const grid = document.getElementById('productGrid');
-            if (products.length === 0) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center;">Kosong</div>`; return; }
+            if (products.length === 0) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px;">Kosong</div>`; return; }
             
             let html = "";
             products.forEach(p => {
                 let satuan = p.Satuan ? p.Satuan : "pcs";
                 
-                // Cek Badge (Terbaru/Terlaris/Unggulan)
                 let badgeHtml = "";
                 if (p.Terbaru === "Ya") badgeHtml = `<div class="badge-katalog bg-terbaru">TERBARU</div>`;
                 else if (p.Terlaris === "Ya") badgeHtml = `<div class="badge-katalog bg-terlaris">TERLARIS</div>`;
                 else if (p.Unggulan === "Ya") badgeHtml = `<div class="badge-katalog bg-unggulan">PILIHAN</div>`;
-                
-                // Tambahan Label Promo
                 if (p.Label_Promo) badgeHtml += `<div class="badge-katalog bg-promo" ${badgeHtml ? 'style="top: 32px;"' : ''}>${p.Label_Promo}</div>`;
 
-                // Logika Harga (Promo Coret)
                 let hrgHtml = "";
                 if (Number(p.Harga_Promo) > 0) {
                     hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>
@@ -403,7 +408,6 @@
             document.getElementById('detailModal').style.display = 'flex';
         }
 
-        // LOGIKA KERANJANG (MEMPERHITUNGKAN PROMO & GROSIR)
         function getFinalPrice(p, qty) {
             if (Number(p.Harga_Promo) > 0) return Number(p.Harga_Promo);
             if (qty >= 5 && Number(p.Harga_Grosir) > 0) return Number(p.Harga_Grosir);
@@ -515,7 +519,6 @@
             document.getElementById('imagePreview').style.display = 'none'; document.getElementById('productModal').style.display = 'flex';
         }
 
-        // UPDATE EDIT PRODUK UNTUK MENANGKAP SEMUA KOLOM
         function editProduct(p) {
             openProductModal();
             document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formFotoUrl').value = p.Foto_URL;
@@ -536,7 +539,6 @@
             if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; }
         }
 
-        // UPDATE SUBMIT UNTUK MENGIRIM SEMUA DATA KE BACKEND
         async function submitProduct() {
             let badgeVal = document.getElementById('formBadge').value;
             const p = { 
