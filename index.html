@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.32 Pro</title>
+    <title>Toko Serba Ada - v1.0.33 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -203,7 +203,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.32 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.33 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -370,11 +370,11 @@
         </div>
     </div>
 
-    <!-- MODAL PRODUK (URL & GROSIR MODE) -->
+    <!-- MODAL PRODUK (URL, DESKRIPSI & GROSIR MODE) -->
     <div class="modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
         <div class="modal-content" style="background:#1e293b; color:white;">
             <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white;">X</div>
-            <h3 style="margin-bottom: 16px;">Form Produk & Harga Grosir</h3>
+            <h3 style="margin-bottom: 16px;">Form Produk & Deskripsi</h3>
             <input type="hidden" id="formIdProduk">
             <div class="form-group">
                 <label>URL Foto Produk*</label>
@@ -383,6 +383,7 @@
             </div>
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama"></div>
             <div class="form-group"><label>Kategori*</label><input type="text" id="formKategori"></div>
+            <div class="form-group"><label>Deskripsi Produk</label><textarea id="formDeskripsi" rows="3" placeholder="Tuliskan spesifikasi, warna, atau keterangan produk..."></textarea></div>
             <div class="form-group"><label>Stok Real-time*</label><input type="number" id="formStok" value="10"></div>
             <div class="form-group"><label>Harga Eceran (Satuan / Min. 1)*</label><input type="number" id="formHargaNormal"></div>
             <div class="form-group"><label>Harga Grosir (Min. Beli 5 Pcs)</label><input type="number" id="formHargaGrosir" placeholder="Kosongkan jika tidak ada harga grosir"></div>
@@ -546,8 +547,8 @@
         function renderKatalogVisitor(products) {
             const grid = document.getElementById('productGrid');
             let sorted = [...products];
-            if (currentSort === "termurah") sorted.sort((a, b) => (Number(a.Harga_Normal)) - (Number(b.Harga_Normal)));
-            else if (currentSort === "termahal") sorted.sort((a, b) => (Number(b.Harga_Normal)) - (Number(a.Harga_Normal)));
+            if (currentSort === "termurah") sorted.sort((a, b) => (Number(a.Harga_Grosir && Number(a.Harga_Grosir) > 0 ? a.Harga_Grosir : a.Harga_Normal)) - (Number(b.Harga_Grosir && Number(b.Harga_Grosir) > 0 ? b.Harga_Grosir : b.Harga_Normal)));
+            else if (currentSort === "termahal") sorted.sort((a, b) => (Number(b.Harga_Grosir && Number(b.Harga_Grosir) > 0 ? b.Harga_Grosir : b.Harga_Normal)) - (Number(a.Harga_Grosir && Number(a.Harga_Grosir) > 0 ? a.Harga_Grosir : a.Harga_Normal)));
             else sorted.reverse();
 
             if (sorted.length === 0) { grid.innerHTML = `<div class="empty-state"><h3>Produk tidak ditemukan</h3></div>`; return; }
@@ -555,13 +556,23 @@
             let html = "";
             sorted.forEach(p => {
                 let wIcon = wishlist.includes(p.ID_Produk) ? '<i class="fas fa-heart" style="color:#ef4444;"></i>' : '<i class="far fa-heart"></i>'; 
-                let grosirInfo = p.Harga_Grosir && Number(p.Harga_Grosir) > 0 ? `<div style="font-size:10px; color:var(--success); font-weight:700;">Grosir (≥5): ${formatRp(p.Harga_Grosir)}</div>` : "";
-                let hrg = `<div class="price-final">${formatRp(p.Harga_Normal)}</div>${grosirInfo}`;
+                
+                let hrgHtml = "";
+                let hasGrosir = p.Harga_Grosir && Number(p.Harga_Grosir) > 0;
+                
+                if (hasGrosir) {
+                    // Harga grosir nampak duluan di depan
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)} <span style="font-size:9px; color:var(--success); font-weight:700;">(Grosir ≥5)</span></div>
+                               <span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`;
+                } else {
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`;
+                }
+
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Keranjang</button>`;
                 
                 html += `<div class="product-card" onclick="openProductDetail('${p.ID_Produk}')">
                             <div class="product-img-wrapper"><button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${wIcon}</button><img src="${p.Foto_URL}" class="product-img" loading="lazy"></div>
-                            <div class="product-info"><div><div class="product-title">${p.Nama_Produk}</div>${hrg}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; font-weight:600; color:var(--text-muted);">Sisa: ${p.Stok}</span>${btn}</div></div>
+                            <div class="product-info"><div><div class="product-title">${p.Nama_Produk}</div>${hrgHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; font-weight:600; color:var(--text-muted);">Sisa: ${p.Stok}</span>${btn}</div></div>
                          </div>`;
             });
             grid.innerHTML = html;
@@ -570,15 +581,23 @@
         function openProductDetail(id) {
             const p = allProducts.find(x => x.ID_Produk === id); 
             const isHabis = Number(p.Stok) <= 0; 
-            const grosirText = p.Harga_Grosir && Number(p.Harga_Grosir) > 0 ? `<div style="background:var(--primary-light); padding:10px; border-radius:10px; margin-bottom:12px; font-size:13px; color:var(--primary); font-weight:700;">🔥 Harga Grosir (Beli ≥ 5 Pcs): ${formatRp(p.Harga_Grosir)} / pcs</div>` : "";
+            
+            let hasGrosir = p.Harga_Grosir && Number(p.Harga_Grosir) > 0;
+            let hargaUtamaHtml = "";
+            
+            if (hasGrosir) {
+                hargaUtamaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:12px; font-weight:normal; color:var(--text-main);">/pcs (Min. Beli 5 Pcs)</span></div>
+                                  <div style="font-size:13px; color:var(--text-muted); text-decoration:line-through; margin-top:2px;">Harga Eceran: ${formatRp(p.Harga_Normal)}</div>`;
+            } else {
+                hargaUtamaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">(Harga Eceran / Satuan)</span></div>`;
+            }
             
             document.getElementById('detailContent').innerHTML = `
                 <div style="position:relative;"><img src="${p.Foto_URL}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 18px; margin-bottom: 16px;"></div>
                 <div style="font-size: 22px; font-weight: 800; margin-bottom: 6px; padding-right: 35px;">${p.Nama_Produk}</div>
-                <div class="price-final" style="font-size:24px; margin-bottom: 8px;">${formatRp(p.Harga_Normal)} <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">(Harga Eceran / Satuan)</span></div>
-                ${grosirText}
+                <div style="margin-bottom: 12px;">${hargaUtamaHtml}</div>
                 <div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px; font-weight:600;">Stok Gudang: ${p.Stok} Pcs</div>
-                <div style="font-size:14px; color:var(--text-muted); line-height: 1.6; white-space: pre-wrap; margin-bottom:20px;">${p.Deskripsi || "-"}</div>
+                <div style="font-size:14px; color:var(--text-muted); line-height: 1.6; white-space: pre-wrap; margin-bottom:20px; background:var(--bg); padding:14px; border-radius:12px; border:1px solid var(--border);">${p.Deskripsi || "Tidak ada deskripsi produk."}</div>
                 <div class="sticky-bottom-bar">
                     ${isHabis ? `<button class="btn btn-secondary" style="width:100%;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex: 1;" onclick="addToCart('${p.ID_Produk}', 1)">+ Keranjang</button><button class="btn btn-primary" style="flex:1;" onclick="addToCart('${p.ID_Produk}', 1); openCart();">Beli Langsung</button>`}
                 </div>`;
@@ -599,7 +618,6 @@
             let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
             if (currentQty > Number(p.Stok)) { showToast("Gagal: Stok tidak mencukupi!", "error"); return; }
             
-            // Tentukan harga otomatis (Eceran atau Grosir jika qty >= 5)
             let finalHarga = Number(p.Harga_Normal);
             if (currentQty >= 5 && p.Harga_Grosir && Number(p.Harga_Grosir) > 0) {
                 finalHarga = Number(p.Harga_Grosir);
@@ -625,7 +643,6 @@
             
             if (cart[i]) {
                 cart[i].qty = newQty;
-                // Update otomatis harga eceran / grosir berdasarkan qty terbaru
                 if (newQty >= 5 && p.Harga_Grosir && Number(p.Harga_Grosir) > 0) {
                     cart[i].harga = Number(p.Harga_Grosir);
                 } else {
@@ -922,7 +939,7 @@
         async function deleteItem(action, id) { if(confirm("Hapus data secara permanen?")) { const r = await fetchAPI(action, "POST", {id: id}); if(r.status==='success') { showToast("Dihapus"); loadAdminData(); } } }
 
         function openProductModal() {
-            ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formStok', 'formHargaNormal', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = "");
+            ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formDeskripsi', 'formStok', 'formHargaNormal', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('formStok').value = "10"; 
             document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('productModal').style.display = 'flex';
@@ -934,6 +951,7 @@
             document.getElementById('formFotoUrl').value = p.Foto_URL || "";
             document.getElementById('formNama').value = p.Nama_Produk; 
             document.getElementById('formKategori').value = p.Kategori;
+            document.getElementById('formDeskripsi').value = p.Deskripsi || "";
             document.getElementById('formStok').value = p.Stok || 10; 
             document.getElementById('formHargaNormal').value = p.Harga_Normal; 
             document.getElementById('formHargaGrosir').value = p.Harga_Grosir || "";
@@ -949,6 +967,7 @@
                 ID_Produk: document.getElementById('formIdProduk').value, 
                 Nama_Produk: document.getElementById('formNama').value, 
                 Kategori: document.getElementById('formKategori').value, 
+                Deskripsi: document.getElementById('formDeskripsi').value,
                 Stok: document.getElementById('formStok').value, 
                 Harga_Normal: document.getElementById('formHargaNormal').value, 
                 Harga_Grosir: document.getElementById('formHargaGrosir').value, 
