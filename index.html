@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.53 Core-Match</title>
+    <title>Toko Serba Ada - v1.0.54 Ultimate Fix</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -164,7 +164,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.53 Core-Match)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.54 Ultimate)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -747,6 +747,9 @@
                             </button>
                         </div>`;
                     document.getElementById('detailModal').style.display = 'flex';
+                    
+                    // Trigger buka WhatsApp secara otomatis agar tidak perlu diklik manual jika browser mendukung
+                    window.open(waUrl, '_blank');
                 } else { 
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
