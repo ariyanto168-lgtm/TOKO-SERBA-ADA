@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.51 Pro</title>
+    <title>Toko Serba Ada - v1.0.52 Stable</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -164,7 +164,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.51 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.52 Stable)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -238,7 +238,7 @@
                 <img id="checkoutBuktiPreview" style="max-height: 120px; display:none; margin-top:10px; border-radius: 10px;">
             </div>
             
-            <button class="btn btn-success" style="width:100%; margin-top:20px; padding: 14px;" onclick="processCheckout()"><i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang</button>
+            <button id="btnSubmitOrder" class="btn btn-success" style="width:100%; margin-top:20px; padding: 14px;" onclick="processCheckout()"><i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang</button>
         </div>
     </div>
 
@@ -441,7 +441,6 @@
             document.getElementById('wishlistModal').style.display = 'flex';
         }
 
-        // BUKA RIWAYAT PESANAN PEMBELI (AUTO-LOAD JIKA NOMOR WA SUDAH TERSIMPAN)
         function openCustomerOrdersModal() {
             let savedWa = localStorage.getItem('TokoUser_WA') || "";
             document.getElementById('checkWaInput').value = savedWa;
@@ -675,6 +674,10 @@
             document.getElementById('checkoutBuktiPreview').style.display = 'none';
             document.getElementById('uploadStatusText').innerText = "Belum ada gambar dipilih.";
             
+            let submitBtn = document.getElementById('btnSubmitOrder');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
+
             if(storeSettings.Info_Rekening) document.getElementById('uiInfoRekening').innerText = storeSettings.Info_Rekening;
             if(storeSettings.QRIS_URL) { document.getElementById('uiQrisImage').src = storeSettings.QRIS_URL; document.getElementById('uiQrisImage').style.display = 'block'; }
             document.getElementById('checkoutModal').style.display = 'flex';
@@ -702,8 +705,11 @@
             }
         }
 
-        // SETELAH KLIK BUAT PESANAN SEKARANG: TAMPILKAN TOMBOL SHARE WA & SELESAI
+        // ANTI-DUPLICATE CHECKOUT PROCESS DENGAN PENGUNCI TOMBOL OTOMATIS
         async function processCheckout() {
+            let submitBtn = document.getElementById('btnSubmitOrder');
+            if (submitBtn.disabled) return;
+            
             let mt = document.getElementById('checkoutMetode').value;
             let ok = mt === "Kurir Toko" ? tarifKurir : 0;
             let finalTotal = globalSubtotal + ok;
@@ -713,32 +719,45 @@
             if(!n || !w || !a) { showToast("Lengkapi nama, WA, dan alamat!", "error"); return; }
             if(!b64) { showToast("Mohon tunggu sebentar, gambar sedang diproses / belum dipilih!", "error"); return; }
             
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Menyimpan Pesanan...`;
+            
             localStorage.setItem('TokoUser_Nama', n); localStorage.setItem('TokoUser_WA', w); localStorage.setItem('TokoUser_Alamat', a);
             
-            const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
-            if(res.status === 'success') {
-                let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
-                let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
-                let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
-                
-                let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
-                
-                cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
-                
-                document.getElementById('detailContent').innerHTML = `
-                    <div style="text-align:center; padding:10px;">
-                        <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
-                        <h3 style="margin-bottom:6px;">Pesanan Berhasil Disimpan!</h3>
-                        <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b><br>Silakan ketuk tombol WhatsApp untuk konfirmasi ke Admin.</p>
-                        <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center;">
-                            <i class="fab fa-whatsapp" style="font-size:20px;"></i> Share ke WhatsApp Admin
-                        </a>
-                        <button class="btn btn-primary" style="width:100%; padding:14px; justify-content:center;" onclick="location.reload()">
-                            <i class="fas fa-check"></i> Selesai / Belanja Lagi
-                        </button>
-                    </div>`;
-                document.getElementById('detailModal').style.display = 'flex';
-            } else { showToast(res.message || "Gagal memproses pesanan.", "error"); }
+            try {
+                const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
+                if(res.status === 'success') {
+                    let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
+                    let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
+                    let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
+                    
+                    let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
+                    
+                    cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
+                    
+                    document.getElementById('detailContent').innerHTML = `
+                        <div style="text-align:center; padding:10px;">
+                            <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
+                            <h3 style="margin-bottom:6px;">Pesanan Berhasil Disimpan!</h3>
+                            <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b><br>Silakan ketuk tombol WhatsApp untuk konfirmasi ke Admin.</p>
+                            <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center;">
+                                <i class="fab fa-whatsapp" style="font-size:20px;"></i> Share ke WhatsApp Admin
+                            </a>
+                            <button class="btn btn-primary" style="width:100%; padding:14px; justify-content:center;" onclick="location.reload()">
+                                <i class="fas fa-check"></i> Selesai / Belanja Lagi
+                            </button>
+                        </div>`;
+                    document.getElementById('detailModal').style.display = 'flex';
+                } else { 
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
+                    showToast(res.message || "Gagal memproses pesanan.", "error"); 
+                }
+            } catch(err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
+                showToast("Terjadi kesalahan koneksi.", "error");
+            }
         }
 
         window.addEventListener("hashchange", checkAdminAccess);
