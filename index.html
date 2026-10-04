@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.39 Pro</title>
+    <title>Toko Serba Ada - v1.0.42 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -39,6 +39,7 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
         .header-actions { display: flex; gap: 8px; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid #c7d2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
@@ -110,7 +111,6 @@
     <div class="toast-container" id="toastContainer"></div>
     <div class="loading-bar" id="loadingBar"></div>
 
-    <!-- PENGUNJUNG (PELANGGAN) -->
     <div id="userView">
         <header class="header">
             <div class="header-top">
@@ -133,12 +133,18 @@
                     <option value="terbaru">Terbaru</option><option value="termurah">Termurah</option><option value="termahal">Termahal</option>
                 </select>
             </div>
-            <div class="product-grid" id="productGrid"></div>
+            <div class="product-grid" id="productGrid">
+                <!-- INDIKATOR LOADING AGAR TIDAK BLANK -->
+                <div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size: 30px; margin-bottom: 10px; color: var(--primary);"></i><br>
+                    <b>Memuat Katalog Produk...</b>
+                </div>
+            </div>
         </main>
 
-        <div class="footer">
+        <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.39 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.42 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -258,25 +264,38 @@
         </div>
     </div>
 
-    <!-- Modal Orders Customer, Proof, dll -->
-    <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')"><div class="modal-content"><div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div><h2>Cek Pesanan</h2><div style="display:flex;gap:10px;margin-bottom:16px;"><input type="number" id="checkWaInput" placeholder="No. WA Anda"><button class="btn btn-primary" onclick="fetchCustomerOrders()">Cek</button></div><div id="customerOrdersResult"></div></div></div>
-    <div class="modal-overlay center" id="proofModal" onclick="if(event.target===this) closeModal('proofModal')"><div class="modal-content" style="max-width: 400px;"><div class="modal-close-btn" onclick="closeModal('proofModal')">X</div><img id="proofImageElement" style="width:100%;border-radius:14px;"></div></div>
+    <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')"><div class="modal-content"><div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div><h2 style="margin-bottom:16px;">Cek Pesanan</h2><div style="display:flex;gap:10px;margin-bottom:16px;"><input type="number" id="checkWaInput" placeholder="No. WA Anda (62x)"><button class="btn btn-primary" onclick="fetchCustomerOrders()">Cek</button></div><div id="customerOrdersResult"></div></div></div>
 
+    <!-- SCRIPT UTAMA - DENGAN URL HARDCODE -->
     <script>
         // =========================================================================================
-        // ⚠️⚠️ SANGAT PENTING: GANTI TEKS DI BAWAH INI DENGAN URL WEB APP ANDA YANG BARU!! ⚠️⚠️
+        // URL WEB APP ANDA DIKUNCI DI SINI:
         // =========================================================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
         // =========================================================================================
         
         let allProducts = [], storeSettings = {};
         let cart = [], wishlist = [];
-        try { cart = JSON.parse(localStorage.getItem("TokoCart_v2")) || []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
-        try { wishlist = JSON.parse(localStorage.getItem("TokoWishlist_v2")) || []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
+        
+        try { 
+            let c = JSON.parse(localStorage.getItem("TokoCart_v2")); 
+            cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; 
+        } catch(e) { localStorage.removeItem("TokoCart_v2"); }
+        
+        try { 
+            let w = JSON.parse(localStorage.getItem("TokoWishlist_v2")); 
+            wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; 
+        } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
+
         let activeCategory = "Semua", currentSort = "terbaru";
 
-        document.getElementById('footerYear').innerText = new Date().getFullYear();
-        if (localStorage.getItem("TokoTheme_v2") === "dark") { document.body.classList.add("dark-theme"); document.getElementById("themelcon").innerText = "☀️"; }
+        try {
+            document.getElementById('footerYear').innerText = new Date().getFullYear();
+            if (localStorage.getItem("TokoTheme_v2") === "dark") { 
+                document.body.classList.add("dark-theme"); 
+                document.getElementById("themelcon").innerText = "☀️"; 
+            }
+        } catch(e) {}
 
         function toggleTheme() {
             document.body.classList.toggle("dark-theme");
@@ -307,39 +326,52 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-        document.addEventListener("DOMContentLoaded", async () => { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); });
+        function updateCartBadge() { const el = document.getElementById('navCartBadge'); if(el) el.innerText = cart.reduce((s, i) => s + (i && i.qty ? i.qty : 0), 0); }
+        function updateWishlistBadge() { const el = document.getElementById('navWishlistBadge'); if(el) el.innerText = wishlist.length; }
+        
+        function toggleWishlist(id) {
+            const p = allProducts.find(x => x && x.ID_Produk === id); if(!p) return;
+            const idx = wishlist.findIndex(x => x && x.id === id);
+            if(idx > -1) { wishlist.splice(idx, 1); showToast("Dihapus dari wishlist", "error"); }
+            else { wishlist.push({id: p.ID_Produk, nama: p.Nama_Produk, foto: p.Foto_URL, harga: getFinalPrice(p, 1), satuan: p.Satuan||'pcs'}); showToast("Disimpan ke wishlist"); }
+            localStorage.setItem('TokoWishlist_v2', JSON.stringify(wishlist)); 
+            updateWishlistBadge(); renderKatalogVisitor(allProducts);
+        }
+
+        function openWishlist() {
+            closeModal('detailModal'); const c = document.getElementById('wishlistContent');
+            if (wishlist.length === 0) c.innerHTML = '<div style="text-align:center; padding:20px;">Belum ada produk favorit.</div>';
+            else c.innerHTML = wishlist.map((item) => {
+                if(!item) return "";
+                return `<div class="cart-item"><img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
+            }).join("");
+            document.getElementById('wishlistModal').style.display = 'flex';
+        }
+
+        function openCustomerOrdersModal() { document.getElementById('customerOrdersModal').style.display='flex'; }
+
+        async function fetchCustomerOrders() {
+            let wa = document.getElementById('checkWaInput').value; if(!wa) return;
+            document.getElementById('customerOrdersResult').innerHTML = "Mencari...";
+            try {
+                const res = await fetchAPI("get_customer_orders", "POST", {wa: wa});
+                if(res.status === 'success') {
+                    document.getElementById('customerOrdersResult').innerHTML = res.data.orders.length ? res.data.orders.map(o => `<div style="background:var(--bg); padding:12px; border-radius:12px; margin-top:10px; border:1px solid var(--border);"><b>${o.ID_Pesanan}</b> <span class="badge" style="background:var(--primary);">${o.Status_Pesanan}</span><br><span style="font-size:12px;">${formatRp(o.Total)}</span></div>`).join("") : "Tidak ada pesanan.";
+                }
+            } catch (e) { document.getElementById('customerOrdersResult').innerHTML = "Gagal memuat data."; }
+        }
 
         async function initApp() {
-            try {
-                const res = await fetchAPI("get_catalog", "GET");
-                if (res && res.status === "success" && res.data && Array.isArray(res.data.products)) {
-                    allProducts = res.data.products; 
-                    storeSettings = res.data.settings || {};
-                    document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
-                    if(storeSettings.Logo_URL) { 
-                        document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; 
-                        document.getElementById('uiLogoImg').style.display = "block"; 
-                    }
-                    renderCategoriesMenu(); 
-                    renderKatalogVisitor(allProducts);
-                } else {
-                    throw new Error("Data katalog tidak valid atau kosong.");
-                }
-            } catch (err) {
-                // TAMPILAN SMART ERROR (JIKA LUPA GANTI URL)
-                document.getElementById('productGrid').innerHTML = `
-                    <div style="grid-column: span 3; text-align:center; padding: 30px 20px; background:var(--surface); border-radius:16px; border: 1px solid var(--danger);">
-                        <i class="fas fa-plug" style="font-size:35px; margin-bottom:12px; color:var(--danger);"></i><br>
-                        <b style="font-size:16px; color:var(--danger);">Koneksi Aplikasi & Server Terputus!</b><br><br>
-                        <span style="font-size:13px; color:var(--text-main); line-height:1.6; display:block; text-align:left;">
-                            <b>Penyebab:</b><br>Anda masih menggunakan Link (GAS_URL) template bawaan, atau link Google Sheet Anda tidak bisa diakses.<br><br>
-                            <b>Cara Memperbaiki (Hanya 1 Menit):</b><br>
-                            1. Buka file <b>index.html</b> Anda.<br>
-                            2. Cari baris nomor 199 <code>const GAS_URL = "ISI_DENGAN_URL_WEB_APP_ANDA_DISINI";</code><br>
-                            3. Ganti teks tersebut dengan URL Google Apps Script milik Anda sendiri.<br>
-                            4. (Penting) Pastikan Akses Deploy di Google Script diset ke <b>"Anyone" (Siapa Saja)</b>.
-                        </span>
-                    </div>`;
+            const res = await fetchAPI("get_catalog", "GET");
+            if (res && res.status === "success" && res.data && Array.isArray(res.data.products)) {
+                allProducts = res.data.products; 
+                storeSettings = res.data.settings || {};
+                document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
+                if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
+                renderCategoriesMenu(); 
+                renderKatalogVisitor(allProducts);
+            } else {
+                throw new Error("Format data tidak sesuai dari server Google.");
             }
         }
 
@@ -370,10 +402,11 @@
 
         function renderKatalogVisitor(products) {
             const grid = document.getElementById('productGrid');
-            if (products.length === 0) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px;">Kosong</div>`; return; }
+            if (products.length === 0) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px;">Produk tidak ditemukan</div>`; return; }
             
             let html = "";
             products.forEach(p => {
+                if(!p) return;
                 let satuan = p.Satuan ? p.Satuan : "pcs";
                 
                 let badgeHtml = "";
@@ -395,8 +428,12 @@
 
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
                 
+                let isW = wishlist.find(w => w && w.id === p.ID_Produk);
+                let heart = isW ? '<i class="fas fa-heart" style="color:var(--danger);"></i>' : '<i class="far fa-heart" style="color:var(--text-muted);"></i>';
+                let wBtn = `<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${heart}</button>`;
+
                 html += `<div class="product-card" onclick="openProductDetail('${p.ID_Produk}')">
-                            <div class="product-img-wrapper">${badgeHtml}<img src="${p.Foto_URL}" class="product-img" loading="lazy"></div>
+                            <div class="product-img-wrapper">${badgeHtml}${wBtn}<img src="${p.Foto_URL}" class="product-img" loading="lazy"></div>
                             <div class="product-info"><div><div class="product-title">${p.Nama_Produk}</div>${hrgHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px;">Sisa: ${p.Stok}</span>${btn}</div></div>
                          </div>`;
             });
@@ -404,7 +441,8 @@
         }
 
         function openProductDetail(id) {
-            const p = allProducts.find(x => x.ID_Produk === id); 
+            const p = allProducts.find(x => x && x.ID_Produk === id); 
+            if(!p) return;
             let satuan = p.Satuan ? p.Satuan : "pcs";
             let hargaHtml = "";
             
@@ -437,8 +475,9 @@
         }
 
         function addToCart(id, qty = 1) {
-            const p = allProducts.find(x => x.ID_Produk === id); 
-            const idx = cart.findIndex(item => item.id === id);
+            const p = allProducts.find(x => x && x.ID_Produk === id); 
+            if(!p) return;
+            const idx = cart.findIndex(item => item && item.id === id);
             let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
             if (currentQty > Number(p.Stok)) { showToast("Stok tidak cukup!", "error"); return; }
             
@@ -449,41 +488,42 @@
             
             localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); updateCartBadge(); showToast("Dimasukkan ke keranjang");
         }
-        function updateCartBadge() { document.getElementById('navCartBadge').innerText = cart.reduce((s, i) => s + i.qty, 0); }
         
         function updateQty(i, d) { 
-            const cartItem = cart[i]; const p = allProducts.find(x => x.ID_Produk === cartItem.id); 
+            const cartItem = cart[i]; if(!cartItem) return;
+            const p = allProducts.find(x => x && x.ID_Produk === cartItem.id); if(!p) return;
             let newQty = cartItem.qty + d;
             if(d > 0 && newQty > Number(p.Stok)) return;
-            if (newQty <= 0) { if(confirm("Hapus?")) cart.splice(i, 1); else newQty = 1; } 
+            if (newQty <= 0) { if(confirm("Hapus dari keranjang?")) cart.splice(i, 1); else newQty = 1; } 
             if (cart[i]) { cart[i].qty = newQty; cart[i].harga = getFinalPrice(p, newQty); }
             localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); openCart(); updateCartBadge(); 
         }
 
         function openCart() {
             closeModal('detailModal'); const c = document.getElementById('cartContent');
-            if (cart.length === 0) { c.innerHTML = `Kosong`; } 
+            if (cart.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 20px;">Keranjang Anda masih kosong.</div>`; } 
             else {
                 let subtotal = 0; 
                 c.innerHTML = cart.map((item, i) => { 
+                    if(!item) return "";
                     subtotal += (item.harga * item.qty); 
-                    const p = allProducts.find(x => x.ID_Produk === item.id);
+                    const p = allProducts.find(x => x && x.ID_Produk === item.id) || {};
                     let note = "";
                     if (Number(p.Harga_Promo) > 0) note = `<span style="font-size:10px; color:var(--danger);">Harga Promo!</span>`;
                     else if (item.qty >= 5 && Number(p.Harga_Grosir) > 0) note = `<span style="font-size:10px; color:var(--success);">Harga Grosir Aktif!</span>`;
                     
                     return `<div class="cart-item">
                                 <img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;">
-                                <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)} /${item.satuan}</div>${note}</div>
+                                <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)} /${item.satuan || 'pcs'}</div>${note}</div>
                                 <div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><b style="width:20px;text-align:center;">${item.qty}</b><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div>
                              </div>`; 
-                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;"><b>Total:</b> <b style="color:var(--primary);">${formatRp(subtotal)}</b></div><button class="btn btn-success" style="width: 100%;" onclick="prepareCheckout()">Checkout</button></div>`;
+                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;"><b>Total:</b> <b style="color:var(--primary);">${formatRp(subtotal)}</b></div><button class="btn btn-success" style="width: 100%;" onclick="prepareCheckout()">Lanjutkan Checkout</button></div>`;
             }
             document.getElementById('cartModal').style.display = 'flex';
         }
 
         async function prepareCheckout() {
-            closeModal('cartModal'); document.getElementById('checkoutTotal').innerText = formatRp(cart.reduce((s, i) => s + (i.harga*i.qty), 0));
+            closeModal('cartModal'); document.getElementById('checkoutTotal').innerText = formatRp(cart.reduce((s, i) => s + ((i&&i.harga?i.harga:0)*(i&&i.qty?i.qty:0)), 0));
             document.getElementById('checkoutNama').value = localStorage.getItem('TokoUser_Nama') || ""; 
             document.getElementById('checkoutWA').value = localStorage.getItem('TokoUser_WA') || ""; 
             document.getElementById('checkoutAlamat').value = localStorage.getItem('TokoUser_Alamat') || "";
@@ -495,14 +535,15 @@
         async function processCheckout() {
             let total = cart.reduce((s, i) => s + (i.harga*i.qty), 0);
             let n = document.getElementById('checkoutNama').value, w = document.getElementById('checkoutWA').value, a = document.getElementById('checkoutAlamat').value, b64 = document.getElementById('checkoutBuktiBase64').value;
-            if(!n || !w || !a || !b64) { showToast("Lengkapi data & bukti transfer!", "error"); return; }
+            if(!n || !w || !a || !b64) { showToast("Lengkapi semua data & upload bukti transfer!", "error"); return; }
             
             const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, total: total, cart: cart, Bukti_Base64: b64 });
             if(res.status === 'success') {
                 let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
                 let txt = `Pesanan Baru (${res.orderId})\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nTotal: ${formatRp(total)}`;
                 cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
-                window.open(`https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`, '_blank'); initApp();
+                window.open(`https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`, '_blank'); 
+                location.reload();
             }
         }
 
@@ -517,19 +558,22 @@
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; const r = await fetchAPI("verify_pin", "POST", { pin: p });
             if (r.status === 'success') { sessionStorage.setItem("Toko_AdminToken", p); window.location.hash = "#admin"; closeModal('adminPinModal'); document.getElementById('userView').style.display='none'; document.getElementById('adminView').style.display='block'; loadAdminData(); } 
+            else { showToast("PIN Salah", "error"); }
         }
         function switchAdminTab(t) { document.querySelectorAll('.admin-tab-btn').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
-                allProducts = res.data.products; 
+                allProducts = res.data.products || []; 
                 document.getElementById('adminProductList').innerHTML = allProducts.map(p => `<div class="admin-card"><img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:cover;border-radius: 10px;"><div style="flex:1; margin-left: 12px;"><b>${p.Nama_Produk}</b><br><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> <span style="font-size:12px;">${formatRp(p.Harga_Normal)}</span></div><button class="btn btn-secondary" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Edit</button></div>`).join("");
                 
-                document.getElementById('adminOrderList').innerHTML = res.data.orders.map(o => `<div class="admin-card" style="flex-direction:column; align-items:flex-start;"><b>${o.ID_Pesanan}</b><div>${o.Nama_Pembeli} - ${formatRp(o.Total)}</div><select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="margin-top:10px;"><option disabled selected>${o.Status_Pesanan}</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option></select></div>`).join("");
+                let orders = res.data.orders || [];
+                document.getElementById('adminOrderList').innerHTML = orders.map(o => `<div class="admin-card" style="flex-direction:column; align-items:flex-start;"><b>${o.ID_Pesanan}</b><div>${o.Nama_Pembeli} - ${formatRp(o.Total)}</div><select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="margin-top:10px;"><option disabled selected>${o.Status_Pesanan}</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option></select></div>`).join("");
                 
-                document.getElementById('setNamaToko').value = res.data.settings.Nama_Toko || ""; document.getElementById('setWaAdmin').value = res.data.settings.WhatsApp_Admin || "";
-                document.getElementById('setLogoUrl').value = res.data.settings.Logo_URL || ""; document.getElementById('setInfoRekening').value = res.data.settings.Info_Rekening || ""; document.getElementById('setQrisUrl').value = res.data.settings.QRIS_URL || "";
+                let s = res.data.settings || {};
+                document.getElementById('setNamaToko').value = s.Nama_Toko || ""; document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || "";
+                document.getElementById('setLogoUrl').value = s.Logo_URL || ""; document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; document.getElementById('setQrisUrl').value = s.QRIS_URL || "";
             }
         }
         async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); }
@@ -604,6 +648,26 @@
                 }
             }
         }
+
+        // =========================================================
+        // EKSEKUSI UTAMA (Mencegah Blank Screen)
+        // =========================================================
+        document.addEventListener("DOMContentLoaded", async function() {
+            try {
+                updateCartBadge(); 
+                updateWishlistBadge();
+                await initApp();
+                checkAdminAccess();
+            } catch(e) {
+                console.error("Kesalahan Load Data: ", e);
+                document.getElementById('productGrid').innerHTML = `
+                    <div style="grid-column: span 3; text-align:center; padding: 20px; background: var(--surface); color: var(--danger); border: 1px solid var(--danger); border-radius: 12px;">
+                        <i class="fas fa-plug" style="font-size: 30px; margin-bottom: 10px;"></i><br>
+                        <b>Gagal Terhubung ke Database!</b><br>
+                        <small style="color: var(--text-main); display:block; margin-top:8px;">Pastikan Anda membuka web ini dari link GitHub Pages (berakhiran <b>.github.io</b>), bukan dari link source code GitHub.</small>
+                    </div>`;
+            }
+        });
     </script>
 </body>
 </html>
