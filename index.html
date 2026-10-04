@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.2 Final</title>
+    <title>Toko Serba Ada - v2.3 Final</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -160,7 +160,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v2.2 Final)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v2.3 Final)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -171,9 +171,10 @@
         </nav>
     </div>
 
-    <!-- MODAL ADMIN LOGIN -->
-    <div class="modal-overlay center" id="adminPinModal" onclick="if(event.target===this) closeModal('adminPinModal')">
-        <div class="modal-content" style="max-width: 300px; text-align: center;">
+    <!-- MODAL ADMIN LOGIN (DENGAN TOMBOL TUTUP YANG JELAS) -->
+    <div class="modal-overlay center" id="adminPinModal">
+        <div class="modal-content" style="max-width: 300px; text-align: center; position: relative;">
+            <div class="modal-close-btn" onclick="closeAdminLoginModal()">X</div>
             <h3 style="margin-bottom:16px;">Verifikasi Penjual</h3>
             <input type="password" id="adminPinInput" placeholder="Masukkan PIN" style="text-align: center; letter-spacing: 2px; margin-bottom:16px;">
             <button class="btn btn-primary" style="width:100%;" onclick="submitAdminPin()">Masuk Panel</button>
@@ -803,27 +804,46 @@
             }
         }
 
-        // MENGGUNAKAN SESSIONSTORAGE MURNI: SETIAP REFRESH OTOMATIS KEMBALI KE PEMBELI
+        // KONTROL AKSES ADMIN & HASH ROUTING
+        window.addEventListener("hashchange", checkAdminAccess);
+        
         function checkAdminAccess() {
-            if (sessionStorage.getItem("Toko_AdminToken")) {
-                document.getElementById('userView').style.display = 'none';
-                document.getElementById('adminView').style.display = 'block';
-                loadAdminData();
+            if (window.location.hash.includes("#admin")) {
+                if (sessionStorage.getItem("Toko_AdminToken")) {
+                    document.getElementById('userView').style.display = 'none';
+                    document.getElementById('adminView').style.display = 'block';
+                    loadAdminData();
+                } else {
+                    openAdminLogin();
+                }
             } else {
                 document.getElementById('adminView').style.display = 'none';
                 document.getElementById('userView').style.display = 'block';
             }
         }
 
-        function openAdminLogin() { document.getElementById('userView').style.display = 'none'; document.getElementById('adminPinModal').style.display = 'flex'; }
-        function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); checkAdminAccess(); location.reload(); }
+        function openAdminLogin() { 
+            document.getElementById('adminPinModal').style.display = 'flex'; 
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminPinModal').style.display = 'none';
+            window.location.hash = "";
+            document.getElementById('userView').style.display = 'block';
+        }
+
+        function closeAdmin() { 
+            sessionStorage.removeItem("Toko_AdminToken"); 
+            window.location.hash = "";
+            checkAdminAccess(); 
+        }
         
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; 
             const r = await fetchAPI("verify_pin", "POST", { pin: p });
             if (r.status === 'success') { 
                 sessionStorage.setItem("Toko_AdminToken", p); 
-                closeModal('adminPinModal'); 
+                document.getElementById('adminPinModal').style.display = 'none';
                 checkAdminAccess();
             } else { showToast("PIN Salah", "error"); }
         }
