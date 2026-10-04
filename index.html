@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.1 Final</title>
-    <!-- Library untuk Cetak Struk Gambar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>Toko Serba Ada - v2.2 Final</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -162,7 +160,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v2.1 Final)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v2.2 Final)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -289,7 +287,14 @@
         </div>
 
         <div class="admin-container admin-tab-content" id="adminTab_pengaturan" style="display:none;">
+            <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px;">
+                <h3 style="margin-bottom:16px; color:#f8fafc;"><i class="fas fa-lock"></i> Ganti PIN Admin</h3>
+                <div class="form-group"><label>PIN Admin Baru</label><input type="password" id="setNewPin" placeholder="Minimal 4-6 digit"></div>
+                <button class="btn btn-success" style="width: 100%; margin-top:14px;" onclick="changePinAdmin()"><i class="fas fa-key"></i> Simpan PIN Baru</button>
+            </div>
+
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
+                <h3 style="margin-bottom:16px; color:#f8fafc;"><i class="fas fa-cog"></i> Pengaturan Toko</h3>
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: Toko Berkah"></div>
                 <div class="form-group"><label>Warna Tema Utama</label><input type="color" id="setWarnaTema" style="height: 50px; padding: 5px;"></div>
                 <div class="form-group"><label>Biaya Kirim Kurir Toko (Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
@@ -452,7 +457,6 @@
             if(savedWa) { fetchCustomerOrders(); }
         }
 
-        // FUNGSI MUAT RIWAYAT - MENAMPILKAN DETAIL LANGSUNG & FIX KODE NEGARA WA ADMIN
         async function fetchCustomerOrders() {
             let wa = document.getElementById('checkWaInput').value; 
             if(!wa || wa.length < 5) { showToast("Masukkan No WA minimal 5 angka!", "error"); return; }
@@ -462,26 +466,21 @@
             if(res.status === 'success') {
                 customerOrdersCache = res.data.orders || [];
                 
-                // MENCEGAH CRASH & FIX KODE NEGARA
                 let waAdminSettings = storeSettings.WhatsApp_Admin || "628000";
                 let waAdmin = String(waAdminSettings).replace(/[^0-9]/g, ''); 
-                
-                // FORCE KODE NEGARA INDONESIA (62) JIKA DIAWALI 0 ATAU 8
                 if(waAdmin.startsWith('0')) { waAdmin = '62' + waAdmin.slice(1); }
                 else if(waAdmin.startsWith('8')) { waAdmin = '62' + waAdmin; }
                 
                 document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o, idx) => {
                     let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
                     
-                    // Render Item Detail Langsung
                     let htmlItems = "";
                     if(o.items && o.items.length > 0) {
                         htmlItems = o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; color:var(--text-main);"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
                     } else {
-                        htmlItems = `<div style="font-size:12px; color:var(--text-muted); font-style:italic;">Detail produk tidak ditemukan/kosong.</div>`;
+                        htmlItems = `<div style="font-size:12px; color:var(--text-muted); font-style:italic;">Detail produk kosong.</div>`;
                     }
 
-                    // Tentukan Total yang benar
                     let displayTotal = 0;
                     if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } 
                     else if(o.items && o.items.length > 0) { displayTotal = o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
@@ -497,7 +496,7 @@
                         </div>
                         <div style="font-size:12px; color:var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;">
                             <i class="far fa-clock"></i> ${o.Tanggal}<br>
-                            <i class="fas fa-truck" style="margin-top:4px;"></i> ${o.Metode_Pengiriman || 'Ambil di Toko'}
+                            <i class="fas fa-truck" style="margin-top:4px;"></i> Pengiriman: <b>${o.Metode_Pengiriman || 'Ambil di Toko'}</b>
                         </div>
                         
                         <div style="margin-bottom: 10px;">
@@ -743,7 +742,6 @@
             }
         }
 
-        // TOMBOL WA DIRECT, MENEMBUS PEMBLOKIRAN POP-UP BROWSER
         async function processCheckout() {
             let submitBtn = document.getElementById('btnSubmitOrder');
             if (submitBtn.disabled) return;
@@ -774,7 +772,6 @@
                     let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
                     let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
                     
-                    // Gunakan URL Direct
                     let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
                     
                     cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
@@ -785,7 +782,6 @@
                             <h3 style="margin-bottom:6px;">Pesanan Berhasil!</h3>
                             <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b></p>
                             
-                            <!-- TOMBOL KLIK WAJIB MENGGUNAKAN A HREF TARGET BLANK -->
                             <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center; display:flex;">
                                 <i class="fab fa-whatsapp" style="font-size:20px;"></i> Chat / Share Ke WA Admin
                             </a>
@@ -807,20 +803,31 @@
             }
         }
 
-        window.addEventListener("hashchange", checkAdminAccess);
+        // MENGGUNAKAN SESSIONSTORAGE MURNI: SETIAP REFRESH OTOMATIS KEMBALI KE PEMBELI
         function checkAdminAccess() {
-            if (window.location.hash.includes("#admin")) {
-                if (sessionStorage.getItem("Toko_AdminToken")) { document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; loadAdminData(); } else openAdminLogin();
-            } else { document.getElementById('adminView').style.display = 'none'; document.getElementById('userView').style.display = 'block'; }
+            if (sessionStorage.getItem("Toko_AdminToken")) {
+                document.getElementById('userView').style.display = 'none';
+                document.getElementById('adminView').style.display = 'block';
+                loadAdminData();
+            } else {
+                document.getElementById('adminView').style.display = 'none';
+                document.getElementById('userView').style.display = 'block';
+            }
         }
+
         function openAdminLogin() { document.getElementById('userView').style.display = 'none'; document.getElementById('adminPinModal').style.display = 'flex'; }
-        function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
+        function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); checkAdminAccess(); location.reload(); }
+        
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; 
             const r = await fetchAPI("verify_pin", "POST", { pin: p });
-            if (r.status === 'success') { sessionStorage.setItem("Toko_AdminToken", p); window.location.hash = "#admin"; closeModal('adminPinModal'); document.getElementById('userView').style.display='none'; document.getElementById('adminView').style.display='block'; loadAdminData(); } 
-            else { showToast("PIN Salah", "error"); }
+            if (r.status === 'success') { 
+                sessionStorage.setItem("Toko_AdminToken", p); 
+                closeModal('adminPinModal'); 
+                checkAdminAccess();
+            } else { showToast("PIN Salah", "error"); }
         }
+        
         function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
         async function loadAdminData() {
@@ -859,24 +866,25 @@
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = orderDetails.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let itemsHtml = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
-                    let statusColor = o.Status_Pesanan === 'Selesai' ? 'aktif' : (o.Status_Pesanan === 'Dibatalkan' ? 'nonaktif' : 'aktif');
+                    let statusColor = String(o.Status_Pesanan).trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan).trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
                     
-                    // Hitung total dengan benar untuk panel admin
                     let displayTotal = 0;
                     if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } 
                     else if(items && items.length > 0) { displayTotal = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
                     
+                    let currentStatus = String(o.Status_Pesanan || 'Baru').trim();
+
                     return `
                     <div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;">
                         <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;">
                             <div><b>${o.ID_Pesanan}</b><br><span style="font-size:11px; color:#94a3b8;">${o.Tanggal}</span></div>
-                            <span class="badge ${statusColor}">${o.Status_Pesanan || 'Baru'}</span>
+                            <span class="badge ${statusColor}">${currentStatus}</span>
                         </div>
                         <div style="width:100%; font-size:13px; line-height:1.5;">
                             <div><i class="fas fa-user"></i> <b>${o.Nama_Pembeli}</b></div>
                             <div><i class="fas fa-phone"></i> <a href="https://wa.me/${String(o.WhatsApp).replace(/[^0-9]/g, '')}" target="_blank" style="color:#818cf8; text-decoration:none;">${o.WhatsApp} <i class="fas fa-external-link-alt" style="font-size:10px;"></i></a></div>
                             <div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${o.Alamat}</div>
-                            <div style="font-size:12px; color:#38bdf8; margin-top:2px;"><i class="fas fa-truck"></i> Kurir: ${o.Metode_Pengiriman || 'Ambil di Toko'}</div>
+                            <div style="font-size:12px; color:#38bdf8; margin-top:2px;"><i class="fas fa-truck"></i> Pengiriman: <b>${o.Metode_Pengiriman || 'Ambil di Toko'}</b></div>
                         </div>
                         
                         <div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">
@@ -892,7 +900,7 @@
                         
                         <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
                             <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px;">
-                                <option value="" disabled selected>Ubah Status: ${o.Status_Pesanan || 'Baru'}</option>
+                                <option value="" disabled selected>Status: ${currentStatus}</option>
                                 <option value="Baru">Baru</option>
                                 <option value="Diproses">Diproses</option>
                                 <option value="Dikirim">Dikirim</option>
@@ -915,6 +923,19 @@
         }
         
         async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(); }
+
+        async function changePinAdmin() {
+            let newPin = document.getElementById('setNewPin').value;
+            if(!newPin || newPin.length < 4) { showToast("PIN baru minimal 4 karakter!", "error"); return; }
+            const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin });
+            if(r.status === 'success') {
+                showToast("PIN Admin berhasil diubah!");
+                sessionStorage.setItem("Toko_AdminToken", newPin);
+                document.getElementById('setNewPin').value = "";
+            } else {
+                showToast("Gagal mengubah PIN.", "error");
+            }
+        }
 
         function openBannerModal() { let url = prompt("URL Banner:"); if (url) submitBannerAdmin(url); }
         async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner ditambah"); } }
