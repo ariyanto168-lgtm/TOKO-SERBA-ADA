@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.31 Pro</title>
+    <title>Toko Serba Ada - v1.0.32 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -60,8 +60,6 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* REVISI UKURAN & TAMPILAN LOGO */
         .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; }
         
         .header-actions { display: flex; gap: 8px; }
@@ -77,7 +75,6 @@
         .nav-item.active { color: var(--primary); }
         .nav-badge { position: absolute; top: -2px; right: 20%; background: var(--danger); color: white; font-size: 9px; padding: 1px 5px; border-radius: 10px; border: 2px solid white; }
         
-        /* REVISI TAMPILAN BANNER AGAR TIDAK TERPOTONG */
         .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; display: none; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
         .banner-slider::-webkit-scrollbar { display: none; }
@@ -206,7 +203,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.31 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.32 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -373,11 +370,11 @@
         </div>
     </div>
 
-    <!-- MODAL PRODUK (URL MODE) -->
+    <!-- MODAL PRODUK (URL & GROSIR MODE) -->
     <div class="modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
         <div class="modal-content" style="background:#1e293b; color:white;">
             <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white;">X</div>
-            <h3 style="margin-bottom: 16px;">Form Produk (URL Mode)</h3>
+            <h3 style="margin-bottom: 16px;">Form Produk & Harga Grosir</h3>
             <input type="hidden" id="formIdProduk">
             <div class="form-group">
                 <label>URL Foto Produk*</label>
@@ -386,9 +383,9 @@
             </div>
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama"></div>
             <div class="form-group"><label>Kategori*</label><input type="text" id="formKategori"></div>
-            <div class="form-group"><label>Stok Validasi Real-time*</label><input type="number" id="formStok" value="10"></div>
-            <div class="form-group"><label>Harga Normal*</label><input type="number" id="formHargaNormal"></div>
-            <div class="form-group"><label>Harga Promo</label><input type="number" id="formHargaPromo"></div>
+            <div class="form-group"><label>Stok Real-time*</label><input type="number" id="formStok" value="10"></div>
+            <div class="form-group"><label>Harga Eceran (Satuan / Min. 1)*</label><input type="number" id="formHargaNormal"></div>
+            <div class="form-group"><label>Harga Grosir (Min. Beli 5 Pcs)</label><input type="number" id="formHargaGrosir" placeholder="Kosongkan jika tidak ada harga grosir"></div>
             <div class="form-group"><label>Status Tampil</label><select id="formStatus"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div>
             <div style="display: flex; gap:10px; margin-top:16px;">
                 <button class="btn btn-primary" style="flex: 1;" onclick="submitProduct()">Simpan Produk</button>
@@ -549,21 +546,21 @@
         function renderKatalogVisitor(products) {
             const grid = document.getElementById('productGrid');
             let sorted = [...products];
-            if (currentSort === "termurah") sorted.sort((a, b) => (Number(a.Harga_Promo) || Number(a.Harga_Normal)) - (Number(b.Harga_Promo) || Number(b.Harga_Normal)));
-            else if (currentSort === "termahal") sorted.sort((a, b) => (Number(b.Harga_Promo) || Number(b.Harga_Normal)) - (Number(a.Harga_Promo) || Number(a.Harga_Normal)));
+            if (currentSort === "termurah") sorted.sort((a, b) => (Number(a.Harga_Normal)) - (Number(b.Harga_Normal)));
+            else if (currentSort === "termahal") sorted.sort((a, b) => (Number(b.Harga_Normal)) - (Number(a.Harga_Normal)));
             else sorted.reverse();
 
             if (sorted.length === 0) { grid.innerHTML = `<div class="empty-state"><h3>Produk tidak ditemukan</h3></div>`; return; }
             
             let html = "";
             sorted.forEach(p => {
-                let disc = p.Harga_Promo && Number(p.Harga_Promo) < Number(p.Harga_Normal) ? `<div class="discount-badge">-${Math.round(((p.Harga_Normal - p.Harga_Promo) / p.Harga_Normal) * 100)}%</div>` : "";
                 let wIcon = wishlist.includes(p.ID_Produk) ? '<i class="fas fa-heart" style="color:#ef4444;"></i>' : '<i class="far fa-heart"></i>'; 
-                let hrg = p.Harga_Promo ? `<span class="price-normal">${formatRp(p.Harga_Normal)}</span> <div class="price-final">${formatRp(p.Harga_Promo)}</div>` : `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`;
+                let grosirInfo = p.Harga_Grosir && Number(p.Harga_Grosir) > 0 ? `<div style="font-size:10px; color:var(--success); font-weight:700;">Grosir (≥5): ${formatRp(p.Harga_Grosir)}</div>` : "";
+                let hrg = `<div class="price-final">${formatRp(p.Harga_Normal)}</div>${grosirInfo}`;
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Keranjang</button>`;
                 
                 html += `<div class="product-card" onclick="openProductDetail('${p.ID_Produk}')">
-                            <div class="product-img-wrapper">${disc}<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${wIcon}</button><img src="${p.Foto_URL}" class="product-img" loading="lazy"></div>
+                            <div class="product-img-wrapper"><button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${wIcon}</button><img src="${p.Foto_URL}" class="product-img" loading="lazy"></div>
                             <div class="product-info"><div><div class="product-title">${p.Nama_Produk}</div>${hrg}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; font-weight:600; color:var(--text-muted);">Sisa: ${p.Stok}</span>${btn}</div></div>
                          </div>`;
             });
@@ -573,12 +570,13 @@
         function openProductDetail(id) {
             const p = allProducts.find(x => x.ID_Produk === id); 
             const isHabis = Number(p.Stok) <= 0; 
-            const harga = p.Harga_Promo ? `<span class="price-normal">${formatRp(p.Harga_Normal)}</span> <div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Promo)}</div>` : `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)}</div>`;
+            const grosirText = p.Harga_Grosir && Number(p.Harga_Grosir) > 0 ? `<div style="background:var(--primary-light); padding:10px; border-radius:10px; margin-bottom:12px; font-size:13px; color:var(--primary); font-weight:700;">🔥 Harga Grosir (Beli ≥ 5 Pcs): ${formatRp(p.Harga_Grosir)} / pcs</div>` : "";
             
             document.getElementById('detailContent').innerHTML = `
                 <div style="position:relative;"><img src="${p.Foto_URL}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 18px; margin-bottom: 16px;"></div>
                 <div style="font-size: 22px; font-weight: 800; margin-bottom: 6px; padding-right: 35px;">${p.Nama_Produk}</div>
-                ${harga}
+                <div class="price-final" style="font-size:24px; margin-bottom: 8px;">${formatRp(p.Harga_Normal)} <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">(Harga Eceran / Satuan)</span></div>
+                ${grosirText}
                 <div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px; font-weight:600;">Stok Gudang: ${p.Stok} Pcs</div>
                 <div style="font-size:14px; color:var(--text-muted); line-height: 1.6; white-space: pre-wrap; margin-bottom:20px;">${p.Deskripsi || "-"}</div>
                 <div class="sticky-bottom-bar">
@@ -598,17 +596,42 @@
         function addToCart(id, qty = 1) {
             const p = allProducts.find(x => x.ID_Produk === id); 
             const idx = cart.findIndex(item => item.id === id);
-            if ((idx > -1 ? cart[idx].qty : 0) + qty > Number(p.Stok)) { showToast("Gagal: Stok tidak mencukupi!", "error"); return; }
-            if (idx > -1) cart[idx].qty += qty; else cart.push({ id: p.ID_Produk, nama: p.Nama_Produk, harga: p.Harga_Promo || p.Harga_Normal, foto: p.Foto_URL, qty: qty });
+            let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
+            if (currentQty > Number(p.Stok)) { showToast("Gagal: Stok tidak mencukupi!", "error"); return; }
+            
+            // Tentukan harga otomatis (Eceran atau Grosir jika qty >= 5)
+            let finalHarga = Number(p.Harga_Normal);
+            if (currentQty >= 5 && p.Harga_Grosir && Number(p.Harga_Grosir) > 0) {
+                finalHarga = Number(p.Harga_Grosir);
+            }
+
+            if (idx > -1) {
+                cart[idx].qty = currentQty;
+                cart[idx].harga = finalHarga;
+            } else {
+                cart.push({ id: p.ID_Produk, nama: p.Nama_Produk, harga: finalHarga, foto: p.Foto_URL, qty: qty });
+            }
             localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); updateCartBadge(); showToast("Dimasukkan ke keranjang");
         }
         function updateCartBadge() { document.getElementById('navCartBadge').innerText = cart.reduce((s, i) => s + i.qty, 0); }
         
         function updateQty(i, d) { 
-            const p = allProducts.find(x => x.ID_Produk === cart[i].id); 
-            if(d > 0 && cart[i].qty + 1 > Number(p.Stok)) { showToast("Mentok limit stok", "error"); return; }
-            cart[i].qty += d; 
-            if (cart[i].qty <= 0) { if(confirm("Hapus item?")) cart.splice(i, 1); else cart[i].qty = 1; } 
+            const cartItem = cart[i];
+            const p = allProducts.find(x => x.ID_Produk === cartItem.id); 
+            let newQty = cartItem.qty + d;
+            
+            if(d > 0 && newQty > Number(p.Stok)) { showToast("Mentok limit stok", "error"); return; }
+            if (newQty <= 0) { if(confirm("Hapus item?")) { cart.splice(i, 1); } else { newQty = 1; } } 
+            
+            if (cart[i]) {
+                cart[i].qty = newQty;
+                // Update otomatis harga eceran / grosir berdasarkan qty terbaru
+                if (newQty >= 5 && p.Harga_Grosir && Number(p.Harga_Grosir) > 0) {
+                    cart[i].harga = Number(p.Harga_Grosir);
+                } else {
+                    cart[i].harga = Number(p.Harga_Normal);
+                }
+            }
             localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); openCart(); updateCartBadge(); 
         }
 
@@ -619,9 +642,10 @@
                 subtotalCart = 0; 
                 c.innerHTML = cart.map((item, i) => { 
                     subtotalCart += (item.harga * item.qty); 
+                    let noteGrosir = item.qty >= 5 ? `<span style="font-size:10px; color:var(--success); font-weight:700; display:block;">🔥 Harga Grosir Aktif</span>` : `<span style="font-size:10px; color:var(--text-muted); display:block;">Harga Eceran (Beli ≥5 dapat grosir)</span>`;
                     return `<div class="cart-item">
                                 <img src="${item.foto}" style="width:55px;height:55px;border-radius:12px;object-fit:cover;">
-                                <div style="flex: 1; margin-left:14px;"><div style="font-weight:700; font-size:14px;">${item.nama}</div><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div></div>
+                                <div style="flex: 1; margin-left:14px;"><div style="font-weight:700; font-size:14px;">${item.nama}</div><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)} /pcs</div>${noteGrosir}</div>
                                 <div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><b style="width:20px;text-align:center;">${item.qty}</b><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div>
                              </div>`; 
                 }).join("") + `<div class="total-row"><span>Subtotal:</span><span style="color:var(--primary);">${formatRp(subtotalCart)}</span></div><div class="sticky-bottom-bar"><button class="btn btn-success" style="width: 100%; font-size: 16px;" onclick="prepareCheckout()">Lanjut Checkout</button></div>`;
@@ -852,7 +876,7 @@
                 
                 document.getElementById('adminProductList').innerHTML = allProducts.length ? allProducts.map(p => 
                     `<div class="admin-card"><img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:cover;border-radius: 10px;">
-                        <div style="flex:1; margin-left: 12px;"><b>${p.Nama_Produk}</b><br><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> <span style="font-size:12px; color:#94a3b8;">Stok: ${p.Stok} | ${formatRp(p.Harga_Normal)}</span></div>
+                        <div style="flex:1; margin-left: 12px;"><b>${p.Nama_Produk}</b><br><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> <span style="font-size:12px; color:#94a3b8;">Stok: ${p.Stok} | Ecer: ${formatRp(p.Harga_Normal)} ${p.Harga_Grosir ? '| Grosir: ' + formatRp(p.Harga_Grosir) : ''}</span></div>
                         <div style="display: flex; flex-direction:column; gap:6px;"><button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick='editProduct(${JSON.stringify(p)})'>Edit</button> <button class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="deleteItem('delete_product', '${p.ID_Produk}')">Hapus</button></div>
                      </div>`).join("") : `<p style="color:#94a3b8;">Tidak ada produk.</p>`;
                 
@@ -898,7 +922,7 @@
         async function deleteItem(action, id) { if(confirm("Hapus data secara permanen?")) { const r = await fetchAPI(action, "POST", {id: id}); if(r.status==='success') { showToast("Dihapus"); loadAdminData(); } } }
 
         function openProductModal() {
-            ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formStok', 'formHargaNormal', 'formHargaPromo'].forEach(id => document.getElementById(id).value = "");
+            ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formStok', 'formHargaNormal', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('formStok').value = "10"; 
             document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('productModal').style.display = 'flex';
@@ -912,7 +936,7 @@
             document.getElementById('formKategori').value = p.Kategori;
             document.getElementById('formStok').value = p.Stok || 10; 
             document.getElementById('formHargaNormal').value = p.Harga_Normal; 
-            document.getElementById('formHargaPromo').value = p.Harga_Promo || "";
+            document.getElementById('formHargaGrosir').value = p.Harga_Grosir || "";
             document.getElementById('formStatus').value = p.Status;
             if(p.Foto_URL) { 
                 document.getElementById('imagePreview').src = p.Foto_URL; 
@@ -927,7 +951,8 @@
                 Kategori: document.getElementById('formKategori').value, 
                 Stok: document.getElementById('formStok').value, 
                 Harga_Normal: document.getElementById('formHargaNormal').value, 
-                Harga_Promo: document.getElementById('formHargaPromo').value, 
+                Harga_Grosir: document.getElementById('formHargaGrosir').value, 
+                Harga_Promo: "", 
                 Status: document.getElementById('formStatus').value, 
                 Foto_URL: document.getElementById('formFotoUrl').value 
             };
