@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.48 Ultimate Pro</title>
+    <title>Toko Serba Ada - v1.0.50 Ultimate Fix</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -29,6 +29,10 @@
         input, select, textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 14px; margin-top: 6px; font-size: 14px; outline: none; transition: 0.25s; background: white; color: var(--text-main); }
         body.dark-theme input, body.dark-theme select, body.dark-theme textarea { background: #0f172a; color: white; border-color: var(--border); }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        
+        input[type="file"] { background: var(--surface); color: var(--text-main); border: 2px dashed var(--primary); padding: 10px; border-radius: 12px; cursor: pointer; }
+        input[type="file"]::file-selector-button { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-right: 10px; }
+
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 380px; pointer-events: none; }
         .toast { background: var(--text-main); color: white; padding: 14px 20px; border-radius: 16px; font-size: 14px; display: flex; align-items: center; gap: 12px; animation: slideDown 0.3s; }
         .toast.success { border-left: 4px solid var(--success); } .toast.error { border-left: 4px solid var(--danger); }
@@ -160,7 +164,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.48 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.50 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -228,7 +232,8 @@
             
             <div class="form-group" id="uploadBuktiGroup">
                 <label>Upload Bukti Transfer*</label>
-                <input type="file" accept="image/*" onchange="handleImageUpload(event, 'checkoutBuktiBase64', 'checkoutBuktiPreview')">
+                <input type="file" id="inputFileBukti" accept="image/*" onchange="handleImageUpload(event, 'checkoutBuktiBase64', 'checkoutBuktiPreview')">
+                <div id="uploadStatusText" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Belum ada gambar dipilih.</div>
                 <input type="hidden" id="checkoutBuktiBase64">
                 <img id="checkoutBuktiPreview" style="max-height: 120px; display:none; margin-top:10px; border-radius: 10px;">
             </div>
@@ -277,7 +282,6 @@
             <div id="adminProductList">Memuat data produk...</div>
         </div>
         
-        <!-- KOLOM ORDER ADMIN DINAMIS & TERPERINCI -->
         <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat pesanan masuk...</div></div>
         
         <div class="admin-container admin-tab-content" id="adminTab_banner" style="display:none;">
@@ -408,7 +412,7 @@
             } catch (e) { throw e; } finally { document.getElementById('loadingBar').style.display = 'none'; }
         }
 
-        function formatRp(angka) { return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka || 0); }
+        function formatRp(angka) { return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(Number(angka) || 0); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById('btnShareProduct').style.display = 'none'; }
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
@@ -641,19 +645,48 @@
             document.getElementById('checkoutNama').value = localStorage.getItem('TokoUser_Nama') || ""; 
             document.getElementById('checkoutWA').value = localStorage.getItem('TokoUser_WA') || ""; 
             document.getElementById('checkoutAlamat').value = localStorage.getItem('TokoUser_Alamat') || "";
+            document.getElementById('checkoutBuktiBase64').value = "";
+            document.getElementById('inputFileBukti').value = "";
+            document.getElementById('checkoutBuktiPreview').style.display = 'none';
+            document.getElementById('uploadStatusText').innerText = "Belum ada gambar dipilih.";
+            
             if(storeSettings.Info_Rekening) document.getElementById('uiInfoRekening').innerText = storeSettings.Info_Rekening;
             if(storeSettings.QRIS_URL) { document.getElementById('uiQrisImage').src = storeSettings.QRIS_URL; document.getElementById('uiQrisImage').style.display = 'block'; }
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
-        // CHECKOUT KE WHATSAPP 100% AMAN TANPA POPUP BLOCKER HP
+        // PROSES UPLOAD BUKTI DENGAN INDIKATOR STATUS JELAS
+        function handleImageUpload(e, base64Id, previewId) {
+            const file = e.target.files[0]; if (!file) return; 
+            const statusEl = document.getElementById('uploadStatusText');
+            statusEl.innerText = "⏳ Sedang memproses gambar...";
+            statusEl.style.color = "var(--secondary)";
+            
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (ev) => { 
+                const img = new Image(); img.src = ev.target.result; 
+                img.onload = () => { 
+                    const canvas = document.createElement('canvas'); let w = img.width, h = img.height; 
+                    if (w > 800) { h *= 800 / w; w = 800; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); 
+                    const data = canvas.toDataURL('image/jpeg', 0.7); 
+                    document.getElementById(base64Id).value = data; 
+                    document.getElementById(previewId).src = data; 
+                    document.getElementById(previewId).style.display = 'block'; 
+                    statusEl.innerText = "✓ Gambar siap di-upload!";
+                    statusEl.style.color = "var(--success)";
+                }
+            }
+        }
+
         async function processCheckout() {
             let mt = document.getElementById('checkoutMetode').value;
             let ok = mt === "Kurir Toko" ? tarifKurir : 0;
             let finalTotal = globalSubtotal + ok;
             
             let n = document.getElementById('checkoutNama').value, w = document.getElementById('checkoutWA').value, a = document.getElementById('checkoutAlamat').value, b64 = document.getElementById('checkoutBuktiBase64').value;
-            if(!n || !w || !a || !b64) { showToast("Lengkapi data & bukti transfer!", "error"); return; }
+            
+            if(!n || !w || !a) { showToast("Lengkapi nama, WA, dan alamat!", "error"); return; }
+            if(!b64) { showToast("Mohon tunggu sebentar, gambar sedang diproses / belum dipilih!", "error"); return; }
             
             localStorage.setItem('TokoUser_Nama', n); localStorage.setItem('TokoUser_WA', w); localStorage.setItem('TokoUser_Alamat', a);
             
@@ -667,7 +700,6 @@
                 
                 cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
                 
-                // Tampilkan Modal Sukses dengan Tombol Tombol WhatsApp Langsung (Bypass Popup Blocker HP)
                 document.getElementById('detailContent').innerHTML = `
                     <div style="text-align:center; padding:10px;">
                         <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
@@ -698,7 +730,6 @@
         }
         function switchAdminTab(t) { document.querySelectorAll('.admin-tab-btn').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
-        // RENDER KOLOM ORDER ADMIN LEBIH DINAMIS & TERPERINCI
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
@@ -728,7 +759,6 @@
                         <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
                     </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
-                // RENDER ORDER DINAMIS & TERPERINCI
                 let orders = res.data.orders || [];
                 let orderDetails = res.data.orderDetails || [];
                 
@@ -736,6 +766,7 @@
                     let items = orderDetails.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let itemsHtml = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
                     let statusColor = o.Status_Pesanan === 'Selesai' ? 'aktif' : (o.Status_Pesanan === 'Dibatalkan' ? 'nonaktif' : 'aktif');
+                    let fixedTotal = formatRp(o.Total);
                     
                     return `
                     <div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;">
@@ -755,7 +786,7 @@
                             ${itemsHtml}
                             <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;">
                                 <span>Total Bayar:</span>
-                                <span style="color:#818cf8;">${formatRp(o.Total)}</span>
+                                <span style="color:#818cf8;">${fixedTotal}</span>
                             </div>
                         </div>
                         
@@ -763,7 +794,7 @@
                         
                         <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
                             <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px;">
-                                <option value="" disabled selected>Ubah Status: ${o.Status_Pesanan}</option>
+                                <option value="" disabled selected>Ubah Status: ${o.Status_Pesanan || 'Baru'}</option>
                                 <option value="Baru">Baru</option>
                                 <option value="Diproses">Diproses</option>
                                 <option value="Dikirim">Dikirim</option>
@@ -861,20 +892,6 @@
                 </div>`;
             document.getElementById('printArea').innerHTML = printContent;
             window.print();
-        }
-
-        function handleImageUpload(e, base64Id, previewId) {
-            const file = e.target.files[0]; if (!file) return; 
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = (ev) => { 
-                const img = new Image(); img.src = ev.target.result; 
-                img.onload = () => { 
-                    const canvas = document.createElement('canvas'); let w = img.width, h = img.height; 
-                    if (w > 800) { h *= 800 / w; w = 800; } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); 
-                    const data = canvas.toDataURL('image/jpeg', 0.7); 
-                    document.getElementById(base64Id).value = data; document.getElementById(previewId).src = data; document.getElementById(previewId).style.display = 'block'; 
-                }
-            }
         }
 
         document.addEventListener("DOMContentLoaded", async function() {
