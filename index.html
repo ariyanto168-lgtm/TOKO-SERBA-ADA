@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.28 Pro</title>
+    <title>Toko Serba Ada - v1.0.29 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -31,7 +31,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; transition: background 0.3s; }
         
-        /* SHIMMER ANIMATION FOR LOADING */
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
         .skeleton { background: #e2e8f0; background-image: linear-gradient(90deg, #e2e8f0 0px, #f8fafc 40px, #e2e8f0 80px); background-size: 1000px 100%; animation: shimmer 2s infinite linear; border-radius: 12px; }
         body.dark-theme .skeleton { background: #334155; background-image: linear-gradient(90deg, #334155 0px, #475569 40px, #334155 80px); }
@@ -143,7 +142,6 @@
         .badge.baru { background: var(--primary); } .badge.diproses { background: var(--secondary); } .badge.dikirim { background: #0284c7; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
         
-        /* RECEIPT PRINTING STYLES */
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
@@ -174,7 +172,6 @@
             </div>
         </header>
 
-        <!-- Banner Container Wrapper (Otomatis tersembunyi jika belum ada banner) -->
         <div class="banner-container-wrapper" id="bannerWrapper"><div class="banner-slider" id="bannerContainer"></div></div>
         
         <div class="categories-wrapper"><div class="category-menu-scroll" id="categoryContainer"></div></div>
@@ -189,7 +186,6 @@
                 </select>
             </div>
             <div class="product-grid" id="productGrid">
-                <!-- Skeleton Loader -->
                 <div class="product-card skeleton" style="height:220px;"></div>
                 <div class="product-card skeleton" style="height:220px;"></div>
                 <div class="product-card skeleton" style="height:220px;"></div>
@@ -206,7 +202,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.28 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.29 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -218,7 +214,7 @@
         </nav>
     </div>
 
-    <!-- MODAL ADMIN LOGIN (SERVER VERIFIED) -->
+    <!-- MODAL ADMIN LOGIN -->
     <div class="modal-overlay center" id="adminPinModal" onclick="if(event.target===this) closeModal('adminPinModal')">
         <div class="modal-content" style="max-width: 380px;">
             <div class="modal-close-btn" onclick="cancelAdminLogin()">X</div>
@@ -233,7 +229,7 @@
         </div>
     </div>
 
-    <!-- MODALS TAMBAHAN: CART, WISHLIST, CHECKOUT -->
+    <!-- MODALS TAMBAHAN -->
     <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
         <div class="modal-content"><div class="modal-drag-handle" onclick="closeModal('detailModal')"></div><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div><div id="detailContent"></div></div>
     </div>
@@ -389,22 +385,26 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL BANNER (REVISI MODE URL) -->
     <div class="modal-overlay" id="bannerModal" onclick="if(event.target===this) closeModal('bannerModal')">
         <div class="modal-content" style="background:#1e293b; color:white;">
             <div class="modal-close-btn" onclick="closeModal('bannerModal')" style="background:#0f172a; color:white;">X</div>
-            <h3 style="margin-bottom: 16px;">Form Banner</h3>
-            <input type="hidden" id="bannerId"><input type="hidden" id="bannerBase64">
-            <div class="form-group"><label>Gambar Landscape*</label><input type="file" accept="image/*" onchange="handleImageUpload(event, 'bannerBase64', 'bannerPreview')"><img id="bannerPreview" style="max-height:100px; display:none; margin-top:10px;"></div>
+            <h3 style="margin-bottom: 16px;">Form Banner (URL Mode)</h3>
+            <input type="hidden" id="bannerId">
+            <div class="form-group">
+                <label>URL Gambar Banner (Landscape)*</label>
+                <input type="text" id="bannerUrlInput" placeholder="https://... (Tempel link gambar langsung disini)" oninput="document.getElementById('bannerPreview').src=this.value; document.getElementById('bannerPreview').style.display=this.value?'block':'none';">
+                <img id="bannerPreview" style="max-height:120px; display:none; margin-top:10px; border-radius:8px; width:100%; object-fit:cover;">
+            </div>
             <div class="form-group"><label>Status</label><select id="bannerStatus"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div>
             <button class="btn btn-primary" style="width:100%; margin-top:16px;" onclick="submitBanner()">Simpan Banner</button>
         </div>
     </div>
 
-    <!-- AREA CETAK STRUK KHUSUS -->
     <div id="printArea" style="display:none;"></div>
 
     <script>
-        // MASUKKAN URL GOOGLE SCRIPT DISINI
         const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec";
         
         let allProducts = [], allBanners = [], storeSettings = {};
@@ -425,7 +425,7 @@
             document.body.classList.toggle("dark-theme");
             let isDark = document.body.classList.contains("dark-theme");
             localStorage.setItem("TokoTheme_v2", isDark ? "dark" : "light");
-            document.getElementById("themelcon").innerText = isDark ? "☀️️" : "🌙";
+            document.getElementById("themelcon").innerText = isDark ? "☀️" : "🌙";
         }
 
         function showToast(msg, type = "success") {
@@ -435,14 +435,12 @@
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
         }
 
-        // INTELLIGENT FETCH API: Otomatis menyematkan PIN Admin jika tersimpan di session
         async function fetchAPI(action, method = 'POST', data = {}, silent = false) {
             if(!silent) showLoading(true);
             try {
                 if(sessionStorage.getItem("Toko_AdminToken")) {
                     data.admin_pin = sessionStorage.getItem("Toko_AdminToken");
                 }
-                
                 let options = { method: method }; 
                 if (method === 'POST') { 
                     options.headers = { 'Content-Type': 'text/plain; charset=utf-8' }; 
@@ -497,18 +495,18 @@
             }
         }
 
-        // --- SISTEM KATALOG & PRODUK ---
         function renderBanners() { 
             const wrapper = document.getElementById('bannerWrapper');
             const c = document.getElementById('bannerContainer');
+            const activeBanners = allBanners.filter(b => b.Status === 'Aktif' && b.Foto_URL);
             
-            if(allBanners.length === 0) { 
+            if(activeBanners.length === 0) { 
                 wrapper.style.display = "none"; 
                 return; 
             } 
             
             wrapper.style.display = "block";
-            c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(""); 
+            c.innerHTML = activeBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(""); 
         }
 
         function renderCategoriesMenu() {
@@ -576,7 +574,6 @@
             document.getElementById('detailModal').style.display = 'flex';
         }
 
-        // --- CART & KERANJANG ---
         function toggleWishlist(id) {
             const idx = wishlist.indexOf(id);
             if (idx > -1) { wishlist.splice(idx, 1); showToast("Dihapus dari Wishlist"); } 
@@ -627,7 +624,6 @@
             document.getElementById('wishlistModal').style.display = 'flex';
         }
 
-        // --- SISTEM CHECKOUT (Validasi Ganda) ---
         async function prepareCheckout() {
             closeModal('cartModal'); ongkosKirim = 0; currKurirLayanan = "";
             document.getElementById('checkoutNama').value = localStorage.getItem('TokoUser_Nama') || ""; 
@@ -716,7 +712,6 @@
             } else { showToast(res.message, "error"); } 
         }
 
-        // --- SISTEM PELANGGAN & CETAK STRUK ---
         function openCustomerOrdersModal() {
             document.getElementById('checkWaInput').value = localStorage.getItem('TokoUser_WA') || "";
             document.getElementById('customerOrdersModal').style.display = 'flex'; 
@@ -761,7 +756,6 @@
 
         function viewProofModal(url) { document.getElementById('proofImageElement').src = url; document.getElementById('proofModal').style.display = 'flex'; }
 
-        // --- SISTEM CETAK STRUK THERMAL 58MM/80MM ---
         function cetakStruk(orderId) {
             let order = cachedCustomerOrders.orders.find(o => o.ID_Pesanan === orderId);
             let details = cachedCustomerOrders.orderDetails.filter(d => d.ID_Pesanan === orderId);
@@ -807,7 +801,6 @@
             w.document.write(html); w.document.close();
         }
 
-        // --- SISTEM ADMIN (SERVER AUTH) ---
         window.addEventListener("hashchange", checkAdminAccess);
         function checkAdminAccess() {
             if (window.location.hash.includes("#admin")) {
@@ -907,12 +900,33 @@
             if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
         }
 
-        function openBannerModal() { ['bannerId', 'bannerBase64'].forEach(id => document.getElementById(id).value = ""); document.getElementById('bannerPreview').style.display='none'; document.getElementById('bannerModal').style.display='flex'; }
+        // --- FUNGSI BANNER (MODE URL) ---
+        function openBannerModal() { 
+            document.getElementById('bannerId').value = ""; 
+            document.getElementById('bannerUrlInput').value = ""; 
+            document.getElementById('bannerPreview').style.display = 'none'; 
+            document.getElementById('bannerModal').style.display = 'flex'; 
+        }
         
         async function submitBanner() { 
-            const b = { ID_Banner: document.getElementById('bannerId').value, Status: document.getElementById('bannerStatus').value, Foto_Base64: document.getElementById('bannerBase64').value }; 
+            const urlVal = document.getElementById('bannerUrlInput').value.trim();
+            if(!urlVal) { showToast("URL gambar banner wajib diisi!", "error"); return; }
+            
+            const b = { 
+                ID_Banner: document.getElementById('bannerId').value, 
+                Status: document.getElementById('bannerStatus').value, 
+                Foto_URL: urlVal 
+            }; 
+            
             const r = await fetchAPI("save_banner", "POST", b); 
-            if(r.status==='success') { closeModal('bannerModal'); loadAdminData(); initApp(); showToast("Banner Disimpan");} 
+            if(r.status==='success') { 
+                closeModal('bannerModal'); 
+                loadAdminData(); 
+                initApp(); 
+                showToast("Banner Berhasil Disimpan");
+            } else {
+                showToast(r.message || "Gagal menyimpan banner", "error");
+            }
         }
 
         async function saveSettings() {
