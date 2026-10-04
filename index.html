@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.30 Pro</title>
+    <title>Toko Serba Ada - v1.0.31 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -60,7 +60,10 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .logo img { height: 36px; border-radius: 10px; display: none; object-fit: cover; }
+        
+        /* REVISI UKURAN & TAMPILAN LOGO */
+        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; }
+        
         .header-actions { display: flex; gap: 8px; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid #c7d2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         
@@ -74,12 +77,13 @@
         .nav-item.active { color: var(--primary); }
         .nav-badge { position: absolute; top: -2px; right: 20%; background: var(--danger); color: white; font-size: 9px; padding: 1px 5px; border-radius: 10px; border: 2px solid white; }
         
+        /* REVISI TAMPILAN BANNER AGAR TIDAK TERPOTONG */
         .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; display: none; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
         .banner-slider::-webkit-scrollbar { display: none; }
-        .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); }
-        .banner-item img { width: 100%; height: 170px; object-fit: cover; display: block; }
-        @media (min-width: 768px) { .banner-item img { height: 300px; } }
+        .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); background: var(--surface); display: flex; align-items: center; justify-content: center; }
+        .banner-item img { width: 100%; max-height: 220px; object-fit: contain; display: block; margin: 0 auto; }
+        @media (min-width: 768px) { .banner-item img { max-height: 350px; } }
         
         .categories-wrapper { padding: 25px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
         .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; }
@@ -202,7 +206,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.30 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.31 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -278,7 +282,6 @@
                 <img id="uiQrisImage" src="" style="width:100%; max-width:200px; border-radius:10px; display:none; margin:0 auto;">
             </div>
 
-            <!-- Bukti transfer pembeli tetap file upload agar mudah diakses dari galeri HP -->
             <div class="form-group" id="uploadBuktiGroup" style="background:#fef3c7; padding: 14px; border-radius: 14px; border:1px solid #fde68a;">
                 <label style="color:#b45309; font-weight:700;">Upload Bukti Transfer*</label>
                 <input type="file" accept="image/*" id="checkoutFileBukti" onchange="handleImageUpload(event, 'checkoutBuktiBase64', 'checkoutBuktiPreview')">
@@ -348,7 +351,6 @@
             <div id="adminBannerList">Memuat...</div>
         </div>
         
-        <!-- PENGATURAN TOKO (QRIS VIA URL) -->
         <div class="admin-container admin-tab-content" id="adminTab_pengaturan" style="display:none;">
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko"></div>
@@ -495,7 +497,10 @@
                 document.getElementById('uiStoreName').innerHTML = n;
                 document.getElementById('footerName').innerText = n; 
                 document.title = `${n} - Belanja Cepat & Aman`;
-                if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
+                if(storeSettings.Logo_URL) { 
+                    document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; 
+                    document.getElementById('uiLogoImg').style.display = "block"; 
+                }
                 
                 renderBanners(); renderCategoriesMenu(); renderKatalogVisitor(allProducts);
             } else {
@@ -892,7 +897,6 @@
         async function updateStatus(id, stat) { const res = await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); if(res.status==='success') { showToast("Status diubah"); loadAdminData(); } }
         async function deleteItem(action, id) { if(confirm("Hapus data secara permanen?")) { const r = await fetchAPI(action, "POST", {id: id}); if(r.status==='success') { showToast("Dihapus"); loadAdminData(); } } }
 
-        // --- FUNGSI PRODUK (URL MODE) ---
         function openProductModal() {
             ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formStok', 'formHargaNormal', 'formHargaPromo'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('formStok').value = "10"; 
@@ -932,7 +936,6 @@
             if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
         }
 
-        // --- FUNGSI BANNER (URL MODE) ---
         function openBannerModal() { 
             document.getElementById('bannerId').value = ""; 
             document.getElementById('bannerUrlInput').value = ""; 
@@ -961,7 +964,6 @@
             }
         }
 
-        // --- FUNGSI SETTING & QRIS (URL MODE) ---
         async function saveSettings() {
             const s = { 
                 Nama_Toko: document.getElementById('setNamaToko').value, 
