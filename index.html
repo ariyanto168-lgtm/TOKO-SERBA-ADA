@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.44 Pro Final</title>
+    <title>Toko Serba Ada - v1.0.45 Ultimate Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1; --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --primary-light: #eef2ff; --secondary: #f59e0b; --danger: #ef4444; --success: #10b981;
+            /* Tema dinamis akan ditimpa JS */
+            --primary: #6366f1; 
+            --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%);
+            --primary-light: rgba(99, 102, 241, 0.1); 
+            --secondary: #f59e0b; --danger: #ef4444; --success: #10b981;
             --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b;
-            --border: #e2e8f0; --border-hover: #cbd5e1; --shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.12);
+            --border: #e2e8f0; --border-hover: #cbd5e1;
         }
-        body.dark-theme { --bg: #0f172a; --surface: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155; --border-hover: #475569; --primary-light: rgba(99, 102, 241, 0.2); }
+        body.dark-theme { --bg: #0f172a; --surface: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155; --border-hover: #475569; --primary-light: rgba(255, 255, 255, 0.05); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; transition: background 0.3s; }
-        .loading-bar { height: 3px; background: var(--primary-gradient); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
+        .loading-bar { height: 3px; background: var(--primary); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
         .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 6px 20px rgba(99,102,241,0.35); }
+        .btn-primary { background: var(--primary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-success { background: var(--success); color: white; }
         .btn-secondary { background: #f1f5f9; color: var(--text-main); }
@@ -37,27 +39,24 @@
         .header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .logo { font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo { font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
         .header-actions { display: flex; gap: 8px; }
-        .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid #c7d2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
+        .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
         .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         .search-box input { padding-left: 42px; margin: 0; background: var(--bg); border: 1px solid var(--border); font-weight: 500; }
         
-        /* MENU BANNER DIKEMBALIKAN UTUH */
         .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; display: none; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; }
         .banner-item img { width: 100%; max-height: 220px; object-fit: cover; display: block; margin: 0 auto; }
         
-        /* KATEGORI DIKEMBALIKAN UTUH */
         .categories-wrapper { padding: 25px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
         .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; }
         .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); white-space: nowrap; cursor: pointer; position: relative; padding-bottom: 10px; }
         .category-menu-item.active { color: var(--primary); font-weight: 800; }
-        .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary-gradient); border-radius: 3px 3px 0 0; }
+        .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
         
         .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
         .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -66,10 +65,8 @@
         .product-img-wrapper { position: relative; width: 100%; height: 120px; background: #f1f5f9; overflow: hidden; }
         body.dark-theme .product-img-wrapper { background: #334155; }
         .product-img { width: 100%; height: 100%; object-fit: cover; }
-        
         .wishlist-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 2; font-size: 14px; }
         
-        /* SEMUA BADGE PRODUK DIKEMBALIKAN UTUH */
         .badge-katalog { position: absolute; top: 8px; left: 8px; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; z-index: 2; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .badge-katalog.bg-promo { background: var(--danger); } 
         .badge-katalog.bg-terbaru { background: var(--success); }
@@ -81,7 +78,7 @@
         .price-normal { font-size: 10px; color: var(--text-muted); text-decoration: line-through; display: block; }
         .price-final {font-size: 13px; font-weight: 800; color: var(--primary); }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 99; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 99; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; position: relative; }
         .nav-item i { font-size: 18px; margin-bottom: 4px; }
         .nav-item.active { color: var(--primary); }
@@ -99,11 +96,11 @@
         .qty-control { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: 22px; padding: 4px; border: 1.5px solid var(--border); }
         .qty-btn { width: 30px; height: 30px; border-radius: 50%; background: white; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; color: #0f172a; }
         
-        /* ADMIN PANEL LENGKAP */
+        /* ADMIN PANEL */
         #adminView { display: none; background: #0f172a; min-height: 100vh; padding-bottom: 60px; color: #f8fafc; }
         .admin-header { background: #1e293b; color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
         .admin-tabs { display: flex; background: #1e293b; border-bottom: 1px solid #334155; overflow-x: auto; scrollbar-width: none; }
-        .admin-tab-btn { flex: 1; text-align: center; padding: 16px; font-weight: 700; color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; min-width: 80px; }
+        .admin-tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 700; color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; min-width: 80px; font-size:13px; }
         .admin-tab-btn.active { color: #818cf8; border-bottom: 3px solid #818cf8; background: rgba(99,102,241,0.12); }
         .admin-container { padding: 24px 20px; max-width: 800px; margin: 0 auto; }
         .admin-card { background: #1e293b; border-radius: 18px; padding: 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #334155; color: #f8fafc; }
@@ -111,21 +108,33 @@
         .badge.aktif { background: var(--success); } .badge.nonaktif { background: var(--danger); }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* CETAK NOTA STYLES (Hanya tampil saat print) */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; font-family: monospace; font-size: 12px; padding: 10px; }
+        }
     </style>
 </head>
 <body>
     <div class="toast-container" id="toastContainer"></div>
     <div class="loading-bar" id="loadingBar"></div>
 
-    <!-- TAMPILAN PENGUNJUNG (KONSUMEN) -->
+    <!-- AREA CETAK NOTA (Thermal/A4) -->
+    <div id="printArea" style="display:none;"></div>
+
+    <!-- TAMPILAN KONSUMEN -->
     <div id="userView">
         <header class="header">
             <div class="header-top">
                 <div class="logo" onclick="location.reload()">
-                    <img id="uiLogoImg" src="" alt="Logo" style="display:none; width:36px; height:36px; border-radius:10px; object-fit:cover; flex-shrink:0;">
-                    <span id="uiStoreName">Toko<span>Ku</span></span>
+                    <img id="uiLogoImg" src="" alt="Logo">
+                    <span id="uiStoreName">TokoKu</span>
                 </div>
-                <div class="header-actions"><div class="action-icon-btn" onclick="toggleTheme()"><i id="themelcon">🌙</i></div></div>
+                <div class="header-actions">
+                    <div class="action-icon-btn" onclick="toggleTheme()"><i id="themelcon">🌙</i></div>
+                </div>
             </div>
             <div class="search-box">
                 <i class="fas fa-search"></i>
@@ -138,7 +147,7 @@
             <div class="banner-slider" id="bannerContainer"></div>
         </div>
 
-        <!-- MENU KATEGORI -->
+        <!-- KATEGORI -->
         <div class="categories-wrapper"><div class="category-menu-scroll" id="categoryContainer"></div></div>
 
         <!-- DAFTAR PRODUK & FILTER -->
@@ -146,11 +155,10 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
                 <h2 id="sectionTitle" style="font-size: 16px; font-weight: 800;">Semua Produk</h2>
                 <select id="sortKatalog" onchange="handleSort()" style="width: auto; padding: 6px; font-size: 12px; font-weight: bold; border-radius: 8px;">
-                    <option value="terbaru">Sort: Terbaru</option><option value="termurah">Sort: Termurah</option><option value="termahal">Sort: Termahal</option>
+                    <option value="terbaru">Terbaru</option><option value="termurah">Termurah</option><option value="termahal">Termahal</option>
                 </select>
             </div>
             <div class="product-grid" id="productGrid">
-                <!-- INDIKATOR LOADING ANTI-BLANK SCREEN -->
                 <div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">
                     <i class="fas fa-circle-notch fa-spin" style="font-size: 30px; margin-bottom: 10px; color: var(--primary);"></i><br>
                     <b>Memuat Katalog Toko...</b>
@@ -160,7 +168,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.44 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.45 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -180,9 +188,13 @@
         </div>
     </div>
 
-    <!-- MODAL DETAIL PRODUK -->
+    <!-- MODAL DETAIL PRODUK + TOMBOL SHARE -->
     <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
-        <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div><div id="detailContent"></div></div>
+        <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div>
+            <!-- Ikon Share di Kanan Atas -->
+            <div id="btnShareProduct" class="modal-close-btn" style="right: 60px; border-color: var(--primary); color: var(--primary);" title="Bagikan Produk"><i class="fas fa-share-alt"></i></div>
+            <div id="detailContent"></div>
+        </div>
     </div>
 
     <!-- MODAL KERANJANG -->
@@ -195,18 +207,29 @@
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('wishlistModal')">X</div><h2 style="margin-bottom: 20px;">Produk Favorit</h2><div id="wishlistContent"></div></div>
     </div>
 
-    <!-- MODAL CHECKOUT PENGIRIMAN -->
+    <!-- MODAL CHECKOUT PENGIRIMAN (ONGKIR TOKO) -->
     <div class="modal-overlay" id="checkoutModal" onclick="if(event.target===this) closeModal('checkoutModal')">
         <div class="modal-content">
             <div class="modal-close-btn" onclick="closeModal('checkoutModal')">X</div><h2>Informasi Pengiriman</h2>
             <div style="background: var(--bg); padding: 16px; border-radius: 16px; margin: 16px 0;">
-                <div style="display:flex; justify-content:space-between;"><span>Total Belanja:</span> <span id="checkoutTotal" style="color: var(--primary); font-weight:bold; font-size:18px;">Rp0</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total Produk:</span> <span id="checkoutSubtotal">Rp0</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom: 1px solid var(--border); padding-bottom:8px;"><span>Biaya Kirim:</span> <span id="checkoutOngkir">Rp0</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Total Bayar:</span> <span id="checkoutTotal" style="color: var(--primary); font-weight:bold; font-size:18px;">Rp0</span></div>
             </div>
+            
+            <div class="form-group">
+                <label>Pilih Metode Pengambilan/Pengiriman*</label>
+                <select id="checkoutMetode" onchange="calculateOngkir()">
+                    <option value="Ambil di Toko">Ambil Sendiri di Toko (Gratis)</option>
+                    <option value="Kurir Toko">Kirim via Kurir Toko (+Biaya Kirim)</option>
+                </select>
+            </div>
+            
             <div class="form-group"><label>Nama Penerima*</label><input type="text" id="checkoutNama" placeholder="Contoh: Budi Santoso" required></div>
             <div class="form-group"><label>Nomor WhatsApp*</label><input type="number" id="checkoutWA" placeholder="Contoh: 62812345678" required></div>
-            <div class="form-group"><label>Alamat Pengiriman (Kurir Toko)*</label><textarea id="checkoutAlamat" rows="3" placeholder="Tulis alamat lengkap beserta patokan rumah" required></textarea></div>
+            <div class="form-group"><label>Alamat Lengkap*</label><textarea id="checkoutAlamat" rows="3" placeholder="Tulis alamat/patokan" required></textarea></div>
             
-            <div id="paymentBox" style="background: var(--primary-light); padding: 16px; border-radius: 16px; margin-bottom: 16px; border: 1px solid #c7d2fe;">
+            <div id="paymentBox" style="background: var(--primary-light); padding: 16px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--primary);">
                 <h4 style="color: var(--text-main); margin-bottom:8px;">Metode Pembayaran (Transfer/QRIS)</h4>
                 <div id="uiInfoRekening" style="font-weight:bold; color:var(--primary); white-space:pre-wrap;"></div>
                 <img id="uiQrisImage" src="" style="width:100%; max-width:200px; border-radius:10px; display:none; margin:10px auto; border: 1px solid var(--border);">
@@ -223,21 +246,50 @@
         </div>
     </div>
 
-    <!-- PANEL ADMIN (DENGAN TAB BANNER LENGKAP) -->
+    <!-- PANEL ADMIN ULTIMATE -->
     <div id="adminView">
-        <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup Sesi</button></div>
+        <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
         <div class="admin-tabs">
-            <div class="admin-tab-btn active" id="tabBtn_produk" onclick="switchAdminTab('produk')">Produk</div>
-            <div class="admin-tab-btn" id="tabBtn_banner" onclick="switchAdminTab('banner')">Banner</div>
-            <div class="admin-tab-btn" id="tabBtn_pesanan" onclick="switchAdminTab('pesanan')">Pesanan</div>
-            <div class="admin-tab-btn" id="tabBtn_pengaturan" onclick="switchAdminTab('pengaturan')">Setting</div>
+            <div class="admin-tab-btn active" id="tabBtn_laporan" onclick="switchAdminTab('laporan')"><i class="fas fa-chart-line"></i> Info</div>
+            <div class="admin-tab-btn" id="tabBtn_produk" onclick="switchAdminTab('produk')"><i class="fas fa-box"></i> Produk</div>
+            <div class="admin-tab-btn" id="tabBtn_pesanan" onclick="switchAdminTab('pesanan')"><i class="fas fa-receipt"></i> Order</div>
+            <div class="admin-tab-btn" id="tabBtn_banner" onclick="switchAdminTab('banner')"><i class="fas fa-image"></i> Banner</div>
+            <div class="admin-tab-btn" id="tabBtn_pengaturan" onclick="switchAdminTab('pengaturan')"><i class="fas fa-cog"></i> Tema/Set</div>
         </div>
 
-        <!-- TAB PRODUK -->
-        <div class="admin-container admin-tab-content" id="adminTab_produk">
+        <!-- TAB LAPORAN (INFO PENGUNJUNG & PENJUALAN) -->
+        <div class="admin-container admin-tab-content" id="adminTab_laporan">
+            <h3 style="margin-bottom:16px;">Ringkasan Penjualan</h3>
+            <div class="form-row" style="margin-bottom:16px;">
+                <div style="background:var(--primary); padding:16px; border-radius:16px; text-align:center;">
+                    <div style="font-size:12px; opacity:0.8;">Total Pendapatan</div>
+                    <div style="font-size:18px; font-weight:bold;" id="repPendapatan">Rp0</div>
+                </div>
+                <div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:16px; text-align:center;">
+                    <div style="font-size:12px; opacity:0.8;">Pesanan Selesai</div>
+                    <div style="font-size:18px; font-weight:bold; color:var(--success);" id="repSelesai">0</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:16px; text-align:center;">
+                    <div style="font-size:12px; opacity:0.8;">Total Order Masuk</div>
+                    <div style="font-size:18px; font-weight:bold;" id="repTotalOrder">0</div>
+                </div>
+                <div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:16px; text-align:center;">
+                    <div style="font-size:12px; opacity:0.8;">Total Pengunjung</div>
+                    <div style="font-size:18px; font-weight:bold; color:var(--secondary);" id="repPengunjung">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB PRODUK (DENGAN SHARE LINK ADMIN) -->
+        <div class="admin-container admin-tab-content" id="adminTab_produk" style="display:none;">
             <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="openProductModal()">+ Tambah Produk Baru</button>
             <div id="adminProductList">Memuat data produk...</div>
         </div>
+        
+        <!-- TAB PESANAN (DENGAN CETAK NOTA) -->
+        <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat pesanan masuk...</div></div>
         
         <!-- TAB BANNER -->
         <div class="admin-container admin-tab-content" id="adminTab_banner" style="display:none;">
@@ -245,18 +297,17 @@
             <div id="adminBannerList">Memuat data banner...</div>
         </div>
 
-        <!-- TAB PESANAN -->
-        <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat pesanan masuk...</div></div>
-        
-        <!-- TAB PENGATURAN -->
+        <!-- TAB PENGATURAN (DENGAN WARNA TEMA & ONGKIR) -->
         <div class="admin-container admin-tab-content" id="adminTab_pengaturan" style="display:none;">
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: Toko Berkah"></div>
+                <div class="form-group"><label>Warna Tema Utama</label><input type="color" id="setWarnaTema" style="height: 50px; padding: 5px;"></div>
+                <div class="form-group"><label>Biaya Kirim Kurir Toko (Flat/Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
                 <div class="form-group"><label>WA Admin (Gunakan 62)</label><input type="number" id="setWaAdmin" placeholder="Contoh: 6281234567"></div>
                 <div class="form-group"><label>Link URL Logo Toko</label><input type="text" id="setLogoUrl" placeholder="https://..."></div>
                 <div class="form-group"><label>Info Rekening Bank</label><textarea id="setInfoRekening" rows="2" placeholder="BCA 12345 a/n Toko"></textarea></div>
                 <div class="form-group"><label>Link URL Gambar QRIS</label><input type="text" id="setQrisUrl" placeholder="https://..."></div>
-                <button class="btn btn-primary" style="width: 100%; margin-top:20px;" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+                <button class="btn btn-primary" style="width: 100%; margin-top:20px;" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan & Tema</button>
             </div>
         </div>
     </div>
@@ -277,7 +328,7 @@
             
             <div class="form-row">
                 <div class="form-group"><label>Harga Normal*</label><input type="number" id="formHargaNormal" placeholder="Misal: 50000"></div>
-                <div class="form-group"><label>Harga Promo Diskon</label><input type="number" id="formHargaPromo" placeholder="Isi untuk coret harga normal"></div>
+                <div class="form-group"><label>Harga Promo Diskon</label><input type="number" id="formHargaPromo" placeholder="Isi untuk coret harga"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Harga Grosir (Min 5)</label><input type="number" id="formHargaGrosir" placeholder="0 jika tidak ada"></div>
@@ -304,7 +355,7 @@
         </div>
     </div>
 
-    <!-- MODAL CEK PESANAN KONSUMEN -->
+    <!-- MODAL CEK PESANAN KONSUMEN (DENGAN CETAK NOTA) -->
     <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
         <div class="modal-content">
             <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div><h2 style="margin-bottom:16px;">Cek Status Pesanan</h2>
@@ -316,15 +367,16 @@
         </div>
     </div>
 
+    <!-- SCRIPT UTAMA - ULTIMATE -->
     <script>
-        // =========================================================================================
-        // URL WEB APP ANDA (SUDAH DIKUNCI PERMANEN & AKURAT)
         // =========================================================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
         // =========================================================================================
         
-        let allProducts = [], storeSettings = {};
+        let allProducts = [], storeSettings = {}, customerOrdersCache = [];
         let cart = [], wishlist = [];
+        let tarifKurir = 0;
+        let globalSubtotal = 0;
         
         try { let c = JSON.parse(localStorage.getItem("TokoCart_v2")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
         try { let w = JSON.parse(localStorage.getItem("TokoWishlist_v2")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
@@ -345,10 +397,23 @@
             document.getElementById("themelcon").innerText = document.body.classList.contains("dark-theme") ? "☀" : "🌙";
         }
 
+        // Terapkan Warna Tema dari Admin
+        function applyStoreTheme(hexColor) {
+            if (hexColor && hexColor !== "") {
+                document.documentElement.style.setProperty('--primary', hexColor);
+            }
+        }
+
         function showToast(msg, type = "success") {
             const c = document.getElementById("toastContainer"); const t = document.createElement("div"); 
             t.className = `toast ${type}`; t.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
+        }
+
+        // Fungsi Copy Link Share
+        function shareLink(idProduk) {
+            let url = window.location.href.split('?')[0] + "?product=" + idProduk;
+            navigator.clipboard.writeText(url).then(() => { showToast("Link Produk Disalin!"); });
         }
 
         async function fetchAPI(action, method = 'POST', data = {}, silent = false) {
@@ -396,24 +461,31 @@
             try {
                 const res = await fetchAPI("get_customer_orders", "POST", {wa: wa});
                 if(res.status === 'success') {
-                    document.getElementById('customerOrdersResult').innerHTML = res.data.orders.length ? res.data.orders.map(o => `<div style="background:var(--bg); padding:16px; border-radius:12px; margin-top:10px; border:1px solid var(--border);"><b>Order: ${o.ID_Pesanan}</b> <span class="badge" style="background:var(--primary); float:right;">${o.Status_Pesanan}</span><br><span style="font-size:12px; color:var(--text-muted);">${o.Tanggal}</span><br><div style="margin-top:8px; font-weight:bold; color:var(--primary);">Total: ${formatRp(o.Total)}</div></div>`).join("") : "<div style='margin-top:10px;'>Tidak ada pesanan ditemukan.</div>";
+                    customerOrdersCache = res.data.orders;
+                    document.getElementById('customerOrdersResult').innerHTML = res.data.orders.length ? res.data.orders.map((o, idx) => `
+                        <div style="background:var(--bg); padding:16px; border-radius:12px; margin-top:10px; border:1px solid var(--border);">
+                            <b>Order: ${o.ID_Pesanan}</b> <span class="badge" style="background:var(--primary); float:right;">${o.Status_Pesanan}</span><br>
+                            <span style="font-size:12px; color:var(--text-muted);">${o.Tanggal}</span><br>
+                            <div style="margin-top:8px; font-weight:bold; color:var(--primary);">Total: ${formatRp(o.Total)}</div>
+                            <button class="btn btn-outline" style="width:100%; margin-top:10px; padding:6px; font-size:12px;" onclick="cetakNotaUser(${idx})"><i class="fas fa-print"></i> Cetak Struk/Nota</button>
+                        </div>`).join("") : "<div style='margin-top:10px;'>Tidak ada pesanan ditemukan.</div>";
                 }
             } catch (e) { document.getElementById('customerOrdersResult').innerHTML = "Gagal memuat data."; }
         }
 
-        // FUNGSI RENDER BANNER 
         function renderBanners(banners) {
             const wrapper = document.getElementById('bannerWrapper');
             const container = document.getElementById('bannerContainer');
-            if (!banners || banners.length === 0) {
-                wrapper.style.display = 'none';
-                return;
-            }
+            if (!banners || banners.length === 0) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
             container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner Promosi"></div>`).join('');
         }
 
+        // INIT APP (PLUS PING VISITOR & DEEP LINKING)
         async function initApp() {
+            // Ping Visitor (Mode Info Pengunjung)
+            if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
+            
             const res = await fetchAPI("get_catalog", "GET");
             if (res && res.status === "success" && res.data) {
                 allProducts = res.data.products || []; 
@@ -424,11 +496,22 @@
                 document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
                 if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
                 
+                // Terapkan Tema Warna dari database
+                if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
+                
+                // Tarif Kurir
+                tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
+                
                 renderCategoriesMenu(); 
                 renderKatalogVisitor(allProducts);
-            } else {
-                throw new Error("Gagal mengambil data dari Google Sheet.");
-            }
+                
+                // Fitur Share URL (Deep Linking) - Buka produk otomatis jika ada parameter di URL
+                let params = new URLSearchParams(window.location.search);
+                let productIdUrl = params.get('product');
+                if (productIdUrl) {
+                    setTimeout(() => openProductDetail(productIdUrl), 500);
+                }
+            } else { throw new Error("Gagal mengambil data dari Google Sheet."); }
         }
 
         function renderCategoriesMenu() {
@@ -442,17 +525,15 @@
         function handleSort() {
             currentSort = document.getElementById('sortKatalog').value;
             let filtered = activeCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === activeCategory);
-            
             let sorted = [...filtered];
             sorted.sort((a, b) => {
                 let getEffectivePrice = (p) => Number(p.Harga_Promo) > 0 ? Number(p.Harga_Promo) : (Number(p.Harga_Grosir) > 0 ? Number(p.Harga_Grosir) : Number(p.Harga_Normal));
                 if(currentSort === "termurah") return getEffectivePrice(a) - getEffectivePrice(b);
                 if(currentSort === "termahal") return getEffectivePrice(b) - getEffectivePrice(a);
-                return 0; // terbaru (default urutan sheet)
+                return 0; 
             });
             renderKatalogVisitor(sorted);
         }
-        
         function handleSearch() { 
             const k = document.getElementById('searchInput').value.toLowerCase();
             renderKatalogVisitor(allProducts.filter(p => p.Nama_Produk && p.Nama_Produk.toLowerCase().includes(k))); 
@@ -460,15 +541,13 @@
 
         function renderKatalogVisitor(products) {
             const grid = document.getElementById('productGrid');
-            if (products.length === 0) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">Tidak ada produk di kategori ini.</div>`; return; }
+            if (products.length === 0) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">Tidak ada produk.</div>`; return; }
             
             let html = "";
             products.forEach(p => {
                 if(!p) return;
                 let satuan = p.Satuan ? p.Satuan : "pcs";
                 let badgeHtml = "";
-                
-                // Menata posisi badge agar bertumpuk rapi jika ada banyak
                 let topOffset = 8;
                 if (p.Terbaru === "Ya") { badgeHtml += `<div class="badge-katalog bg-terbaru" style="top: ${topOffset}px;">TERBARU</div>`; topOffset += 24; }
                 if (p.Terlaris === "Ya") { badgeHtml += `<div class="badge-katalog bg-terlaris" style="top: ${topOffset}px;">TERLARIS</div>`; topOffset += 24; }
@@ -476,15 +555,9 @@
                 if (p.Label_Promo) { badgeHtml += `<div class="badge-katalog bg-promo" style="top: ${topOffset}px;">${p.Label_Promo}</div>`; }
 
                 let hrgHtml = "";
-                if (Number(p.Harga_Promo) > 0) {
-                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>
-                               <span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`;
-                } else if (Number(p.Harga_Grosir) > 0) {
-                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;">/${satuan} (≥5)</span></div>
-                               <span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`;
-                } else {
-                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>`;
-                }
+                if (Number(p.Harga_Promo) > 0) { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; } 
+                else if (Number(p.Harga_Grosir) > 0) { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;">/${satuan} (≥5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; } 
+                else { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>`; }
 
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
                 
@@ -506,15 +579,9 @@
             let satuan = p.Satuan ? p.Satuan : "pcs";
             let hargaHtml = "";
             
-            if (Number(p.Harga_Promo) > 0) {
-                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div>
-                             <div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>`;
-            } else if (Number(p.Harga_Grosir) > 0) {
-                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Harga Grosir)</span></div>
-                             <div style="font-size:13px; color:var(--text-muted);">Harga Satuan (Ecer): ${formatRp(p.Harga_Normal)}</div>`;
-            } else {
-                hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`;
-            }
+            if (Number(p.Harga_Promo) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>`; } 
+            else if (Number(p.Harga_Grosir) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Harga Grosir)</span></div><div style="font-size:13px; color:var(--text-muted);">Harga Satuan (Ecer): ${formatRp(p.Harga_Normal)}</div>`; } 
+            else { hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`; }
             
             let labelBadge = p.Label_Promo ? `<span style="background:var(--danger); color:white; padding: 4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-right:8px;">${p.Label_Promo}</span>` : "";
             
@@ -528,6 +595,10 @@
                 <div class="sticky-bottom-bar">
                     ${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1); openCart();">Beli Sekarang</button>`}
                 </div>`;
+            
+            // Set Onclick Button Share
+            document.getElementById('btnShareProduct').onclick = function() { shareLink(p.ID_Produk); };
+            
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -566,10 +637,10 @@
             closeModal('detailModal'); const c = document.getElementById('cartContent');
             if (cart.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted);"><i class="fas fa-shopping-cart" style="font-size:40px; margin-bottom:16px; opacity:0.5;"></i><br>Keranjang Anda masih kosong.</div>`; } 
             else {
-                let subtotal = 0; 
+                globalSubtotal = 0; 
                 c.innerHTML = cart.map((item, i) => { 
                     if(!item) return "";
-                    subtotal += (item.harga * item.qty); 
+                    globalSubtotal += (item.harga * item.qty); 
                     const p = allProducts.find(x => x && x.ID_Produk === item.id) || {};
                     let note = "";
                     if (Number(p.Harga_Promo) > 0) note = `<span style="font-size:10px; color:var(--danger); font-weight:bold;">Harga Promo Aktif!</span>`;
@@ -580,13 +651,25 @@
                                 <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800; margin-top:4px;">${formatRp(item.harga)} <span style="font-size:11px; font-weight:normal; color:var(--text-main);">/${item.satuan || 'pcs'}</span></div>${note}</div>
                                 <div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><b style="width:24px;text-align:center; font-size:14px;">${item.qty}</b><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div>
                              </div>`; 
-                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:12px; font-size:16px;"><b>Total Belanja:</b> <b style="color:var(--primary); font-size:18px;">${formatRp(subtotal)}</b></div><button class="btn btn-success" style="width: 100%; padding:14px;" onclick="prepareCheckout()">Lanjutkan Checkout <i class="fas fa-arrow-right"></i></button></div>`;
+                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:12px; font-size:16px;"><b>Total Belanja:</b> <b style="color:var(--primary); font-size:18px;">${formatRp(globalSubtotal)}</b></div><button class="btn btn-success" style="width: 100%; padding:14px;" onclick="prepareCheckout()">Lanjutkan Checkout <i class="fas fa-arrow-right"></i></button></div>`;
             }
             document.getElementById('cartModal').style.display = 'flex';
         }
 
+        // FUNGSI ONGKIR OTOMATIS
+        function calculateOngkir() {
+            let mt = document.getElementById('checkoutMetode').value;
+            let ok = mt === "Kurir Toko" ? tarifKurir : 0;
+            document.getElementById('checkoutOngkir').innerText = formatRp(ok);
+            document.getElementById('checkoutTotal').innerText = formatRp(globalSubtotal + ok);
+        }
+
         async function prepareCheckout() {
-            closeModal('cartModal'); document.getElementById('checkoutTotal').innerText = formatRp(cart.reduce((s, i) => s + ((i&&i.harga?i.harga:0)*(i&&i.qty?i.qty:0)), 0));
+            closeModal('cartModal'); 
+            document.getElementById('checkoutSubtotal').innerText = formatRp(globalSubtotal);
+            document.getElementById('checkoutMetode').value = "Ambil di Toko";
+            calculateOngkir(); // reset ongkir ke 0 pada awalnya
+            
             document.getElementById('checkoutNama').value = localStorage.getItem('TokoUser_Nama') || ""; 
             document.getElementById('checkoutWA').value = localStorage.getItem('TokoUser_WA') || ""; 
             document.getElementById('checkoutAlamat').value = localStorage.getItem('TokoUser_Alamat') || "";
@@ -596,30 +679,30 @@
         }
 
         async function processCheckout() {
-            let total = cart.reduce((s, i) => s + (i.harga*i.qty), 0);
+            let mt = document.getElementById('checkoutMetode').value;
+            let ok = mt === "Kurir Toko" ? tarifKurir : 0;
+            let finalTotal = globalSubtotal + ok;
+            
             let n = document.getElementById('checkoutNama').value, w = document.getElementById('checkoutWA').value, a = document.getElementById('checkoutAlamat').value, b64 = document.getElementById('checkoutBuktiBase64').value;
             if(!n || !w || !a || !b64) { showToast("Mohon lengkapi alamat dan upload bukti transfer!", "error"); return; }
             
-            // Simpan info user untuk next order
             localStorage.setItem('TokoUser_Nama', n); localStorage.setItem('TokoUser_WA', w); localStorage.setItem('TokoUser_Alamat', a);
             
-            const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, total: total, cart: cart, Bukti_Base64: b64 });
+            const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
             if(res.status === 'success') {
                 let waAdmin = storeSettings.WhatsApp_Admin || "628000"; waAdmin = waAdmin.replace(/[^0-9]/g, ''); if(waAdmin.startsWith('0')) waAdmin = '62' + waAdmin.slice(1);
                 
                 let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
-                let txt = `*PESANAN BARU (${res.orderId})*\n\n*Nama:* ${n}\n*WA:* ${w}\n*Alamat:* ${a}\n\n*Rincian Pesanan:*\n${orderItems}\n\n*Total Tagihan: ${formatRp(total)}*\n\n_(Bukti transfer telah diupload di sistem)_`;
+                let txt = `*PESANAN BARU (${res.orderId})*\n\n*Nama:* ${n}\n*WA:* ${w}\n*Alamat:* ${a}\n*Pengiriman:* ${mt}\n\n*Rincian Pesanan:*\n${orderItems}\nOngkos Kirim: ${formatRp(ok)}\n\n*TOTAL BAYAR: ${formatRp(finalTotal)}*\n\n_(Sistem Antrean Aman - Bukti transfer tersimpan di database)_`;
                 
                 cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
                 window.open(`https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`, '_blank'); 
                 location.reload();
-            } else {
-                showToast("Terjadi kesalahan saat memproses pesanan.", "error");
-            }
+            } else { showToast(res.message || "Terjadi kesalahan saat memproses.", "error"); }
         }
 
         // ==========================================
-        // PANEL ADMIN PENJUAL (DIPASTIKAN LENGKAP)
+        // PANEL ADMIN PENJUAL (DENGAN LAPORAN & TEMA)
         // ==========================================
         window.addEventListener("hashchange", checkAdminAccess);
         function checkAdminAccess() {
@@ -640,7 +723,16 @@
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
-                // RENDER LIST PRODUK
+                
+                // RENDER LAPORAN PENJUALAN & PENGUNJUNG
+                if (res.data.laporan) {
+                    document.getElementById('repPendapatan').innerText = formatRp(res.data.laporan.pendapatan);
+                    document.getElementById('repSelesai').innerText = res.data.laporan.pesananSelesai;
+                    document.getElementById('repTotalOrder').innerText = res.data.laporan.totalPesanan;
+                    document.getElementById('repPengunjung').innerText = res.data.laporan.pengunjung;
+                }
+
+                // RENDER LIST PRODUK (DENGAN TOMBOL SHARE LINK DI ADMIN)
                 allProducts = res.data.products || []; 
                 document.getElementById('adminProductList').innerHTML = allProducts.map(p => `
                     <div class="admin-card">
@@ -652,12 +744,13 @@
                             <span style="font-size:13px; color:#818cf8; font-weight:bold;">${formatRp(p.Harga_Normal)}</span>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:6px;">
-                            <button class="btn btn-secondary" style="padding:6px 12px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-danger" style="padding:6px 12px;" onclick="deleteProductAdmin('${p.ID_Produk}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="shareLink('${p.ID_Produk}')"><i class="fas fa-share"></i> Share</button>
+                            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteProductAdmin('${p.ID_Produk}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>`).join("");
                 
-                // RENDER LIST BANNER (KOREKSI MENDALAM)
+                // RENDER LIST BANNER
                 let banners = res.data.banners || [];
                 document.getElementById('adminBannerList').innerHTML = banners.length ? banners.map(b => `
                     <div class="admin-card">
@@ -665,55 +758,48 @@
                         <button class="btn btn-danger" style="padding:8px 12px;" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i> Hapus</button>
                     </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner terpasang.</div>";
 
-                // RENDER PESANAN
+                // RENDER PESANAN ADMIN (BISA CETAK NOTA)
                 let orders = res.data.orders || [];
-                document.getElementById('adminOrderList').innerHTML = orders.map(o => `
+                document.getElementById('adminOrderList').innerHTML = orders.map((o, idx) => `
                     <div class="admin-card" style="flex-direction:column; align-items:flex-start;">
                         <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:8px;">
                             <b>${o.ID_Pesanan}</b> <span style="color:#94a3b8; font-size:12px;">${o.Tanggal}</span>
                         </div>
                         <div><i class="fas fa-user"></i> ${o.Nama_Pembeli} (${o.WhatsApp})</div>
+                        <div style="font-size:12px; color:#94a3b8;">${o.Metode_Pengiriman || "Ambil di Toko"}</div>
                         <div style="color:#818cf8; font-weight:bold; margin-top:4px;">${formatRp(o.Total)}</div>
                         ${o.Bukti_Transfer ? `<a href="${o.Bukti_Transfer}" target="_blank" style="color:var(--success); font-size:12px; margin-top:6px; display:inline-block;"><i class="fas fa-image"></i> Lihat Bukti Transfer</a>` : ""}
-                        <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="margin-top:10px; background:#0f172a; color:white; border-color:#475569;">
-                            <option disabled selected>${o.Status_Pesanan}</option>
-                            <option value="Baru">Baru</option>
-                            <option value="Diproses">Diproses</option>
-                            <option value="Dikirim">Dikirim</option>
-                            <option value="Selesai">Selesai</option>
-                            <option value="Dibatalkan">Dibatalkan</option>
-                        </select>
+                        <div style="display:flex; gap:10px; width:100%; margin-top:10px;">
+                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569;">
+                                <option disabled selected>${o.Status_Pesanan}</option>
+                                <option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option>
+                                <option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="cetakNotaAdmin(${JSON.stringify(o).replace(/'/g, "&apos;")})"><i class="fas fa-print"></i></button>
+                        </div>
                     </div>`).join("");
                 
                 // RENDER SETTING
                 let s = res.data.settings || {};
-                document.getElementById('setNamaToko').value = s.Nama_Toko || ""; document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || "";
-                document.getElementById('setLogoUrl').value = s.Logo_URL || ""; document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; document.getElementById('setQrisUrl').value = s.QRIS_URL || "";
+                document.getElementById('setNamaToko').value = s.Nama_Toko || ""; 
+                document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || "";
+                document.getElementById('setLogoUrl').value = s.Logo_URL || ""; 
+                document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; 
+                document.getElementById('setQrisUrl').value = s.QRIS_URL || "";
+                document.getElementById('setWarnaTema').value = s.Warna_Tema || "#6366f1";
+                document.getElementById('setTarifKurir').value = s.Tarif_Kurir_Toko || "10000";
             }
         }
         
         async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status pesanan diubah!"); }
 
-        // FUNGSI CRUD BANNER ADMIN
-        function openBannerModal() {
-            let url = prompt("Masukkan Link URL Foto Banner Promosi Baru (Saran Rasio 16:9):");
-            if (url && url.trim() !== "") submitBannerAdmin(url.trim());
-        }
-        async function submitBannerAdmin(url) {
-            const r = await fetchAPI("save_banner", "POST", { Foto_URL: url });
-            if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner promosi berhasil ditambahkan"); }
-        }
-        async function deleteBannerAdmin(id) {
-            if(!confirm("Anda yakin ingin menghapus banner ini dari halaman depan?")) return;
-            const r = await fetchAPI("delete_banner", "POST", { id: id });
-            if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner berhasil dihapus"); }
-        }
+        function openBannerModal() { let url = prompt("Masukkan Link URL Foto Banner Promosi Baru (Saran Rasio 16:9):"); if (url && url.trim() !== "") submitBannerAdmin(url.trim()); }
+        async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner promosi berhasil ditambahkan"); } }
+        async function deleteBannerAdmin(id) { if(!confirm("Anda yakin ingin menghapus banner ini?")) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner dihapus"); } }
 
-        // FUNGSI CRUD PRODUK ADMIN
         function openProductModal() {
             ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formDeskripsi', 'formHargaPromo', 'formLabelPromo', 'formHargaNormal', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = "");
-            document.getElementById('formStok').value = "10"; document.getElementById('formSatuan').value = "pcs"; document.getElementById('formBadge').value = "";
-            document.getElementById('imagePreview').style.display = 'none'; document.getElementById('productModal').style.display = 'flex';
+            document.getElementById('formStok').value = "10"; document.getElementById('formSatuan').value = "pcs"; document.getElementById('formBadge').value = ""; document.getElementById('imagePreview').style.display = 'none'; document.getElementById('productModal').style.display = 'flex';
         }
 
         function editProduct(p) {
@@ -723,14 +809,8 @@
             document.getElementById('formDeskripsi').value = p.Deskripsi || ""; document.getElementById('formStok').value = p.Stok || 0;
             document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaGrosir').value = p.Harga_Grosir || "";
             document.getElementById('formHargaPromo').value = p.Harga_Promo || ""; document.getElementById('formSatuan').value = p.Satuan || "pcs"; document.getElementById('formLabelPromo').value = p.Label_Promo || "";
-            
-            if(p.Terbaru === "Ya") document.getElementById('formBadge').value = "Terbaru";
-            else if(p.Terlaris === "Ya") document.getElementById('formBadge').value = "Terlaris";
-            else if(p.Unggulan === "Ya") document.getElementById('formBadge').value = "Unggulan";
-            else document.getElementById('formBadge').value = "";
-            
-            document.getElementById('formStatus').value = p.Status;
-            if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; }
+            if(p.Terbaru === "Ya") document.getElementById('formBadge').value = "Terbaru"; else if(p.Terlaris === "Ya") document.getElementById('formBadge').value = "Terlaris"; else if(p.Unggulan === "Ya") document.getElementById('formBadge').value = "Unggulan"; else document.getElementById('formBadge').value = "";
+            document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; }
         }
 
         async function submitProduct() {
@@ -745,27 +825,65 @@
                 Status: document.getElementById('formStatus').value, Foto_URL: document.getElementById('formFotoUrl').value 
             };
             if(!p.Nama_Produk || !p.Harga_Normal || !p.Kategori || !p.Foto_URL) { showToast("Lengkapi Nama, Harga, Kategori & Foto!", "error"); return; }
-            
             const r = await fetchAPI("save_product", "POST", p);
             if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Data Produk Berhasil Disimpan"); }
         }
         
         async function deleteProductAdmin(id) {
-            if(!confirm("PERINGATAN: Anda yakin ingin menghapus produk ini selamanya?")) return;
+            if(!confirm("Hapus produk ini selamanya?")) return;
             const r = await fetchAPI("delete_product", "POST", {id: id});
             if(r.status === 'success') { loadAdminData(); initApp(); showToast("Produk berhasil dihapus"); }
         }
 
         async function saveSettings() {
             const s = { 
-                Nama_Toko: document.getElementById('setNamaToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
-                Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value 
+                Nama_Toko: document.getElementById('setNamaToko').value, 
+                WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
+                Logo_URL: document.getElementById('setLogoUrl').value, 
+                Info_Rekening: document.getElementById('setInfoRekening').value, 
+                QRIS_URL: document.getElementById('setQrisUrl').value,
+                Warna_Tema: document.getElementById('setWarnaTema').value,
+                Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
             };
             const r = await fetchAPI("save_settings", "POST", s);
-            if (r.status === 'success') { showToast("Pengaturan Toko Berhasil Disimpan!"); loadAdminData(); initApp(); }
+            if (r.status === 'success') { showToast("Pengaturan Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
         }
 
-        // FUNGSI UPLOAD GAMBAR BUKTI TRANSFER (COMPRESSION)
+        // FUNGSI CETAK NOTA KONSUMEN
+        function cetakNotaUser(index) {
+            let order = customerOrdersCache[index]; if(!order) return;
+            generateHTMLCetak(order);
+        }
+
+        // FUNGSI CETAK NOTA ADMIN
+        function cetakNotaAdmin(order) { generateHTMLCetak(order); }
+
+        function generateHTMLCetak(o) {
+            let htmlItems = o.items ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : "<div><i>Detail item disembunyikan/tidak dimuat</i></div>";
+            
+            let printContent = `
+                <div style="max-width:300px; margin:0 auto; padding:20px; border:1px dashed #ccc;">
+                    <h2 style="text-align:center; margin-bottom:5px;">${storeSettings.Nama_Toko || "TokoKu"}</h2>
+                    <div style="text-align:center; font-size:10px; margin-bottom:15px; border-bottom:1px solid #000; padding-bottom:10px;">BUKTI PEMBAYARAN</div>
+                    <div style="font-size:11px; margin-bottom:15px;">
+                        <div>No: <b>${o.ID_Pesanan}</b></div>
+                        <div>Tgl: ${o.Tanggal}</div>
+                        <div>Kepada: ${o.Nama_Pembeli}</div>
+                        <div>Kiriman: ${o.Metode_Pengiriman || "Ambil di Toko"}</div>
+                    </div>
+                    <div style="border-bottom:1px dashed #000; padding-bottom:10px; margin-bottom:10px; font-size:12px;">
+                        ${htmlItems}
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom:20px;">
+                        <span>TOTAL:</span><span>${formatRp(o.Total)}</span>
+                    </div>
+                    <div style="text-align:center; font-size:10px;">Terima kasih telah berbelanja!</div>
+                </div>
+            `;
+            document.getElementById('printArea').innerHTML = printContent;
+            window.print();
+        }
+
         function handleImageUpload(e, base64Id, previewId) {
             const file = e.target.files[0]; if (!file) return; 
             const reader = new FileReader(); reader.readAsDataURL(file);
@@ -780,19 +898,13 @@
             }
         }
 
-        // INIT APP (DIPAKSA LOAD AGAR TIDAK BLANK)
         document.addEventListener("DOMContentLoaded", async function() {
             try {
                 updateCartBadge(); updateWishlistBadge();
                 await initApp(); checkAdminAccess();
             } catch(e) {
                 console.error("Critical Init Error: ", e);
-                document.getElementById('productGrid').innerHTML = `
-                    <div style="grid-column: span 3; text-align:center; padding: 20px; background: var(--surface); color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; margin: 10px;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 30px; margin-bottom: 10px;"></i><br>
-                        <b>Gagal Terhubung ke Database!</b><br>
-                        <small style="color: var(--text-main); display:block; margin-top:8px;">Terjadi kesalahan saat memuat data. Mohon muat ulang halaman.</small>
-                    </div>`;
+                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`;
             }
         });
     </script>
