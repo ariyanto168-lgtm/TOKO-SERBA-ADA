@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.47 Ultimate Stable</title>
+    <title>Toko Serba Ada - v1.0.48 Ultimate Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -18,7 +18,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; transition: background 0.3s; }
         .loading-bar { height: 3px; background: var(--primary); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
-        .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--primary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
@@ -160,7 +160,7 @@
 
         <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.47 Pro)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary);" title="Masuk Panel Penjual"> (v1.0.48 Pro)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -180,10 +180,10 @@
         </div>
     </div>
 
-    <!-- MODAL DETAIL PRODUK -->
+    <!-- MODAL DETAIL PRODUK / CHECKOUT SUCCESS -->
     <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div>
-            <div id="btnShareProduct" class="modal-close-btn" style="right: 60px; border-color: var(--primary); color: var(--primary);" title="Bagikan Produk"><i class="fas fa-share-alt"></i></div>
+            <div id="btnShareProduct" class="modal-close-btn" style="right: 60px; border-color: var(--primary); color: var(--primary); display:none;" title="Bagikan Produk"><i class="fas fa-share-alt"></i></div>
             <div id="detailContent"></div>
         </div>
     </div>
@@ -277,6 +277,7 @@
             <div id="adminProductList">Memuat data produk...</div>
         </div>
         
+        <!-- KOLOM ORDER ADMIN DINAMIS & TERPERINCI -->
         <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat pesanan masuk...</div></div>
         
         <div class="admin-container admin-tab-content" id="adminTab_banner" style="display:none;">
@@ -408,7 +409,7 @@
         }
 
         function formatRp(angka) { return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka || 0); }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById('btnShareProduct').style.display = 'none'; }
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
         function updateCartBadge() { const el = document.getElementById('navCartBadge'); if(el) el.innerText = cart.reduce((s, i) => s + (i && i.qty ? i.qty : 0), 0); }
@@ -462,7 +463,6 @@
         }
 
         async function initApp() {
-            // Ping visitor untuk fitur mode info pengunjung
             if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
             
             const res = await fetchAPI("get_catalog", "GET");
@@ -481,7 +481,6 @@
                 renderCategoriesMenu(); 
                 renderKatalogVisitor(allProducts);
                 
-                // Deep Linking
                 let params = new URLSearchParams(window.location.search);
                 let productIdUrl = params.get('product');
                 if (productIdUrl) { setTimeout(() => openProductDetail(productIdUrl), 500); }
@@ -570,6 +569,7 @@
                     ${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1); openCart();">Beli Sekarang</button>`}
                 </div>`;
             
+            document.getElementById('btnShareProduct').style.display = 'flex';
             document.getElementById('btnShareProduct').onclick = function() { shareLink(p.ID_Produk); };
             document.getElementById('detailModal').style.display = 'flex';
         }
@@ -646,6 +646,7 @@
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
+        // CHECKOUT KE WHATSAPP 100% AMAN TANPA POPUP BLOCKER HP
         async function processCheckout() {
             let mt = document.getElementById('checkoutMetode').value;
             let ok = mt === "Kurir Toko" ? tarifKurir : 0;
@@ -662,9 +663,22 @@
                 let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
                 let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
                 
+                let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
+                
                 cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
-                window.open(`https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`, '_blank'); 
-                location.reload();
+                
+                // Tampilkan Modal Sukses dengan Tombol Tombol WhatsApp Langsung (Bypass Popup Blocker HP)
+                document.getElementById('detailContent').innerHTML = `
+                    <div style="text-align:center; padding:10px;">
+                        <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
+                        <h3 style="margin-bottom:6px;">Pesanan Berhasil Disimpan!</h3>
+                        <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b><br>Ketuk tombol di bawah untuk mengirim konfirmasi ke WhatsApp Admin.</p>
+                        <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center;">
+                            <i class="fab fa-whatsapp" style="font-size:20px;"></i> Konfirmasi Pesanan ke WhatsApp Admin
+                        </a>
+                        <button class="btn btn-secondary" style="width:100%; padding:12px;" onclick="location.reload()">Selesai / Belanja Lagi</button>
+                    </div>`;
+                document.getElementById('detailModal').style.display = 'flex';
             } else { showToast(res.message || "Gagal memproses pesanan.", "error"); }
         }
 
@@ -684,6 +698,7 @@
         }
         function switchAdminTab(t) { document.querySelectorAll('.admin-tab-btn').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
+        // RENDER KOLOM ORDER ADMIN LEBIH DINAMIS & TERPERINCI
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
@@ -713,17 +728,52 @@
                         <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
                     </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
+                // RENDER ORDER DINAMIS & TERPERINCI
                 let orders = res.data.orders || [];
-                document.getElementById('adminOrderList').innerHTML = orders.map((o, idx) => `
-                    <div class="admin-card" style="flex-direction:column; align-items:flex-start;">
-                        <b>${o.ID_Pesanan}</b><div>${o.Nama_Pembeli} - ${formatRp(o.Total)}</div>
-                        <div style="font-size:12px; color:#94a3b8;">${o.Metode_Pengiriman || "Ambil di Toko"}</div>
-                        ${o.Bukti_Transfer ? `<a href="${o.Bukti_Transfer}" target="_blank" style="color:var(--success); font-size:12px; margin-top:4px;">Lihat Bukti Transfer</a>` : ""}
-                        <div style="display:flex; gap:10px; width:100%; margin-top:10px;">
-                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white;"><option disabled selected>${o.Status_Pesanan}</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select>
-                            <button class="btn btn-primary" onclick="cetakNotaAdmin(${JSON.stringify(o).replace(/'/g, "&apos;")})"><i class="fas fa-print"></i></button>
+                let orderDetails = res.data.orderDetails || [];
+                
+                document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
+                    let items = orderDetails.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
+                    let itemsHtml = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
+                    let statusColor = o.Status_Pesanan === 'Selesai' ? 'aktif' : (o.Status_Pesanan === 'Dibatalkan' ? 'nonaktif' : 'aktif');
+                    
+                    return `
+                    <div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;">
+                            <div><b>${o.ID_Pesanan}</b><br><span style="font-size:11px; color:#94a3b8;">${o.Tanggal}</span></div>
+                            <span class="badge ${statusColor}">${o.Status_Pesanan || 'Baru'}</span>
                         </div>
-                    </div>`).join("");
+                        <div style="width:100%; font-size:13px; line-height:1.5;">
+                            <div><i class="fas fa-user"></i> <b>${o.Nama_Pembeli}</b></div>
+                            <div><i class="fas fa-phone"></i> <a href="https://wa.me/${o.WhatsApp}" target="_blank" style="color:#818cf8; text-decoration:none;">${o.WhatsApp} <i class="fas fa-external-link-alt" style="font-size:10px;"></i></a></div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${o.Alamat}</div>
+                            <div style="font-size:12px; color:#38bdf8; margin-top:2px;"><i class="fas fa-truck"></i> Kurir: ${o.Metode_Pengiriman || 'Ambil di Toko'}</div>
+                        </div>
+                        
+                        <div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">
+                            <div style="font-size:11px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">DETAIL PRODUK DIPESAN:</div>
+                            ${itemsHtml}
+                            <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;">
+                                <span>Total Bayar:</span>
+                                <span style="color:#818cf8;">${formatRp(o.Total)}</span>
+                            </div>
+                        </div>
+                        
+                        ${o.Bukti_Transfer ? `<div style="width:100%;"><a href="${o.Bukti_Transfer}" target="_blank" class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981; text-decoration:none;"><i class="fas fa-image"></i> Lihat Bukti Transfer</a></div>` : ""}
+                        
+                        <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
+                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px;">
+                                <option value="" disabled selected>Ubah Status: ${o.Status_Pesanan}</option>
+                                <option value="Baru">Baru</option>
+                                <option value="Diproses">Diproses</option>
+                                <option value="Dikirim">Dikirim</option>
+                                <option value="Selesai">Selesai</option>
+                                <option value="Dibatalkan">Dibatalkan</option>
+                            </select>
+                            <button class="btn btn-primary" style="padding:8px 14px;" onclick="cetakNotaAdmin(${JSON.stringify(o).replace(/'/g, "&apos;")})" title="Cetak Nota"><i class="fas fa-print"></i></button>
+                        </div>
+                    </div>`;
+                }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px; width:100%;'>Belum ada pesanan masuk.</div>";
                 
                 let s = res.data.settings || {};
                 document.getElementById('setNamaToko').value = s.Nama_Toko || ""; 
@@ -736,7 +786,7 @@
             }
         }
         
-        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); }
+        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(); }
 
         function openBannerModal() { let url = prompt("URL Banner:"); if (url) submitBannerAdmin(url); }
         async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner ditambah"); } }
