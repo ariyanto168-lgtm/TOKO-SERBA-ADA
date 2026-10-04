@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.29 Pro</title>
+    <title>Toko Serba Ada - v1.0.30 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -202,7 +202,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.29 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.30 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -278,6 +278,7 @@
                 <img id="uiQrisImage" src="" style="width:100%; max-width:200px; border-radius:10px; display:none; margin:0 auto;">
             </div>
 
+            <!-- Bukti transfer pembeli tetap file upload agar mudah diakses dari galeri HP -->
             <div class="form-group" id="uploadBuktiGroup" style="background:#fef3c7; padding: 14px; border-radius: 14px; border:1px solid #fde68a;">
                 <label style="color:#b45309; font-weight:700;">Upload Bukti Transfer*</label>
                 <input type="file" accept="image/*" id="checkoutFileBukti" onchange="handleImageUpload(event, 'checkoutBuktiBase64', 'checkoutBuktiPreview')">
@@ -346,6 +347,8 @@
             <button class="btn btn-primary" style="width:100%; margin-bottom: 20px;" onclick="openBannerModal()">+ Tambah Banner</button>
             <div id="adminBannerList">Memuat...</div>
         </div>
+        
+        <!-- PENGATURAN TOKO (QRIS VIA URL) -->
         <div class="admin-container admin-tab-content" id="adminTab_pengaturan" style="display:none;">
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko"></div>
@@ -355,25 +358,30 @@
                 <div class="form-group"><label>API Key RajaOngkir</label><input type="password" id="setRoKey"></div>
                 <div class="form-group"><label>ID Kota Asal (Origin ID)</label><input type="number" id="setRoOrigin"></div>
                 <div class="form-group"><label>Info Rekening Bank</label><textarea id="setInfoRekening" rows="3"></textarea></div>
+                
                 <div class="form-group">
-                    <label>Upload QRIS (Baru)</label>
-                    <input type="file" accept="image/*" onchange="handleImageUpload(event, 'setQrisBase64', 'setQrisPreview')">
-                    <input type="hidden" id="setQrisBase64">
-                    <img id="setQrisPreview" style="max-height:200px; display:none; margin-top:10px;">
+                    <label>URL Gambar QRIS</label>
+                    <input type="text" id="setQrisUrl" placeholder="https://... (Link langsung QRIS)" oninput="document.getElementById('setQrisPreview').src=this.value; document.getElementById('setQrisPreview').style.display=this.value?'block':'none';">
+                    <img id="setQrisPreview" style="max-height:200px; display:none; margin-top:10px; border-radius:8px;">
                 </div>
+
                 <div class="form-group"><label>Ubah PIN Admin</label><input type="password" id="setAdminPin" placeholder="Kosongkan jika tidak diubah"></div>
                 <button class="btn btn-primary" style="width: 100%; margin-top:24px;" onclick="saveSettings()">Simpan Pengaturan Aman</button>
             </div>
         </div>
     </div>
 
-    <!-- Modals Admin -->
+    <!-- MODAL PRODUK (URL MODE) -->
     <div class="modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
         <div class="modal-content" style="background:#1e293b; color:white;">
             <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white;">X</div>
-            <h3 style="margin-bottom: 16px;">Form Produk</h3>
-            <input type="hidden" id="formIdProduk"><input type="hidden" id="formFotoBase64">
-            <div class="form-group"><label>Foto Produk</label><input type="file" accept="image/*" onchange="handleImageUpload(event, 'formFotoBase64', 'imagePreview')"><img id="imagePreview" style="max-height:150px; display:none; margin-top:10px;"></div>
+            <h3 style="margin-bottom: 16px;">Form Produk (URL Mode)</h3>
+            <input type="hidden" id="formIdProduk">
+            <div class="form-group">
+                <label>URL Foto Produk*</label>
+                <input type="text" id="formFotoUrl" placeholder="https://... (Link gambar produk)" oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none';">
+                <img id="imagePreview" style="max-height:150px; display:none; margin-top:10px; border-radius:8px; width:100%; object-fit:cover;">
+            </div>
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama"></div>
             <div class="form-group"><label>Kategori*</label><input type="text" id="formKategori"></div>
             <div class="form-group"><label>Stok Validasi Real-time*</label><input type="number" id="formStok" value="10"></div>
@@ -386,7 +394,7 @@
         </div>
     </div>
 
-    <!-- MODAL BANNER (REVISI MODE URL) -->
+    <!-- MODAL BANNER (URL MODE) -->
     <div class="modal-overlay" id="bannerModal" onclick="if(event.target===this) closeModal('bannerModal')">
         <div class="modal-content" style="background:#1e293b; color:white;">
             <div class="modal-close-btn" onclick="closeModal('bannerModal')" style="background:#0f172a; color:white;">X</div>
@@ -394,7 +402,7 @@
             <input type="hidden" id="bannerId">
             <div class="form-group">
                 <label>URL Gambar Banner (Landscape)*</label>
-                <input type="text" id="bannerUrlInput" placeholder="https://... (Tempel link gambar langsung disini)" oninput="document.getElementById('bannerPreview').src=this.value; document.getElementById('bannerPreview').style.display=this.value?'block':'none';">
+                <input type="text" id="bannerUrlInput" placeholder="https://... (Link gambar banner)" oninput="document.getElementById('bannerPreview').src=this.value; document.getElementById('bannerPreview').style.display=this.value?'block':'none';">
                 <img id="bannerPreview" style="max-height:120px; display:none; margin-top:10px; border-radius:8px; width:100%; object-fit:cover;">
             </div>
             <div class="form-group"><label>Status</label><select id="bannerStatus"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></div>
@@ -872,35 +880,59 @@
                 document.getElementById('setRoKey').value = res.data.settings.RajaOngkir_Key || "";
                 document.getElementById('setRoOrigin').value = res.data.settings.RajaOngkir_Origin || "";
                 document.getElementById('setInfoRekening').value = res.data.settings.Info_Rekening || "";
-                if (res.data.settings.QRIS_URL) { document.getElementById('setQrisPreview').src = res.data.settings.QRIS_URL; document.getElementById('setQrisPreview').style.display = 'block'; }
+                
+                if (res.data.settings.QRIS_URL) { 
+                    document.getElementById('setQrisUrl').value = res.data.settings.QRIS_URL;
+                    document.getElementById('setQrisPreview').src = res.data.settings.QRIS_URL; 
+                    document.getElementById('setQrisPreview').style.display = 'block'; 
+                }
             }
         }
 
         async function updateStatus(id, stat) { const res = await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); if(res.status==='success') { showToast("Status diubah"); loadAdminData(); } }
         async function deleteItem(action, id) { if(confirm("Hapus data secara permanen?")) { const r = await fetchAPI(action, "POST", {id: id}); if(r.status==='success') { showToast("Dihapus"); loadAdminData(); } } }
 
+        // --- FUNGSI PRODUK (URL MODE) ---
         function openProductModal() {
-            ['formIdProduk', 'formFotoBase64', 'formNama', 'formKategori', 'formStok', 'formHargaNormal', 'formHargaPromo'].forEach(id => document.getElementById(id).value = "");
-            document.getElementById('formStok').value = "10"; document.getElementById('imagePreview').style.display = 'none';
+            ['formIdProduk', 'formFotoUrl', 'formNama', 'formKategori', 'formStok', 'formHargaNormal', 'formHargaPromo'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById('formStok').value = "10"; 
+            document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('productModal').style.display = 'flex';
         }
 
         function editProduct(p) {
             openProductModal(); 
-            document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formNama').value = p.Nama_Produk; document.getElementById('formKategori').value = p.Kategori;
-            document.getElementById('formStok').value = p.Stok || 10; document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaPromo').value = p.Harga_Promo || "";
+            document.getElementById('formIdProduk').value = p.ID_Produk; 
+            document.getElementById('formFotoUrl').value = p.Foto_URL || "";
+            document.getElementById('formNama').value = p.Nama_Produk; 
+            document.getElementById('formKategori').value = p.Kategori;
+            document.getElementById('formStok').value = p.Stok || 10; 
+            document.getElementById('formHargaNormal').value = p.Harga_Normal; 
+            document.getElementById('formHargaPromo').value = p.Harga_Promo || "";
             document.getElementById('formStatus').value = p.Status;
-            if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display='block'; }
+            if(p.Foto_URL) { 
+                document.getElementById('imagePreview').src = p.Foto_URL; 
+                document.getElementById('imagePreview').style.display = 'block'; 
+            }
         }
 
         async function submitProduct() {
-            const p = { ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama').value, Kategori: document.getElementById('formKategori').value, Stok: document.getElementById('formStok').value, Harga_Normal: document.getElementById('formHargaNormal').value, Harga_Promo: document.getElementById('formHargaPromo').value, Status: document.getElementById('formStatus').value, Foto_Base64: document.getElementById('formFotoBase64').value };
+            const p = { 
+                ID_Produk: document.getElementById('formIdProduk').value, 
+                Nama_Produk: document.getElementById('formNama').value, 
+                Kategori: document.getElementById('formKategori').value, 
+                Stok: document.getElementById('formStok').value, 
+                Harga_Normal: document.getElementById('formHargaNormal').value, 
+                Harga_Promo: document.getElementById('formHargaPromo').value, 
+                Status: document.getElementById('formStatus').value, 
+                Foto_URL: document.getElementById('formFotoUrl').value 
+            };
             if(!p.Nama_Produk || !p.Harga_Normal || !p.Kategori) { showToast("Form tidak lengkap!", "error"); return; }
             const r = await fetchAPI("save_product", "POST", p);
             if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
         }
 
-        // --- FUNGSI BANNER (MODE URL) ---
+        // --- FUNGSI BANNER (URL MODE) ---
         function openBannerModal() { 
             document.getElementById('bannerId').value = ""; 
             document.getElementById('bannerUrlInput').value = ""; 
@@ -929,12 +961,17 @@
             }
         }
 
+        // --- FUNGSI SETTING & QRIS (URL MODE) ---
         async function saveSettings() {
             const s = { 
-                Nama_Toko: document.getElementById('setNamaToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
-                Logo_URL: document.getElementById('setLogoUrl').value, Tarif_Kurir_Toko: Number(document.getElementById('setTarifKurirToko').value) || 0, 
-                RajaOngkir_Key: document.getElementById('setRoKey').value, RajaOngkir_Origin: document.getElementById('setRoOrigin').value, 
-                Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_Base64: document.getElementById('setQrisBase64').value 
+                Nama_Toko: document.getElementById('setNamaToko').value, 
+                WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
+                Logo_URL: document.getElementById('setLogoUrl').value, 
+                Tarif_Kurir_Toko: Number(document.getElementById('setTarifKurirToko').value) || 0, 
+                RajaOngkir_Key: document.getElementById('setRoKey').value, 
+                RajaOngkir_Origin: document.getElementById('setRoOrigin').value, 
+                Info_Rekening: document.getElementById('setInfoRekening').value, 
+                QRIS_URL: document.getElementById('setQrisUrl').value 
             };
             const p = document.getElementById('setAdminPin').value.trim();
             if(p !== "") s.Admin_PIN = p; 
@@ -943,7 +980,8 @@
             
             const r = await fetchAPI("save_settings", "POST", s);
             if (r.status === 'success') { 
-                showToast("Pengaturan Disimpan!"); document.getElementById('setQrisBase64').value = ""; document.getElementById('setAdminPin').value = "";
+                showToast("Pengaturan Disimpan!"); 
+                document.getElementById('setAdminPin').value = "";
                 if(p !== "") { sessionStorage.setItem("Toko_AdminToken", p); } 
                 loadAdminData(); initApp(); 
             }
