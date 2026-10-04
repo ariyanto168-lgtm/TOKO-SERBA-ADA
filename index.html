@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v1.0.27 Pro</title>
+    <title>Toko Serba Ada - v1.0.28 Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -75,7 +75,7 @@
         .nav-item.active { color: var(--primary); }
         .nav-badge { position: absolute; top: -2px; right: 20%; background: var(--danger); color: white; font-size: 9px; padding: 1px 5px; border-radius: 10px; border: 2px solid white; }
         
-        .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
+        .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; display: none; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
         .banner-slider::-webkit-scrollbar { display: none; }
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); }
@@ -160,7 +160,7 @@
         <header class="header">
             <div class="header-top">
                 <div class="logo" onclick="location.reload()">
-                    <img id="uiLogolmg" src="" alt="Logo">
+                    <img id="uiLogoImg" src="" alt="Logo">
                     <span id="uiStoreName">Toko<span>Ku</span></span>
                 </div>
                 <div class="header-actions">
@@ -174,7 +174,9 @@
             </div>
         </header>
 
-        <div class="banner-container-wrapper"><div class="banner-slider" id="bannerContainer"></div></div>
+        <!-- Banner Container Wrapper (Otomatis tersembunyi jika belum ada banner) -->
+        <div class="banner-container-wrapper" id="bannerWrapper"><div class="banner-slider" id="bannerContainer"></div></div>
+        
         <div class="categories-wrapper"><div class="category-menu-scroll" id="categoryContainer"></div></div>
 
         <main class="container">
@@ -204,7 +206,7 @@
 
         <div class="footer">
             &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span>
-            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.27 Pro)</span><br>
+            <span onclick="openAdminLogin()" style="cursor:pointer;" title="Admin Rahasia">(v1.0.28 Pro)</span><br>
             Powered by Ari GPM
         </div>
 
@@ -231,7 +233,7 @@
         </div>
     </div>
 
-    <!-- MODALS TAMBAHAN: CART, WISHLIST, CHECKOUT (Digenerate Dinamis) -->
+    <!-- MODALS TAMBAHAN: CART, WISHLIST, CHECKOUT -->
     <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
         <div class="modal-content"><div class="modal-drag-handle" onclick="closeModal('detailModal')"></div><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div><div id="detailContent"></div></div>
     </div>
@@ -423,7 +425,7 @@
             document.body.classList.toggle("dark-theme");
             let isDark = document.body.classList.contains("dark-theme");
             localStorage.setItem("TokoTheme_v2", isDark ? "dark" : "light");
-            document.getElementById("themelcon").innerText = isDark ? "☀️" : "🌙";
+            document.getElementById("themelcon").innerText = isDark ? "☀️️" : "🌙";
         }
 
         function showToast(msg, type = "success") {
@@ -497,9 +499,15 @@
 
         // --- SISTEM KATALOG & PRODUK ---
         function renderBanners() { 
+            const wrapper = document.getElementById('bannerWrapper');
             const c = document.getElementById('bannerContainer');
-            if(allBanners.length === 0) { c.style.display = "none"; return; } 
-            c.style.display = "flex";
+            
+            if(allBanners.length === 0) { 
+                wrapper.style.display = "none"; 
+                return; 
+            } 
+            
+            wrapper.style.display = "block";
             c.innerHTML = allBanners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}"></div>`).join(""); 
         }
 
@@ -705,7 +713,7 @@
                 cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
                 showToast("Pesanan Berhasil Disimpan Server!"); 
                 setTimeout(() => { window.open(`https://api.whatsapp.com/send?phone=${waToko}&text=${encodeURIComponent(text)}`, '_blank'); initApp(); }, 1500);
-            } else { showToast(res.message, "error"); } // Will show Error if stock is manipulated
+            } else { showToast(res.message, "error"); } 
         }
 
         // --- SISTEM PELANGGAN & CETAK STRUK ---
@@ -758,7 +766,6 @@
             let order = cachedCustomerOrders.orders.find(o => o.ID_Pesanan === orderId);
             let details = cachedCustomerOrders.orderDetails.filter(d => d.ID_Pesanan === orderId);
             
-            // Cek jika dari Admin Dasbor
             if(!order && window.adminOrdersData) {
                 order = window.adminOrdersData.find(o => o.ID_Pesanan === orderId);
                 details = window.adminOrderDetailsData.filter(d => d.ID_Pesanan === orderId);
@@ -832,7 +839,6 @@
         }
 
         async function loadAdminData() {
-            // FIX: Menggunakan POST agar PIN Admin ikut terkirim ke server untuk divalidasi
             const res = await fetchAPI("get_admin_data", "POST");
             
             if (res.status === "success") {
@@ -850,7 +856,6 @@
                         <button class="btn btn-danger" style="padding:6px 12px; font-size:12px;" onclick="deleteItem('delete_banner','${b.ID_Banner}')">Hapus</button>
                      </div>`).join("") : `<p style="color:#94a3b8;">Belum ada banner.</p>`;
                 
-                // Simpan global untuk cetak struk dari admin
                 window.adminOrdersData = res.data.orders;
                 window.adminOrderDetailsData = res.data.orderDetails;
 
@@ -918,14 +923,14 @@
                 Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_Base64: document.getElementById('setQrisBase64').value 
             };
             const p = document.getElementById('setAdminPin').value.trim();
-            if(p !== "") s.Admin_PIN = p; // Update PIN baru
+            if(p !== "") s.Admin_PIN = p; 
             
             if(!s.Nama_Toko || !s.WhatsApp_Admin) { showToast("Data Wajib Diisi", "error"); return; }
             
             const r = await fetchAPI("save_settings", "POST", s);
             if (r.status === 'success') { 
                 showToast("Pengaturan Disimpan!"); document.getElementById('setQrisBase64').value = ""; document.getElementById('setAdminPin').value = "";
-                if(p !== "") { sessionStorage.setItem("Toko_AdminToken", p); } // Perbarui Sesi jika PIN diganti
+                if(p !== "") { sessionStorage.setItem("Toko_AdminToken", p); } 
                 loadAdminData(); initApp(); 
             }
         }
