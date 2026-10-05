@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.6 (Fast Load)</title>
+    <title>Toko Serba Ada - v2.7</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -44,9 +44,15 @@
         .header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .logo { font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
-        .header-actions { display: flex; gap: 8px; }
+        
+        /* HEADER LOGO & NAMA TOKO DIPERBARUI */
+        .header-store-info { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1;}
+        .logo-img { width: 40px; height: 40px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
+        .store-text-group { display: flex; flex-direction: column; justify-content: center; overflow: hidden;}
+        .store-name-text { font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .store-address-text { font-size: 10px; color: var(--text-muted); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
         .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -57,14 +63,22 @@
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; }
         .banner-item img { width: 100%; max-height: 220px; object-fit: cover; display: block; margin: 0 auto; }
         
-        .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
+        /* SPESIAL BUAT ANDA SCROLLING CSS */
+        .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; overflow: hidden; }
         .scrolling-title { font-size: 15px; font-weight: 800; padding: 0 20px; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        .scrolling-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; }
-        .scroll-card { min-width: 160px; max-width: 160px; scroll-snap-align: start; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .scroll-card img { width: 100%; height: 100px; object-fit: cover; }
+        .scrolling-slider { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; -ms-overflow-style: none; }
+        .scrolling-slider::-webkit-scrollbar { display: none; }
         
-        .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
-        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; white-space: nowrap; }
+        .scroll-card { min-width: 160px; max-width: 160px; flex-shrink: 0; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .scroll-card img { width: 100%; height: 100px; object-fit: cover; }
+        .scroll-price-normal { font-size: 9px; color: var(--text-muted); text-decoration: line-through; display: block; }
+        .scroll-price-final { font-size: 12px; font-weight: 800; color: var(--primary); }
+        
+        /* KATEGORI SCROLLING CSS */
+        .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; overflow: hidden; }
+        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; -ms-overflow-style: none; white-space: nowrap; }
+        .category-menu-scroll::-webkit-scrollbar { display: none; }
+        
         .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; flex-shrink: 0; }
         .category-menu-item.active { color: var(--primary); font-weight: 800; }
         .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
@@ -129,9 +143,13 @@
     <div id="userView">
         <header class="header">
             <div class="header-top">
-                <div class="logo" onclick="location.reload()">
-                    <img id="uiLogoImg" src="" alt="Logo">
-                    <span id="uiStoreName">TokoKu</span>
+                <!-- LOGO & NAMA TOKO & ALAMAT (Diperbarui) -->
+                <div class="header-store-info" onclick="location.reload()">
+                    <img id="uiLogoImg" src="" alt="Logo" class="logo-img">
+                    <div class="store-text-group">
+                        <div id="uiStoreName" class="store-name-text">TokoKu</div>
+                        <div id="uiStoreAddress" class="store-address-text">Pusat Perbelanjaan</div>
+                    </div>
                 </div>
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="shareStoreLink()" title="Bagikan Toko"><i class="fas fa-share-alt"></i></div>
@@ -177,7 +195,7 @@
             
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.6)</span>
+            <!-- TOMBOL ADMIN PANEL DI HAPUS DARI SINI -->
         </div>
 
         <nav class="bottom-nav">
@@ -188,7 +206,7 @@
         </nav>
     </div>
 
-    <!-- MODAL ADMIN LOGIN -->
+    <!-- MODAL ADMIN LOGIN (HANYA BISA DIAKSES VIA HASH URL: #admin) -->
     <div class="modal-overlay center" id="adminPinModal">
         <div class="modal-content" style="max-width: 300px; text-align: center; position: relative;">
             <div class="modal-close-btn" onclick="closeAdminLoginModal()">X</div>
@@ -256,7 +274,7 @@
         </div>
     </div>
 
-    <!-- PANEL ADMIN (TERBARU DENGAN STATISTIK LENGKAP) -->
+    <!-- PANEL ADMIN -->
     <div id="adminView">
         <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
         
@@ -346,7 +364,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRODUK (DENGAN UPLOAD FOTO & HPP) -->
+    <!-- MODAL PRODUK -->
     <div class="modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
         <div class="modal-content" style="background:#1e293b; color:white; border-top-left-radius: 28px; border-top-right-radius: 28px;">
             <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white; border-color:#334155;">X</div>
@@ -432,26 +450,33 @@
 
         let activeCategory = "Semua", currentSort = "terbaru";
 
-        // JS Logic untuk Menu Kategori Slowmo Berjalan
-        let catScrollInterval;
-        let catScrollSpeed = 0.5; // pixel per frame
-        function startCategoryScroll() {
-            const container = document.getElementById('categoryContainer');
-            if(!container) return;
-            clearInterval(catScrollInterval);
-            if(container.scrollWidth <= container.clientWidth) return;
-            catScrollInterval = setInterval(() => {
-                container.scrollLeft += catScrollSpeed;
+        // LOGIC ANIMASI SLOWMO (AUTO-SCROLL)
+        let scrollAnimCategory, scrollAnimSpecial;
+        let speedCat = 0.5, speedSpecial = 0.5;
+
+        function startAutoScroll(containerId, speedRef) {
+            const container = document.getElementById(containerId);
+            if(!container) return null;
+            if(container.scrollWidth <= container.clientWidth) return null; // ga perlu scroll kalau konten dikit
+
+            let interval = setInterval(() => {
+                container.scrollLeft += (containerId === 'categoryContainer' ? speedCat : speedSpecial);
+                
+                // Balik arah kalau mentok
                 if(container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
-                    catScrollSpeed = -0.5; // Mundur
+                    if(containerId === 'categoryContainer') speedCat = -0.5; else speedSpecial = -0.5;
                 } else if (container.scrollLeft <= 0) {
-                    catScrollSpeed = 0.5;  // Maju
+                    if(containerId === 'categoryContainer') speedCat = 0.5; else speedSpecial = 0.5;
                 }
-            }, 30);
-            container.onmouseenter = () => clearInterval(catScrollInterval);
-            container.ontouchstart = () => clearInterval(catScrollInterval);
-            container.onmouseleave = startCategoryScroll;
-            container.ontouchend = () => setTimeout(startCategoryScroll, 1000);
+            }, 25);
+
+            // Berhenti saat disentuh / hover
+            container.onmouseenter = () => clearInterval(interval);
+            container.ontouchstart = () => clearInterval(interval);
+            container.onmouseleave = () => { interval = startAutoScroll(containerId, speedRef); };
+            container.ontouchend = () => { setTimeout(() => { interval = startAutoScroll(containerId, speedRef); }, 1500); };
+            
+            return interval;
         }
 
         try {
@@ -627,6 +652,8 @@
             const wrapper = document.getElementById('scrollKatalogWrapper');
             const container = document.getElementById('scrollKatalogContainer');
             
+            clearInterval(scrollAnimSpecial); // reset animasi jika dirender ulang
+            
             let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
             
             if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
@@ -635,7 +662,14 @@
             let html = "";
             promoProducts.slice(0, 10).forEach(p => {
                 let badge = p.Label_Promo ? p.Label_Promo : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
-                let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : formatRp(p.Harga_Normal);
+                let satuan = p.Satuan ? p.Satuan : "pcs";
+                
+                // Samakan format harga Spesial dengan format harga Produk Grid Utama
+                let hrgHtml = "";
+                if (Number(p.Harga_Promo) > 0) { hrgHtml = `<div class="scroll-price-final">${formatRp(p.Harga_Promo)}<span style="font-size:9px; font-weight:normal;">/${satuan}</span></div><span class="scroll-price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; } 
+                else if (Number(p.Harga_Grosir) > 0) { hrgHtml = `<div class="scroll-price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:9px; font-weight:normal;">/${satuan} (≥5)</span></div><span class="scroll-price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; } 
+                else { hrgHtml = `<div class="scroll-price-final">${formatRp(p.Harga_Normal)}<span style="font-size:9px; font-weight:normal;">/${satuan}</span></div>`; }
+
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
                 
                 html += `
@@ -644,12 +678,15 @@
                     <img src="${p.Foto_URL}" loading="lazy">
                     <div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;">
                         <div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.Nama_Produk}</div>
-                        <div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:6px;">${harga}</div>
+                        <div style="margin-bottom:6px;">${hrgHtml}</div>
                         ${btn}
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
+            
+            // Start Animasi
+            scrollAnimSpecial = startAutoScroll('scrollKatalogContainer', speedSpecial);
         }
 
         // FUNGSI RENDER UTAMA UNTUK UI
@@ -661,9 +698,12 @@
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
             document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
             
+            // Render Alamat di Header
             if(storeSettings.Alamat_Toko) { 
+                document.getElementById('uiStoreAddress').innerHTML = storeSettings.Alamat_Toko;
                 document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko;
             } else {
+                document.getElementById('uiStoreAddress').innerHTML = "Belanja Aman Terpercaya";
                 document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda";
             }
 
@@ -681,7 +721,6 @@
         async function initApp() {
             if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
             
-            // 1. Tampilkan Data Cache Dulu (Jika Ada) -> Super Cepat!
             let cachedData = localStorage.getItem("TokoCache_Catalog");
             let isSilentFetch = false;
             
@@ -689,37 +728,33 @@
                 try {
                     let parsedData = JSON.parse(cachedData);
                     applyDataToUI(parsedData);
-                    isSilentFetch = true; // Jika cache ada, fetch background jangan munculin loading bar
+                    isSilentFetch = true; 
                 } catch(e) { console.error("Cache Error", e); }
             }
 
-            // 2. Tarik Data Terbaru dari Server (Background Fetch)
             const res = await fetchAPI("get_catalog", "GET", {}, isSilentFetch);
             
             if (res && res.status === "success" && res.data) {
-                // Simpan ke Cache untuk kunjungan berikutnya
                 localStorage.setItem("TokoCache_Catalog", JSON.stringify(res.data));
-                
-                // Terapkan data fresh ke UI
                 applyDataToUI(res.data);
                 
-                // Buka detail produk dari URL jika pertama kali load tanpa cache
                 let params = new URLSearchParams(window.location.search);
                 let productIdUrl = params.get('product');
                 if (productIdUrl && !cachedData) { setTimeout(() => openProductDetail(productIdUrl), 500); }
                 
             } else if (!cachedData) {
-                // Jika tidak ada cache dan fetch gagal
                 document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Cek izin web app Anda.</b></div>`;
             }
         }
 
         function renderCategoriesMenu() {
             const c = document.getElementById('categoryContainer');
+            clearInterval(scrollAnimCategory);
+            
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
             c.innerHTML = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`).join("");
             
-            startCategoryScroll();
+            scrollAnimCategory = startAutoScroll('categoryContainer', speedCat);
         }
 
         function filterCategory(cat) { activeCategory = cat; renderCategoriesMenu(); handleSort(); }
@@ -984,6 +1019,12 @@
                 document.getElementById('adminView').style.display = 'none';
                 document.getElementById('userView').style.display = 'block';
             }
+        }
+
+        // FUNGSI UNTUK MENGAKSES PANEL ADMIN TANPA TOMBOL
+        // Panggil fungsi ini dari console browser (atau dengan ketik "#admin" di URL bar)
+        function forceAdmin() {
+            window.location.hash = "#admin";
         }
 
         function openAdminLogin() { document.getElementById('adminPinModal').style.display = 'flex'; }
