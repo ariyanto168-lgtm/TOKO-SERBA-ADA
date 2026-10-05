@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.5 Final</title>
+    <title>Toko Serba Ada - v2.6 (Fast Load)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -63,7 +63,6 @@
         .scroll-card { min-width: 160px; max-width: 160px; scroll-snap-align: start; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .scroll-card img { width: 100%; height: 100px; object-fit: cover; }
         
-        /* CSS UNTUK MENU KATEGORI */
         .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
         .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; white-space: nowrap; }
         .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; flex-shrink: 0; }
@@ -154,7 +153,6 @@
             <div class="scrolling-slider" id="scrollKatalogContainer"></div>
         </div>
 
-        <!-- Kolom Kategori (Slowmo) -->
         <div class="categories-wrapper"><div class="category-menu-scroll" id="categoryContainer"></div></div>
 
         <main class="container">
@@ -165,6 +163,7 @@
                 </select>
             </div>
             <div class="product-grid" id="productGrid">
+                <!-- UI Loading Awal -->
                 <div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">
                     <i class="fas fa-circle-notch fa-spin" style="font-size: 30px; margin-bottom: 10px; color: var(--primary);"></i><br>
                     <b>Memuat Katalog Toko...</b>
@@ -172,14 +171,13 @@
             </div>
         </main>
 
-        <!-- FOOTER DIPERBARUI -->
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
             <span id="footerAlamat" style="font-size:11px; display:block; margin-top:4px; line-height:1.4;"></span>
             
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.5)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.6)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -441,10 +439,7 @@
             const container = document.getElementById('categoryContainer');
             if(!container) return;
             clearInterval(catScrollInterval);
-            
-            // Animasi hanya jalan jika item kategori panjang melebihi layar
             if(container.scrollWidth <= container.clientWidth) return;
-
             catScrollInterval = setInterval(() => {
                 container.scrollLeft += catScrollSpeed;
                 if(container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
@@ -453,8 +448,6 @@
                     catScrollSpeed = 0.5;  // Maju
                 }
             }, 30);
-            
-            // Pause ketika pembeli mau scroll/sentuh agar mudah diklik
             container.onmouseenter = () => clearInterval(catScrollInterval);
             container.ontouchstart = () => clearInterval(catScrollInterval);
             container.onmouseleave = startCategoryScroll;
@@ -659,37 +652,66 @@
             container.innerHTML = html;
         }
 
+        // FUNGSI RENDER UTAMA UNTUK UI
+        function applyDataToUI(data) {
+            allProducts = data.products || []; 
+            if(data.banners) renderBanners(data.banners);
+            
+            storeSettings = data.settings || {};
+            document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
+            document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
+            
+            if(storeSettings.Alamat_Toko) { 
+                document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko;
+            } else {
+                document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda";
+            }
+
+            if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
+            
+            if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
+            tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
+            
+            renderScrollingCatalog(allProducts);
+            renderCategoriesMenu(); 
+            handleSort(); // otomatis memanggil renderKatalogVisitor
+        }
+
+        // INIT APP DENGAN SISTEM FAST LOAD (CACHE)
         async function initApp() {
             if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
             
-            const res = await fetchAPI("get_catalog", "GET");
-            if (res && res.status === "success" && res.data) {
-                allProducts = res.data.products || []; 
-                if(res.data.banners) renderBanners(res.data.banners);
-                
-                storeSettings = res.data.settings || {};
-                document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
-                document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
-                // Memastikan alamat toko muncul di footer
-                if(storeSettings.Alamat_Toko) { 
-                    document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko;
-                } else {
-                    document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda";
-                }
+            // 1. Tampilkan Data Cache Dulu (Jika Ada) -> Super Cepat!
+            let cachedData = localStorage.getItem("TokoCache_Catalog");
+            let isSilentFetch = false;
+            
+            if (cachedData) {
+                try {
+                    let parsedData = JSON.parse(cachedData);
+                    applyDataToUI(parsedData);
+                    isSilentFetch = true; // Jika cache ada, fetch background jangan munculin loading bar
+                } catch(e) { console.error("Cache Error", e); }
+            }
 
-                if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
+            // 2. Tarik Data Terbaru dari Server (Background Fetch)
+            const res = await fetchAPI("get_catalog", "GET", {}, isSilentFetch);
+            
+            if (res && res.status === "success" && res.data) {
+                // Simpan ke Cache untuk kunjungan berikutnya
+                localStorage.setItem("TokoCache_Catalog", JSON.stringify(res.data));
                 
-                if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
-                tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
+                // Terapkan data fresh ke UI
+                applyDataToUI(res.data);
                 
-                renderScrollingCatalog(allProducts);
-                renderCategoriesMenu(); 
-                renderKatalogVisitor(allProducts);
-                
+                // Buka detail produk dari URL jika pertama kali load tanpa cache
                 let params = new URLSearchParams(window.location.search);
                 let productIdUrl = params.get('product');
-                if (productIdUrl) { setTimeout(() => openProductDetail(productIdUrl), 500); }
-            } else { throw new Error("Gagal mengambil data dari Google Sheet."); }
+                if (productIdUrl && !cachedData) { setTimeout(() => openProductDetail(productIdUrl), 500); }
+                
+            } else if (!cachedData) {
+                // Jika tidak ada cache dan fetch gagal
+                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Cek izin web app Anda.</b></div>`;
+            }
         }
 
         function renderCategoriesMenu() {
@@ -697,7 +719,6 @@
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
             c.innerHTML = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`).join("");
             
-            // Panggil animasi slowmo setelah menu dirender
             startCategoryScroll();
         }
 
@@ -715,6 +736,7 @@
             });
             renderKatalogVisitor(sorted);
         }
+        
         function handleSearch() { 
             const k = document.getElementById('searchInput').value.toLowerCase();
             renderKatalogVisitor(allProducts.filter(p => p.Nama_Produk && p.Nama_Produk.toLowerCase().includes(k))); 
@@ -882,7 +904,7 @@
                         statusEl.style.color = "var(--success)";
                     }
                     if(base64Id === 'formFotoBase64'){
-                        document.getElementById('formFotoUrl').value = ""; // hapus url kalo pake file
+                        document.getElementById('formFotoUrl').value = "";
                     }
                 }
             }
@@ -993,7 +1015,6 @@
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
-                // UPDATE STATISTIK DASHBOARD HARIAN, MINGGUAN, BULANAN
                 if (res.data.laporan) {
                     let r = res.data.laporan;
                     document.getElementById('repPengunjung').innerText = r.pengunjung;
