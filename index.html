@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.7 (Nota & Reset)</title>
+    <title>Toko Serba Ada - v2.8 (Fitur Ulasan)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -18,14 +18,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; transition: background 0.3s; }
         
-        /* PENGATURAN CETAK PRINTER (THERMAL/KERTAS) */
         @media print {
             body { background: white !important; }
             body > *:not(#notaModal) { display: none !important; }
             #notaModal { display: block !important; position: static !important; background: white !important; height: auto !important; }
             .modal-content { box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; max-width: 100% !important; }
             .no-print { display: none !important; }
-            /* Memaksa text hitam di nota saat print */
             #notaPrintArea, #notaPrintArea * { color: black !important; font-family: 'Courier New', Courier, monospace !important; }
         }
 
@@ -101,8 +99,9 @@
         .price-normal { font-size: 10px; color: var(--text-muted); text-decoration: line-through; display: block; }
         .price-final {font-size: 13px; font-weight: 800; color: var(--primary); }
         
+        /* BOTTOM NAV DENGAN 5 ITEM (TERMASUK ULASAN) */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 99; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; position: relative; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; position: relative; flex:1; }
         .nav-item i { font-size: 18px; margin-bottom: 4px; }
         .nav-item.active { color: var(--primary); }
         .nav-badge { position: absolute; top: -2px; right: 20%; background: var(--danger); color: white; font-size: 9px; padding: 1px 5px; border-radius: 10px; }
@@ -118,6 +117,9 @@
         .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
         .qty-control { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: 22px; padding: 4px; border: 1.5px solid var(--border); }
         .qty-btn { width: 30px; height: 30px; border-radius: 50%; background: white; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; color: #0f172a; }
+        
+        .review-card { background: var(--bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 12px; }
+        .star-rating i { color: #f59e0b; font-size: 12px; }
         
         #adminView { display: none; background: #0f172a; min-height: 100vh; padding-bottom: 85px; color: #f8fafc; }
         .admin-header { background: #1e293b; color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
@@ -175,7 +177,6 @@
                 </select>
             </div>
             <div class="product-grid" id="productGrid">
-                <!-- UI Loading Awal -->
                 <div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">
                     <i class="fas fa-circle-notch fa-spin" style="font-size: 30px; margin-bottom: 10px; color: var(--primary);"></i><br>
                     <b>Memuat Katalog Toko...</b>
@@ -187,17 +188,82 @@
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
             <span id="footerAlamat" style="font-size:11px; display:block; margin-top:4px; line-height:1.4;"></span>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.7)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.8)</span>
         </div>
 
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="scrollToTop()"><i class="fas fa-home"></i> Beranda</div>
-            <div class="nav-item" onclick="openWishlist()"><i class="fas fa-heart"></i> Wishlist <span class="nav-badge" id="navWishlistBadge">0</span></div>
+            <div class="nav-item" onclick="openWishlist()"><i class="fas fa-heart"></i> Favorit <span class="nav-badge" id="navWishlistBadge">0</span></div>
             <div class="nav-item" onclick="openCart()"><i class="fas fa-shopping-cart"></i> Keranjang <span class="nav-badge" id="navCartBadge">0</span></div>
             <div class="nav-item" onclick="openCustomerOrdersModal()"><i class="fas fa-receipt"></i> Pesanan</div>
+            <div class="nav-item" onclick="openReviewsModal()"><i class="fas fa-star" style="color:#f59e0b;"></i> Ulasan</div>
         </nav>
     </div>
 
+    <!-- MODAL CEK STATUS & RIWAYAT PESANAN -->
+    <div class="no-print modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
+        <div class="modal-content" style="max-height: 95vh; padding-bottom: 40px;">
+            <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div>
+            <h2 style="margin-bottom:12px;"><i class="fas fa-receipt" style="color:var(--primary);"></i> Riwayat Pesanan Saya</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Masukkan No. WhatsApp Anda untuk melacak pesanan.</p>
+            
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+                <input type="number" id="checkWaInput" placeholder="No. WA (cth: 0812...)">
+                <button class="btn btn-primary" onclick="fetchCustomerOrders()"><i class="fas fa-search"></i> Cek</button>
+            </div>
+            
+            <div style="text-align:right; margin-bottom:10px;">
+                <button class="btn btn-outline" style="padding:6px 12px; font-size:11px;" onclick="clearUserHistory()"><i class="fas fa-eraser"></i> Hapus Riwayat Nomor</button>
+            </div>
+            
+            <div id="customerOrdersResult"></div>
+        </div>
+    </div>
+
+    <!-- MODAL SEMUA ULASAN -->
+    <div class="no-print modal-overlay" id="reviewsModal" onclick="if(event.target===this) closeModal('reviewsModal')">
+        <div class="modal-content" style="max-height: 90vh;">
+            <div class="modal-close-btn" onclick="closeModal('reviewsModal')">X</div>
+            <h2 style="margin-bottom:20px;"><i class="fas fa-star" style="color:#f59e0b;"></i> Ulasan Pelanggan</h2>
+            
+            <div id="reviewsStatContent" style="display:flex; gap:16px; align-items:center; background:var(--primary-light); padding:16px; border-radius:16px; margin-bottom:20px; border:1px solid var(--primary);">
+                <!-- Diisi otomatis via JS -->
+            </div>
+            
+            <div id="reviewsListContent"></div>
+        </div>
+    </div>
+
+    <!-- MODAL FORM ISI ULASAN -->
+    <div class="no-print modal-overlay center" id="addReviewModal" onclick="if(event.target===this) closeModal('addReviewModal')">
+        <div class="modal-content" style="max-width: 350px;">
+            <div class="modal-close-btn" onclick="closeModal('addReviewModal')">X</div>
+            <h3 style="margin-bottom:16px;">Tulis Ulasan Anda</h3>
+            
+            <input type="hidden" id="revOrderId">
+            <input type="hidden" id="revCustomerName">
+            
+            <div class="form-group">
+                <label>Beri Nilai Bintang*</label>
+                <select id="revRating" style="font-weight:bold;">
+                    <option value="5">⭐⭐⭐⭐⭐ Sangat Puas</option>
+                    <option value="4">⭐⭐⭐⭐ Puas</option>
+                    <option value="3">⭐⭐⭐ Cukup</option>
+                    <option value="2">⭐⭐ Kurang</option>
+                    <option value="1">⭐ Buruk</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Komentar & Saran</label>
+                <textarea id="revComment" rows="4" placeholder="Ceritakan pengalaman belanja Anda..."></textarea>
+            </div>
+            
+            <button id="btnSubmitReview" class="btn btn-success" style="width:100%; margin-top:20px;" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Kirim Ulasan</button>
+        </div>
+    </div>
+
+    <!-- (SISA MODAL LAINNYA TETAP SAMA SEPERTI v2.7) -->
     <!-- MODAL ADMIN LOGIN -->
     <div class="no-print modal-overlay center" id="adminPinModal">
         <div class="modal-content" style="max-width: 300px; text-align: center; position: relative;">
@@ -236,14 +302,7 @@
                 <div style="display:flex; justify-content:space-between;"><span>Total Bayar:</span> <span id="checkoutTotal" style="color: var(--primary); font-weight:bold; font-size:18px;">Rp0</span></div>
             </div>
             
-            <div class="form-group">
-                <label>Pilih Metode Pengiriman*</label>
-                <select id="checkoutMetode" onchange="calculateOngkir()">
-                    <option value="Ambil di Toko">Ambil Sendiri di Toko (Gratis)</option>
-                    <option value="Kurir Toko">Kirim via Kurir Toko</option>
-                </select>
-            </div>
-            
+            <div class="form-group"><label>Pilih Metode Pengiriman*</label><select id="checkoutMetode" onchange="calculateOngkir()"><option value="Ambil di Toko">Ambil Sendiri di Toko (Gratis)</option><option value="Kurir Toko">Kirim via Kurir Toko</option></select></div>
             <div class="form-group"><label>Nama Penerima*</label><input type="text" id="checkoutNama" placeholder="Contoh: Budi Santoso" required></div>
             <div class="form-group"><label>Nomor WhatsApp*</label><input type="number" id="checkoutWA" placeholder="Contoh: 0812345678" required></div>
             <div class="form-group"><label>Alamat Lengkap*</label><textarea id="checkoutAlamat" rows="3" placeholder="Tulis alamat/patokan" required></textarea></div>
@@ -290,8 +349,7 @@
                     <div style="font-size:20px; font-weight:bold; color:#38bdf8;" id="repTotalOrder">0</div>
                 </div>
             </div>
-
-            <!-- Omset Harian, Mingguan, Bulanan... -->
+            
             <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
                 <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-day" style="color:var(--primary);"></i> Hari Ini</h4>
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repHariOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
@@ -324,10 +382,7 @@
         </div>
         
         <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;">
-            <!-- TOMBOL RESET RIWAYAT PESANAN -->
-            <button class="btn btn-danger" style="width: 100%; margin-bottom: 20px; background: #991b1b; border: 1px solid #7f1d1d;" onclick="resetAllOrdersAdmin()">
-                <i class="fas fa-exclamation-triangle"></i> Hapus / Reset Semua Pesanan
-            </button>
+            <button class="btn btn-danger" style="width: 100%; margin-bottom: 20px; background: #991b1b; border: 1px solid #7f1d1d;" onclick="resetAllOrdersAdmin()"><i class="fas fa-exclamation-triangle"></i> Hapus / Reset Semua Pesanan</button>
             <div id="adminOrderList">Memuat pesanan masuk...</div>
         </div>
         
@@ -358,15 +413,11 @@
         </div>
     </div>
 
-    <!-- MODAL CETAK NOTA (NEW) -->
+    <!-- MODAL CETAK NOTA -->
     <div class="modal-overlay center" id="notaModal" onclick="if(event.target===this) closeModal('notaModal')">
         <div class="modal-content" style="max-width: 350px; background: white; color: black; border-radius: 12px; padding: 24px; position: relative;">
             <div class="no-print modal-close-btn" onclick="closeModal('notaModal')" style="background: #f1f5f9; color: #64748b; border: none; top:10px; right:10px; z-index: 999;">X</div>
-            
-            <div id="notaPrintArea" style="font-family: 'Courier New', Courier, monospace; margin-bottom: 24px;">
-                <!-- Isi Nota di-generate dari JS -->
-            </div>
-            
+            <div id="notaPrintArea" style="font-family: 'Courier New', Courier, monospace; margin-bottom: 24px;"></div>
             <div class="no-print" style="display: flex; gap: 10px;">
                 <button class="btn btn-outline" style="flex:1; border-color:#cbd5e1; color:black;" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
                 <button class="btn btn-success" style="flex:1;" id="btnShareNota"><i class="fab fa-whatsapp"></i> Share WA</button>
@@ -413,12 +464,7 @@
 
             <div class="form-group">
                 <label>Pita Badge Khusus</label>
-                <select id="formBadge">
-                    <option value="">Tidak Ada</option>
-                    <option value="Terlaris">Terlaris</option>
-                    <option value="Terbaru">Terbaru</option>
-                    <option value="Unggulan">Unggulan</option>
-                </select>
+                <select id="formBadge"><option value="">Tidak Ada</option><option value="Terlaris">Terlaris</option><option value="Terbaru">Terbaru</option><option value="Unggulan">Unggulan</option></select>
             </div>
 
             <div class="form-group"><label>Deskripsi Produk</label><textarea id="formDeskripsi" rows="3" placeholder="Jelaskan detail produk"></textarea></div>
@@ -428,31 +474,11 @@
         </div>
     </div>
 
-    <!-- MODAL CEK STATUS & RIWAYAT PESANAN PEMBELI -->
-    <div class="no-print modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
-        <div class="modal-content" style="max-height: 95vh; padding-bottom: 40px;">
-            <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div>
-            <h2 style="margin-bottom:12px;"><i class="fas fa-receipt" style="color:var(--primary);"></i> Riwayat Pesanan Saya</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Masukkan No. WhatsApp Anda untuk melacak pesanan.</p>
-            
-            <div style="display:flex;gap:10px;margin-bottom:16px;">
-                <input type="number" id="checkWaInput" placeholder="No. WA (cth: 0812...)">
-                <button class="btn btn-primary" onclick="fetchCustomerOrders()"><i class="fas fa-search"></i> Cek</button>
-            </div>
-            
-            <div style="text-align:right; margin-bottom:10px;">
-                <button class="btn btn-outline" style="padding:6px 12px; font-size:11px;" onclick="clearUserHistory()"><i class="fas fa-eraser"></i> Hapus Riwayat Nomor</button>
-            </div>
-            
-            <div id="customerOrdersResult"></div>
-        </div>
-    </div>
-
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
         
         let allProducts = [], storeSettings = {}, customerOrdersCache = [];
-        let adminOrdersCache = [], adminOrderDetailsCache = [];
+        let adminOrdersCache = [], adminOrderDetailsCache = [], allReviews = [];
         let cart = [], wishlist = [];
         let tarifKurir = 0, globalSubtotal = 0;
         
@@ -572,10 +598,8 @@
 
         function clearUserHistory() {
             if(confirm("Hapus riwayat pesanan (Nomor WA) dari HP ini?")) {
-                localStorage.removeItem('TokoUser_WA');
-                document.getElementById('checkWaInput').value = "";
-                document.getElementById('customerOrdersResult').innerHTML = "";
-                showToast("Riwayat dihapus dari perangkat.");
+                localStorage.removeItem('TokoUser_WA'); document.getElementById('checkWaInput').value = "";
+                document.getElementById('customerOrdersResult').innerHTML = ""; showToast("Riwayat dihapus dari perangkat.");
             }
         }
 
@@ -606,11 +630,17 @@
                     } else { htmlItems = `<div style="font-size:12px; color:var(--text-muted); font-style:italic;">Detail produk kosong.</div>`; }
 
                     let displayTotal = 0;
-                    if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } 
-                    else if(o.items && o.items.length > 0) { displayTotal = o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
+                    if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } else if(o.items && o.items.length > 0) { displayTotal = o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
 
                     let chatText = encodeURIComponent(`Halo Admin, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
                     let chatUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}`;
+                    
+                    let hasReviewed = allReviews.find(r => r.ID_Pesanan === o.ID_Pesanan);
+                    let reviewBtnHtml = "";
+                    if (o.Status_Pesanan === 'Selesai') {
+                        if (!hasReviewed) { reviewBtnHtml = `<button class="btn btn-outline" style="width:100%; padding:10px; font-size:13px; margin-top:8px;" onclick="openAddReview('${o.ID_Pesanan}', '${o.Nama_Pembeli}')"><i class="fas fa-star" style="color:#f59e0b;"></i> Beri Ulasan</button>`; } 
+                        else { reviewBtnHtml = `<div style="text-align:center; font-size:12px; color:var(--success); margin-top:10px;"><i class="fas fa-check-circle"></i> Ulasan telah dikirim</div>`; }
+                    }
                     
                     return `
                     <div style="background:var(--bg); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border);">
@@ -636,11 +666,91 @@
                         <a href="${chatUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:10px; font-size:13px; text-decoration:none;">
                             <i class="fab fa-whatsapp" style="font-size:16px;"></i> Chat Admin
                         </a>
+                        ${reviewBtnHtml}
                     </div>`;
                 }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ada pesanan untuk nomor tersebut.</div>";
             } else {
                 document.getElementById('customerOrdersResult').innerHTML = `<div style='text-align:center; padding:10px; color:var(--danger); font-weight:bold;'>${res.message || "Gagal memuat data."}</div>`; 
             }
+        }
+
+        // --- FITUR BARU: RENDER ULASAN ---
+        function renderReviews() {
+            const listContent = document.getElementById('reviewsListContent');
+            const statContent = document.getElementById('reviewsStatContent');
+            
+            if (!allReviews || allReviews.length === 0) {
+                statContent.style.display = 'none';
+                listContent.innerHTML = "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Belum ada ulasan dari pembeli.</div>";
+                return;
+            }
+            
+            statContent.style.display = 'flex';
+            let totalRating = 0;
+            allReviews.forEach(r => { totalRating += (Number(r.Rating) || 0); });
+            let avgRating = (totalRating / allReviews.length).toFixed(1);
+            
+            statContent.innerHTML = `
+                <div style="font-size: 36px; font-weight: 800; color: var(--primary);">${avgRating}</div>
+                <div>
+                    <div class="star-rating" style="font-size:16px; margin-bottom:4px;">
+                        ${'<i class="fas fa-star"></i>'.repeat(Math.round(avgRating))}
+                    </div>
+                    <div style="font-size:12px; color:var(--text-muted);">Dari total <b>${allReviews.length}</b> Ulasan</div>
+                </div>
+            `;
+
+            listContent.innerHTML = allReviews.map(r => {
+                let stars = '<i class="fas fa-star"></i>'.repeat(Number(r.Rating) || 5);
+                let komentar = r.Komentar ? r.Komentar : "<i>Tidak ada komentar.</i>";
+                return `
+                <div class="review-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <b style="font-size:13px;">${r.Nama_Pembeli}</b>
+                        <div class="star-rating">${stars}</div>
+                    </div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">ID Pesanan: ${r.ID_Pesanan} &bull; ${r.Tanggal}</div>
+                    <div style="font-size:13px; line-height:1.5;">${komentar}</div>
+                </div>`;
+            }).join("");
+        }
+
+        function openReviewsModal() {
+            renderReviews();
+            document.getElementById('reviewsModal').style.display = 'flex';
+        }
+
+        function openAddReview(orderId, customerName) {
+            document.getElementById('revOrderId').value = orderId;
+            document.getElementById('revCustomerName').value = customerName;
+            document.getElementById('revRating').value = "5";
+            document.getElementById('revComment').value = "";
+            document.getElementById('addReviewModal').style.display = 'flex';
+        }
+
+        async function submitReview() {
+            let orderId = document.getElementById('revOrderId').value;
+            let nama = document.getElementById('revCustomerName').value;
+            let rating = document.getElementById('revRating').value;
+            let komentar = document.getElementById('revComment').value;
+            
+            let btn = document.getElementById('btnSubmitReview');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+            
+            const r = await fetchAPI("save_review", "POST", { id_pesanan: orderId, nama: nama, rating: parseInt(rating), komentar: komentar });
+            if (r.status === 'success') {
+                showToast("Terima kasih atas ulasan Anda!");
+                closeModal('addReviewModal');
+                fetchAPI("get_catalog", "GET", {}, true).then(res => {
+                    if (res && res.status === "success" && res.data) {
+                        allReviews = res.data.reviews || [];
+                        if (document.getElementById('customerOrdersModal').style.display === 'flex') { fetchCustomerOrders(); }
+                    }
+                });
+            } else {
+                showToast(r.message || "Gagal mengirim ulasan", "error");
+            }
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Ulasan';
         }
 
         function renderBanners(banners) {
@@ -654,16 +764,13 @@
         function applyDataToUI(data) {
             allProducts = data.products || []; 
             if(data.banners) renderBanners(data.banners);
+            allReviews = data.reviews || []; // TANGKAP DATA ULASAN
             
             storeSettings = data.settings || {};
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
             document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
             
-            if(storeSettings.Alamat_Toko) { 
-                document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko;
-            } else {
-                document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda";
-            }
+            if(storeSettings.Alamat_Toko) { document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko; } else { document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda"; }
 
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
             if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
@@ -680,11 +787,7 @@
             let cachedData = localStorage.getItem("TokoCache_Catalog");
             let isSilentFetch = false;
             if (cachedData) {
-                try {
-                    let parsedData = JSON.parse(cachedData);
-                    applyDataToUI(parsedData);
-                    isSilentFetch = true; 
-                } catch(e) {}
+                try { let parsedData = JSON.parse(cachedData); applyDataToUI(parsedData); isSilentFetch = true; } catch(e) {}
             }
 
             const res = await fetchAPI("get_catalog", "GET", {}, isSilentFetch);
@@ -911,13 +1014,8 @@
                     document.getElementById(base64Id).value = data; 
                     document.getElementById(previewId).src = data; 
                     document.getElementById(previewId).style.display = 'block'; 
-                    if(base64Id === 'checkoutBuktiBase64'){
-                        statusEl.innerText = "✓ Gambar siap di-upload!";
-                        statusEl.style.color = "var(--success)";
-                    }
-                    if(base64Id === 'formFotoBase64'){
-                        document.getElementById('formFotoUrl').value = "";
-                    }
+                    if(base64Id === 'checkoutBuktiBase64'){ statusEl.innerText = "✓ Gambar siap di-upload!"; statusEl.style.color = "var(--success)"; }
+                    if(base64Id === 'formFotoBase64'){ document.getElementById('formFotoUrl').value = ""; }
                 }
             }
         }
@@ -973,20 +1071,11 @@
         }
 
         window.addEventListener("hashchange", checkAdminAccess);
-        
         function checkAdminAccess() {
             if (window.location.hash.includes("#admin")) {
-                if (sessionStorage.getItem("Toko_AdminToken")) {
-                    document.getElementById('userView').style.display = 'none';
-                    document.getElementById('adminView').style.display = 'block';
-                    loadAdminData();
-                } else {
-                    openAdminLogin();
-                }
-            } else {
-                document.getElementById('adminView').style.display = 'none';
-                document.getElementById('userView').style.display = 'block';
-            }
+                if (sessionStorage.getItem("Toko_AdminToken")) { document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; loadAdminData(); } 
+                else { openAdminLogin(); }
+            } else { document.getElementById('adminView').style.display = 'none'; document.getElementById('userView').style.display = 'block'; }
         }
 
         function openAdminLogin() { document.getElementById('adminPinModal').style.display = 'flex'; }
@@ -996,11 +1085,8 @@
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; 
             const r = await fetchAPI("verify_pin", "POST", { pin: p });
-            if (r.status === 'success') { 
-                sessionStorage.setItem("Toko_AdminToken", p); 
-                document.getElementById('adminPinModal').style.display = 'none';
-                checkAdminAccess();
-            } else { showToast("PIN Salah", "error"); }
+            if (r.status === 'success') { sessionStorage.setItem("Toko_AdminToken", p); document.getElementById('adminPinModal').style.display = 'none'; checkAdminAccess(); } 
+            else { showToast("PIN Salah", "error"); }
         }
         
         function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
@@ -1010,16 +1096,11 @@
             if (res.status === "success") {
                 if (res.data.laporan) {
                     let r = res.data.laporan;
-                    document.getElementById('repPengunjung').innerText = r.pengunjung;
-                    document.getElementById('repTotalOrder').innerText = r.totalPesanan;
-                    document.getElementById('repHariOmset').innerText = formatRp(r.hari.pendapatan);
-                    document.getElementById('repHariLaba').innerText = formatRp(r.hari.laba);
-                    document.getElementById('repMingguOmset').innerText = formatRp(r.minggu.pendapatan);
-                    document.getElementById('repMingguLaba').innerText = formatRp(r.minggu.laba);
-                    document.getElementById('repBulanOmset').innerText = formatRp(r.bulan.pendapatan);
-                    document.getElementById('repBulanLaba').innerText = formatRp(r.bulan.laba);
-                    document.getElementById('repSemuaOmset').innerText = formatRp(r.semua.pendapatan);
-                    document.getElementById('repSemuaLaba').innerText = formatRp(r.semua.laba);
+                    document.getElementById('repPengunjung').innerText = r.pengunjung; document.getElementById('repTotalOrder').innerText = r.totalPesanan;
+                    document.getElementById('repHariOmset').innerText = formatRp(r.hari.pendapatan); document.getElementById('repHariLaba').innerText = formatRp(r.hari.laba);
+                    document.getElementById('repMingguOmset').innerText = formatRp(r.minggu.pendapatan); document.getElementById('repMingguLaba').innerText = formatRp(r.minggu.laba);
+                    document.getElementById('repBulanOmset').innerText = formatRp(r.bulan.pendapatan); document.getElementById('repBulanLaba').innerText = formatRp(r.bulan.laba);
+                    document.getElementById('repSemuaOmset').innerText = formatRp(r.semua.pendapatan); document.getElementById('repSemuaLaba').innerText = formatRp(r.semua.laba);
                     document.getElementById('repSemuaSelesai').innerText = r.semua.pesanan + " Order Selesai";
                 }
 
@@ -1048,17 +1129,13 @@
 
                 adminOrdersCache = res.data.orders || [];
                 adminOrderDetailsCache = res.data.orderDetails || [];
-                
                 let orders = [...adminOrdersCache].reverse();
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let itemsHtml = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
                     let statusColor = String(o.Status_Pesanan).trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan).trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
-                    
                     let displayTotal = 0;
-                    if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } 
-                    else if(items && items.length > 0) { displayTotal = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
-                    
+                    if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } else if(items && items.length > 0) { displayTotal = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
                     let currentStatus = String(o.Status_Pesanan || 'Baru').trim();
                     let safeWaTujuan = formatWaNumber(o.WhatsApp);
 
@@ -1074,30 +1151,19 @@
                             <div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${o.Alamat}</div>
                             <div style="font-size:12px; color:#38bdf8; margin-top:2px;"><i class="fas fa-truck"></i> Pengiriman: <b>${o.Metode_Pengiriman || 'Ambil di Toko'}</b></div>
                         </div>
-                        
                         <div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">
                             <div style="font-size:11px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">DETAIL PRODUK:</div>
                             ${itemsHtml}
-                            <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;">
-                                <span>Total Bayar:</span>
-                                <span style="color:#818cf8;">${formatRp(displayTotal)}</span>
-                            </div>
+                            <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div>
                         </div>
-                        
                         ${o.Bukti_Transfer ? `<div style="width:100%;"><a href="${o.Bukti_Transfer}" target="_blank" class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981; text-decoration:none;"><i class="fas fa-image"></i> Lihat Bukti</a></div>` : ""}
                         
                         <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
                             <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;">
                                 <option value="" disabled selected>Ubah Status</option>
-                                <option value="Baru">Baru</option>
-                                <option value="Diproses">Diproses</option>
-                                <option value="Dikirim">Dikirim</option>
-                                <option value="Selesai">Selesai</option>
-                                <option value="Dibatalkan">Dibatalkan</option>
+                                <option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option>
                             </select>
                         </div>
-
-                        <!-- TOMBOL NOTA & HAPUS -->
                         <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
                             <button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${o.ID_Pesanan}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button>
                             <button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${o.ID_Pesanan}')"><i class="fas fa-trash"></i> Hapus</button>
@@ -1106,23 +1172,17 @@
                 }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px; width:100%;'>Belum ada pesanan masuk.</div>";
                 
                 let s = res.data.settings || {};
-                document.getElementById('setNamaToko').value = s.Nama_Toko || ""; 
-                document.getElementById('setAlamatToko').value = s.Alamat_Toko || "";
-                document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || "";
-                document.getElementById('setLogoUrl').value = s.Logo_URL || ""; 
-                document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; 
-                document.getElementById('setQrisUrl').value = s.QRIS_URL || "";
-                document.getElementById('setWarnaTema').value = s.Warna_Tema || "#6366f1";
-                document.getElementById('setTarifKurir').value = s.Tarif_Kurir_Toko || "10000";
+                document.getElementById('setNamaToko').value = s.Nama_Toko || ""; document.getElementById('setAlamatToko').value = s.Alamat_Toko || "";
+                document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || ""; document.getElementById('setLogoUrl').value = s.Logo_URL || ""; 
+                document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; document.getElementById('setQrisUrl').value = s.QRIS_URL || "";
+                document.getElementById('setWarnaTema').value = s.Warna_Tema || "#6366f1"; document.getElementById('setTarifKurir').value = s.Tarif_Kurir_Toko || "10000";
             }
         }
         
         async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(); }
 
-        // FUNGSI NOTA (PRINT & SHARE WA)
         function openNota(orderId) {
-            let o = adminOrdersCache.find(x => x.ID_Pesanan === orderId);
-            if(!o) return;
+            let o = adminOrdersCache.find(x => x.ID_Pesanan === orderId); if(!o) return;
             let items = adminOrderDetailsCache.filter(x => String(x.ID_Pesanan) === String(orderId));
             
             let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
@@ -1134,15 +1194,10 @@
             let notaHtml = `
                 <div style="text-align:center; margin-bottom: 16px;">
                     <h2 style="margin:0; font-size:20px;">${storeSettings.Nama_Toko || 'TokoKu'}</h2>
-                    <div style="font-size:12px; color:#555;">${storeSettings.Alamat_Toko || ''}</div>
-                    <div style="font-size:12px; color:#555;">WA: ${storeSettings.WhatsApp_Admin || ''}</div>
+                    <div style="font-size:12px; color:#555;">${storeSettings.Alamat_Toko || ''}</div><div style="font-size:12px; color:#555;">WA: ${storeSettings.WhatsApp_Admin || ''}</div>
                 </div>
                 <div style="font-size:12px; margin-bottom: 16px; border-top:1px dashed #000; border-bottom:1px dashed #000; padding:8px 0;">
-                    <div><b>ID:</b> ${o.ID_Pesanan}</div>
-                    <div><b>Tgl:</b> ${o.Tanggal}</div>
-                    <div><b>Plg:</b> ${o.Nama_Pembeli}</div>
-                    <div><b>Hp:</b> ${o.WhatsApp}</div>
-                    <div><b>Kirim:</b> ${o.Metode_Pengiriman || 'Ambil di Toko'}</div>
+                    <div><b>ID:</b> ${o.ID_Pesanan}</div><div><b>Tgl:</b> ${o.Tanggal}</div><div><b>Plg:</b> ${o.Nama_Pembeli}</div><div><b>Hp:</b> ${o.WhatsApp}</div><div><b>Kirim:</b> ${o.Metode_Pengiriman || 'Ambil di Toko'}</div>
                 </div>
                 <div style="margin-bottom: 16px;">${itemsHtml}</div>
                 <div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal:</span> <span>${formatRp(totalItems)}</span></div>
@@ -1156,15 +1211,10 @@
             items.forEach(i => { waText += `- ${i.Nama_Produk} (${i.Jumlah}x) = ${formatRp(i.Subtotal)}\n`; });
             waText += `\nSubtotal: ${formatRp(totalItems)}\nOngkir: ${formatRp(ongkir)}\n*TOTAL: ${formatRp(total)}*\n\nTerima kasih telah berbelanja!`;
             
-            document.getElementById('btnShareNota').onclick = function() {
-                let waUrl = `https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(waText)}`;
-                window.open(waUrl, '_blank');
-            };
-
+            document.getElementById('btnShareNota').onclick = function() { let waUrl = `https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(waText)}`; window.open(waUrl, '_blank'); };
             document.getElementById('notaModal').style.display = 'flex';
         }
 
-        // FUNGSI HAPUS SATUAN & RESET SEMUA
         async function deleteOrderAdmin(id) {
             if(!confirm("Yakin ingin menghapus pesanan ini secara permanen?")) return;
             const r = await fetchAPI("delete_order", "POST", {id: id});
@@ -1175,7 +1225,6 @@
             if(!confirm("PERINGATAN! Anda akan menghapus SEMUA riwayat pesanan (baik yang selesai maupun baru). Lanjutkan?")) return;
             let pinConfirm = prompt("Masukkan PIN Admin Anda untuk konfirmasi reset:");
             if(pinConfirm !== sessionStorage.getItem("Toko_AdminToken")) { showToast("PIN tidak cocok! Batal reset.", "error"); return; }
-            
             const r = await fetchAPI("reset_orders", "POST", {});
             if(r.status === 'success') { showToast("Semua riwayat pesanan berhasil direset!"); loadAdminData(); } else { showToast(r.message, "error"); }
         }
@@ -1198,12 +1247,9 @@
 
         function editProduct(p) {
             openProductModal();
-            document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formFotoUrl').value = p.Foto_URL;
-            document.getElementById('formNama').value = p.Nama_Produk; document.getElementById('formKategori').value = p.Kategori;
-            document.getElementById('formDeskripsi').value = p.Deskripsi || ""; document.getElementById('formStok').value = p.Stok || 0;
-            document.getElementById('formHpp').value = p.HPP || 0;
-            document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaGrosir').value = p.Harga_Grosir || "";
-            document.getElementById('formHargaPromo').value = p.Harga_Promo || ""; document.getElementById('formSatuan').value = p.Satuan || "pcs"; document.getElementById('formLabelPromo').value = p.Label_Promo || "";
+            document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formFotoUrl').value = p.Foto_URL; document.getElementById('formNama').value = p.Nama_Produk; document.getElementById('formKategori').value = p.Kategori;
+            document.getElementById('formDeskripsi').value = p.Deskripsi || ""; document.getElementById('formStok').value = p.Stok || 0; document.getElementById('formHpp').value = p.HPP || 0;
+            document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaGrosir').value = p.Harga_Grosir || ""; document.getElementById('formHargaPromo').value = p.Harga_Promo || ""; document.getElementById('formSatuan').value = p.Satuan || "pcs"; document.getElementById('formLabelPromo').value = p.Label_Promo || "";
             if(p.Terbaru === "Ya") document.getElementById('formBadge').value = "Terbaru"; else if(p.Terlaris === "Ya") document.getElementById('formBadge').value = "Terlaris"; else if(p.Unggulan === "Ya") document.getElementById('formBadge').value = "Unggulan"; else document.getElementById('formBadge').value = "";
             document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; }
         }
@@ -1211,17 +1257,13 @@
         async function submitProduct() {
             let badgeVal = document.getElementById('formBadge').value;
             const p = { 
-                ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama').value, 
-                Kategori: document.getElementById('formKategori').value, Deskripsi: document.getElementById('formDeskripsi').value,
+                ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama').value, Kategori: document.getElementById('formKategori').value, Deskripsi: document.getElementById('formDeskripsi').value,
                 Stok: parseInt(document.getElementById('formStok').value) || 0, HPP: parseInt(document.getElementById('formHpp').value) || 0, Harga_Normal: parseInt(document.getElementById('formHargaNormal').value) || 0, 
-                Harga_Grosir: parseInt(document.getElementById('formHargaGrosir').value) || 0, Harga_Promo: parseInt(document.getElementById('formHargaPromo').value) || 0, 
-                Satuan: document.getElementById('formSatuan').value || "pcs", Label_Promo: document.getElementById('formLabelPromo').value || "",
-                Terbaru: badgeVal === "Terbaru" ? "Ya" : "", Terlaris: badgeVal === "Terlaris" ? "Ya" : "", Unggulan: badgeVal === "Unggulan" ? "Ya" : "",
-                Status: document.getElementById('formStatus').value, Foto_URL: document.getElementById('formFotoUrl').value, Foto_Base64: document.getElementById('formFotoBase64').value
+                Harga_Grosir: parseInt(document.getElementById('formHargaGrosir').value) || 0, Harga_Promo: parseInt(document.getElementById('formHargaPromo').value) || 0, Satuan: document.getElementById('formSatuan').value || "pcs", Label_Promo: document.getElementById('formLabelPromo').value || "",
+                Terbaru: badgeVal === "Terbaru" ? "Ya" : "", Terlaris: badgeVal === "Terlaris" ? "Ya" : "", Unggulan: badgeVal === "Unggulan" ? "Ya" : "", Status: document.getElementById('formStatus').value, Foto_URL: document.getElementById('formFotoUrl').value, Foto_Base64: document.getElementById('formFotoBase64').value
             };
-            if(!p.Nama_Produk || !p.Harga_Normal || !p.HPP || !p.Kategori) { showToast("Lengkapi data wajib (termasuk HPP)!", "error"); return; }
+            if(!p.Nama_Produk || !p.Harga_Normal || !p.HPP || !p.Kategori) { showToast("Lengkapi data wajib!", "error"); return; }
             if(!p.Foto_URL && !p.Foto_Base64) { showToast("Foto produk wajib diisi/upload!", "error"); return; }
-            
             const r = await fetchAPI("save_product", "POST", p);
             if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
         }
@@ -1229,9 +1271,7 @@
         async function deleteProductAdmin(id) { if(!confirm("Hapus?")) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); } }
         async function saveSettings() {
             const s = { 
-                Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
-                Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value,
-                Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
+                Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value, Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
             };
             const r = await fetchAPI("save_settings", "POST", s);
             if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
