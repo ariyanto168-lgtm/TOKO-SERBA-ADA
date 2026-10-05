@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.4 Final</title>
+    <title>Toko Serba Ada - v2.5 Final</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -57,16 +57,16 @@
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; }
         .banner-item img { width: 100%; max-height: 220px; object-fit: cover; display: block; margin: 0 auto; }
         
-        /* NEW HORIZONTAL SCROLL CATALOG (PROMO BERJALAN) */
         .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
         .scrolling-title { font-size: 15px; font-weight: 800; padding: 0 20px; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
         .scrolling-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; }
         .scroll-card { min-width: 160px; max-width: 160px; scroll-snap-align: start; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .scroll-card img { width: 100%; height: 100px; object-fit: cover; }
         
+        /* CSS UNTUK MENU KATEGORI */
         .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
-        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; }
-        .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); white-space: nowrap; cursor: pointer; position: relative; padding-bottom: 10px; }
+        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; white-space: nowrap; }
+        .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; flex-shrink: 0; }
         .category-menu-item.active { color: var(--primary); font-weight: 800; }
         .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
         
@@ -149,12 +149,12 @@
             <div class="banner-slider" id="bannerContainer"></div>
         </div>
 
-        <!-- NEW: HORIZONTAL SCROLL CATALOG (SPESIAL BUAT KAMU) -->
         <div class="scrolling-catalog-wrapper" id="scrollKatalogWrapper">
             <div class="scrolling-title"><i class="fas fa-fire" style="color:var(--danger);"></i> Spesial Buat Anda</div>
             <div class="scrolling-slider" id="scrollKatalogContainer"></div>
         </div>
 
+        <!-- Kolom Kategori (Slowmo) -->
         <div class="categories-wrapper"><div class="category-menu-scroll" id="categoryContainer"></div></div>
 
         <main class="container">
@@ -172,10 +172,14 @@
             </div>
         </main>
 
-        <div class="footer" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
-            &copy; <span id="footerYear"></span> <span id="footerName">Toko Serba Ada</span><br>
-            <span id="footerAlamat" style="font-size:10px; display:block; margin-top:4px;"></span>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:block; margin-top:8px;" title="Masuk Panel Penjual"> (v2.4 Final)</span>
+        <!-- FOOTER DIPERBARUI -->
+        <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
+            &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
+            <span id="footerAlamat" style="font-size:11px; display:block; margin-top:4px; line-height:1.4;"></span>
+            
+            <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
+            
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.5)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -254,7 +258,7 @@
         </div>
     </div>
 
-    <!-- PANEL ADMIN -->
+    <!-- PANEL ADMIN (TERBARU DENGAN STATISTIK LENGKAP) -->
     <div id="adminView">
         <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
         
@@ -267,26 +271,46 @@
         </nav>
 
         <div class="admin-container admin-tab-content" id="adminTab_laporan">
-            <h3 style="margin-bottom:16px;">Ringkasan Penjualan</h3>
+            <h3 style="margin-bottom:16px;">Statistik & Laporan Toko</h3>
+            
             <div class="form-row" style="margin-bottom:16px;">
-                <div style="background:var(--primary); color:white; padding:16px; border-radius:16px; text-align:center;">
-                    <div style="font-size:12px; opacity:0.9;">Total Pendapatan Kotor</div>
-                    <div style="font-size:18px; font-weight:bold;" id="repPendapatan">Rp0</div>
+                <div style="background:#334155; padding:16px; border-radius:12px; text-align:center;">
+                    <div style="font-size:12px; color:#cbd5e1;">Total Pengunjung</div>
+                    <div style="font-size:20px; font-weight:bold; color:var(--secondary);" id="repPengunjung">0</div>
                 </div>
-                <div style="background:var(--success); color:white; padding:16px; border-radius:16px; text-align:center;">
-                    <div style="font-size:12px; opacity:0.9;">Estimasi Laba Bersih</div>
-                    <div style="font-size:18px; font-weight:bold;" id="repLaba">Rp0</div>
+                <div style="background:#334155; padding:16px; border-radius:12px; text-align:center;">
+                    <div style="font-size:12px; color:#cbd5e1;">Total Order Masuk</div>
+                    <div style="font-size:20px; font-weight:bold; color:#38bdf8;" id="repTotalOrder">0</div>
                 </div>
             </div>
-            <div class="form-row">
-                <div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:16px; text-align:center;">
-                    <div style="font-size:12px; opacity:0.8;">Pesanan Selesai</div>
-                    <div style="font-size:18px; font-weight:bold; color:var(--success);" id="repSelesai">0</div>
-                </div>
-                <div style="background:#1e293b; border:1px solid #334155; padding:16px; border-radius:16px; text-align:center;">
-                    <div style="font-size:12px; opacity:0.8;">Total Order Masuk</div>
-                    <div style="font-size:18px; font-weight:bold;" id="repTotalOrder">0</div>
-                </div>
+
+            <!-- Omset Harian -->
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
+                <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-day" style="color:var(--primary);"></i> Hari Ini</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repHariOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repHariLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
+            </div>
+
+            <!-- Omset Mingguan -->
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
+                <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-week" style="color:var(--primary);"></i> Minggu Ini</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repMingguOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repMingguLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
+            </div>
+
+            <!-- Omset Bulanan -->
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
+                <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-alt" style="color:var(--primary);"></i> Bulan Ini</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repBulanOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repBulanLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
+            </div>
+            
+            <!-- Omset Semua Waktu -->
+            <div style="background:var(--primary-gradient); border-radius:16px; padding:16px; color:white;">
+                <h4 style="margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:8px;"><i class="fas fa-chart-line"></i> Total Keseluruhan Waktu</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total Omset:</span> <b id="repSemuaOmset" style="font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total Laba:</span> <b id="repSemuaLaba" style="color:#10b981; font-size:16px; background:white; padding:2px 8px; border-radius:6px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.9; margin-top:8px;"><span>Pesanan Selesai:</span> <b id="repSemuaSelesai">0 Order</b></div>
             </div>
         </div>
 
@@ -410,6 +434,33 @@
 
         let activeCategory = "Semua", currentSort = "terbaru";
 
+        // JS Logic untuk Menu Kategori Slowmo Berjalan
+        let catScrollInterval;
+        let catScrollSpeed = 0.5; // pixel per frame
+        function startCategoryScroll() {
+            const container = document.getElementById('categoryContainer');
+            if(!container) return;
+            clearInterval(catScrollInterval);
+            
+            // Animasi hanya jalan jika item kategori panjang melebihi layar
+            if(container.scrollWidth <= container.clientWidth) return;
+
+            catScrollInterval = setInterval(() => {
+                container.scrollLeft += catScrollSpeed;
+                if(container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
+                    catScrollSpeed = -0.5; // Mundur
+                } else if (container.scrollLeft <= 0) {
+                    catScrollSpeed = 0.5;  // Maju
+                }
+            }, 30);
+            
+            // Pause ketika pembeli mau scroll/sentuh agar mudah diklik
+            container.onmouseenter = () => clearInterval(catScrollInterval);
+            container.ontouchstart = () => clearInterval(catScrollInterval);
+            container.onmouseleave = startCategoryScroll;
+            container.ontouchend = () => setTimeout(startCategoryScroll, 1000);
+        }
+
         try {
             document.getElementById('footerYear').innerText = new Date().getFullYear();
             if (localStorage.getItem("TokoTheme_v2") === "dark") { 
@@ -418,7 +469,6 @@
             }
         } catch(e) {}
 
-        // FUNGSI PERBAIKAN FORMAT NOMOR WHATSAPP (MENGATASI ERROR +62 / KODE NEGARA SALAH)
         function formatWaNumber(phoneStr) {
             if(!phoneStr) return "";
             let cleaned = String(phoneStr).replace(/[^0-9]/g, '');
@@ -524,7 +574,7 @@
             const res = await fetchAPI("get_customer_orders", "POST", {wa: waInput});
             if(res.status === 'success') {
                 customerOrdersCache = res.data.orders || [];
-                let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); // Pakai WA format aman
+                let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
                 
                 document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o, idx) => {
                     let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
@@ -580,12 +630,10 @@
             container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner"></div>`).join('');
         }
 
-        // FUNGSI RENDER KATALOG BERJALAN HORIZONTAL
         function renderScrollingCatalog(products) {
             const wrapper = document.getElementById('scrollKatalogWrapper');
             const container = document.getElementById('scrollKatalogContainer');
             
-            // Ambil produk yang punya promo, unggulan, atau terlaris
             let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
             
             if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
@@ -622,7 +670,13 @@
                 storeSettings = res.data.settings || {};
                 document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
                 document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
-                if(storeSettings.Alamat_Toko) { document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko; }
+                // Memastikan alamat toko muncul di footer
+                if(storeSettings.Alamat_Toko) { 
+                    document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko;
+                } else {
+                    document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda";
+                }
+
                 if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
                 
                 if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
@@ -642,6 +696,9 @@
             const c = document.getElementById('categoryContainer');
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
             c.innerHTML = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`).join("");
+            
+            // Panggil animasi slowmo setelah menu dirender
+            startCategoryScroll();
         }
 
         function filterCategory(cat) { activeCategory = cat; renderCategoriesMenu(); handleSort(); }
@@ -853,7 +910,7 @@
                 const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
                 if(res.status === 'success') {
                     
-                    let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); // Pakai nomor terformat aman
+                    let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
                     
                     let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
                     let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
@@ -907,9 +964,7 @@
             }
         }
 
-        function openAdminLogin() { 
-            document.getElementById('adminPinModal').style.display = 'flex'; 
-        }
+        function openAdminLogin() { document.getElementById('adminPinModal').style.display = 'flex'; }
 
         function closeAdminLoginModal() {
             document.getElementById('adminPinModal').style.display = 'none';
@@ -938,11 +993,24 @@
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
+                // UPDATE STATISTIK DASHBOARD HARIAN, MINGGUAN, BULANAN
                 if (res.data.laporan) {
-                    document.getElementById('repPendapatan').innerText = formatRp(res.data.laporan.pendapatan);
-                    document.getElementById('repLaba').innerText = formatRp(res.data.laporan.laba); // Laba bersih baru
-                    document.getElementById('repSelesai').innerText = res.data.laporan.pesananSelesai;
-                    document.getElementById('repTotalOrder').innerText = res.data.laporan.totalPesanan;
+                    let r = res.data.laporan;
+                    document.getElementById('repPengunjung').innerText = r.pengunjung;
+                    document.getElementById('repTotalOrder').innerText = r.totalPesanan;
+                    
+                    document.getElementById('repHariOmset').innerText = formatRp(r.hari.pendapatan);
+                    document.getElementById('repHariLaba').innerText = formatRp(r.hari.laba);
+                    
+                    document.getElementById('repMingguOmset').innerText = formatRp(r.minggu.pendapatan);
+                    document.getElementById('repMingguLaba').innerText = formatRp(r.minggu.laba);
+                    
+                    document.getElementById('repBulanOmset').innerText = formatRp(r.bulan.pendapatan);
+                    document.getElementById('repBulanLaba').innerText = formatRp(r.bulan.laba);
+                    
+                    document.getElementById('repSemuaOmset').innerText = formatRp(r.semua.pendapatan);
+                    document.getElementById('repSemuaLaba').innerText = formatRp(r.semua.laba);
+                    document.getElementById('repSemuaSelesai').innerText = r.semua.pesanan + " Order Selesai";
                 }
 
                 allProducts = res.data.products || []; 
