@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.8 (Fitur Ulasan)</title>
+    <title>Toko Serba Ada - v2.9 (Fix Statistik Omset)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -99,7 +99,6 @@
         .price-normal { font-size: 10px; color: var(--text-muted); text-decoration: line-through; display: block; }
         .price-final {font-size: 13px; font-weight: 800; color: var(--primary); }
         
-        /* BOTTOM NAV DENGAN 5 ITEM (TERMASUK ULASAN) */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 99; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; position: relative; flex:1; }
         .nav-item i { font-size: 18px; margin-bottom: 4px; }
@@ -188,7 +187,7 @@
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
             <span id="footerAlamat" style="font-size:11px; display:block; margin-top:4px; line-height:1.4;"></span>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.8)</span>
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.9)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -225,11 +224,7 @@
         <div class="modal-content" style="max-height: 90vh;">
             <div class="modal-close-btn" onclick="closeModal('reviewsModal')">X</div>
             <h2 style="margin-bottom:20px;"><i class="fas fa-star" style="color:#f59e0b;"></i> Ulasan Pelanggan</h2>
-            
-            <div id="reviewsStatContent" style="display:flex; gap:16px; align-items:center; background:var(--primary-light); padding:16px; border-radius:16px; margin-bottom:20px; border:1px solid var(--primary);">
-                <!-- Diisi otomatis via JS -->
-            </div>
-            
+            <div id="reviewsStatContent" style="display:flex; gap:16px; align-items:center; background:var(--primary-light); padding:16px; border-radius:16px; margin-bottom:20px; border:1px solid var(--primary);"></div>
             <div id="reviewsListContent"></div>
         </div>
     </div>
@@ -239,10 +234,8 @@
         <div class="modal-content" style="max-width: 350px;">
             <div class="modal-close-btn" onclick="closeModal('addReviewModal')">X</div>
             <h3 style="margin-bottom:16px;">Tulis Ulasan Anda</h3>
-            
             <input type="hidden" id="revOrderId">
             <input type="hidden" id="revCustomerName">
-            
             <div class="form-group">
                 <label>Beri Nilai Bintang*</label>
                 <select id="revRating" style="font-weight:bold;">
@@ -253,17 +246,14 @@
                     <option value="1">⭐ Buruk</option>
                 </select>
             </div>
-            
             <div class="form-group">
                 <label>Komentar & Saran</label>
                 <textarea id="revComment" rows="4" placeholder="Ceritakan pengalaman belanja Anda..."></textarea>
             </div>
-            
             <button id="btnSubmitReview" class="btn btn-success" style="width:100%; margin-top:20px;" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Kirim Ulasan</button>
         </div>
     </div>
 
-    <!-- (SISA MODAL LAINNYA TETAP SAMA SEPERTI v2.7) -->
     <!-- MODAL ADMIN LOGIN -->
     <div class="no-print modal-overlay center" id="adminPinModal">
         <div class="modal-content" style="max-width: 300px; text-align: center; position: relative;">
@@ -301,7 +291,6 @@
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom: 1px solid var(--border); padding-bottom:8px;"><span>Biaya Kirim:</span> <span id="checkoutOngkir">Rp0</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>Total Bayar:</span> <span id="checkoutTotal" style="color: var(--primary); font-weight:bold; font-size:18px;">Rp0</span></div>
             </div>
-            
             <div class="form-group"><label>Pilih Metode Pengiriman*</label><select id="checkoutMetode" onchange="calculateOngkir()"><option value="Ambil di Toko">Ambil Sendiri di Toko (Gratis)</option><option value="Kurir Toko">Kirim via Kurir Toko</option></select></div>
             <div class="form-group"><label>Nama Penerima*</label><input type="text" id="checkoutNama" placeholder="Contoh: Budi Santoso" required></div>
             <div class="form-group"><label>Nomor WhatsApp*</label><input type="number" id="checkoutWA" placeholder="Contoh: 0812345678" required></div>
@@ -320,7 +309,6 @@
                 <input type="hidden" id="checkoutBuktiBase64">
                 <img id="checkoutBuktiPreview" style="max-height: 120px; display:none; margin-top:10px; border-radius: 10px;">
             </div>
-            
             <button id="btnSubmitOrder" class="btn btn-success" style="width:100%; margin-top:20px; padding: 14px;" onclick="processCheckout()"><i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang</button>
         </div>
     </div>
@@ -674,17 +662,14 @@
             }
         }
 
-        // --- FITUR BARU: RENDER ULASAN ---
         function renderReviews() {
             const listContent = document.getElementById('reviewsListContent');
             const statContent = document.getElementById('reviewsStatContent');
-            
             if (!allReviews || allReviews.length === 0) {
                 statContent.style.display = 'none';
                 listContent.innerHTML = "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Belum ada ulasan dari pembeli.</div>";
                 return;
             }
-            
             statContent.style.display = 'flex';
             let totalRating = 0;
             allReviews.forEach(r => { totalRating += (Number(r.Rating) || 0); });
@@ -693,13 +678,10 @@
             statContent.innerHTML = `
                 <div style="font-size: 36px; font-weight: 800; color: var(--primary);">${avgRating}</div>
                 <div>
-                    <div class="star-rating" style="font-size:16px; margin-bottom:4px;">
-                        ${'<i class="fas fa-star"></i>'.repeat(Math.round(avgRating))}
-                    </div>
+                    <div class="star-rating" style="font-size:16px; margin-bottom:4px;">${'<i class="fas fa-star"></i>'.repeat(Math.round(avgRating))}</div>
                     <div style="font-size:12px; color:var(--text-muted);">Dari total <b>${allReviews.length}</b> Ulasan</div>
                 </div>
             `;
-
             listContent.innerHTML = allReviews.map(r => {
                 let stars = '<i class="fas fa-star"></i>'.repeat(Number(r.Rating) || 5);
                 let komentar = r.Komentar ? r.Komentar : "<i>Tidak ada komentar.</i>";
@@ -715,11 +697,7 @@
             }).join("");
         }
 
-        function openReviewsModal() {
-            renderReviews();
-            document.getElementById('reviewsModal').style.display = 'flex';
-        }
-
+        function openReviewsModal() { renderReviews(); document.getElementById('reviewsModal').style.display = 'flex'; }
         function openAddReview(orderId, customerName) {
             document.getElementById('revOrderId').value = orderId;
             document.getElementById('revCustomerName').value = customerName;
@@ -747,9 +725,7 @@
                         if (document.getElementById('customerOrdersModal').style.display === 'flex') { fetchCustomerOrders(); }
                     }
                 });
-            } else {
-                showToast(r.message || "Gagal mengirim ulasan", "error");
-            }
+            } else { showToast(r.message || "Gagal mengirim ulasan", "error"); }
             btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Ulasan';
         }
 
@@ -764,7 +740,7 @@
         function applyDataToUI(data) {
             allProducts = data.products || []; 
             if(data.banners) renderBanners(data.banners);
-            allReviews = data.reviews || []; // TANGKAP DATA ULASAN
+            allReviews = data.reviews || [];
             
             storeSettings = data.settings || {};
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
