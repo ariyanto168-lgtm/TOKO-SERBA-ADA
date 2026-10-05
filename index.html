@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v2.7</title>
+    <title>Toko Serba Ada - v2.7 (Nota & Reset)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -17,6 +17,18 @@
         body.dark-theme { --bg: #0f172a; --surface: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155; --border-hover: #475569; --primary-light: rgba(255, 255, 255, 0.05); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; transition: background 0.3s; }
+        
+        /* PENGATURAN CETAK PRINTER (THERMAL/KERTAS) */
+        @media print {
+            body { background: white !important; }
+            body > *:not(#notaModal) { display: none !important; }
+            #notaModal { display: block !important; position: static !important; background: white !important; height: auto !important; }
+            .modal-content { box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; max-width: 100% !important; }
+            .no-print { display: none !important; }
+            /* Memaksa text hitam di nota saat print */
+            #notaPrintArea, #notaPrintArea * { color: black !important; font-family: 'Courier New', Courier, monospace !important; }
+        }
+
         .loading-bar { height: 3px; background: var(--primary); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
         .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn:active { transform: scale(0.97); }
@@ -44,15 +56,9 @@
         .header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        
-        /* HEADER LOGO & NAMA TOKO DIPERBARUI */
-        .header-store-info { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1;}
-        .logo-img { width: 40px; height: 40px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
-        .store-text-group { display: flex; flex-direction: column; justify-content: center; overflow: hidden;}
-        .store-name-text { font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .store-address-text { font-size: 10px; color: var(--text-muted); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .logo { font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
+        .header-actions { display: flex; gap: 8px; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
         .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -63,22 +69,14 @@
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; }
         .banner-item img { width: 100%; max-height: 220px; object-fit: cover; display: block; margin: 0 auto; }
         
-        /* SPESIAL BUAT ANDA SCROLLING CSS */
-        .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; overflow: hidden; }
+        .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
         .scrolling-title { font-size: 15px; font-weight: 800; padding: 0 20px; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        .scrolling-slider { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; -ms-overflow-style: none; }
-        .scrolling-slider::-webkit-scrollbar { display: none; }
-        
-        .scroll-card { min-width: 160px; max-width: 160px; flex-shrink: 0; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .scrolling-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; }
+        .scroll-card { min-width: 160px; max-width: 160px; scroll-snap-align: start; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .scroll-card img { width: 100%; height: 100px; object-fit: cover; }
-        .scroll-price-normal { font-size: 9px; color: var(--text-muted); text-decoration: line-through; display: block; }
-        .scroll-price-final { font-size: 12px; font-weight: 800; color: var(--primary); }
         
-        /* KATEGORI SCROLLING CSS */
-        .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; overflow: hidden; }
-        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; -ms-overflow-style: none; white-space: nowrap; }
-        .category-menu-scroll::-webkit-scrollbar { display: none; }
-        
+        .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
+        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; white-space: nowrap; }
         .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; flex-shrink: 0; }
         .category-menu-item.active { color: var(--primary); font-weight: 800; }
         .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
@@ -137,19 +135,15 @@
     </style>
 </head>
 <body>
-    <div class="toast-container" id="toastContainer"></div>
-    <div class="loading-bar" id="loadingBar"></div>
+    <div class="no-print toast-container" id="toastContainer"></div>
+    <div class="no-print loading-bar" id="loadingBar"></div>
 
-    <div id="userView">
+    <div id="userView" class="no-print">
         <header class="header">
             <div class="header-top">
-                <!-- LOGO & NAMA TOKO & ALAMAT (Diperbarui) -->
-                <div class="header-store-info" onclick="location.reload()">
-                    <img id="uiLogoImg" src="" alt="Logo" class="logo-img">
-                    <div class="store-text-group">
-                        <div id="uiStoreName" class="store-name-text">TokoKu</div>
-                        <div id="uiStoreAddress" class="store-address-text">Pusat Perbelanjaan</div>
-                    </div>
+                <div class="logo" onclick="location.reload()">
+                    <img id="uiLogoImg" src="" alt="Logo">
+                    <span id="uiStoreName">TokoKu</span>
                 </div>
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="shareStoreLink()" title="Bagikan Toko"><i class="fas fa-share-alt"></i></div>
@@ -192,10 +186,8 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
             <span id="footerAlamat" style="font-size:11px; display:block; margin-top:4px; line-height:1.4;"></span>
-            
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            
-            <!-- TOMBOL ADMIN PANEL DI HAPUS DARI SINI -->
+            <span onclick="openAdminLogin()" style="cursor:pointer; color: var(--primary); display:inline-block; margin-top:8px; padding:4px 8px; border:1px solid var(--border-hover); border-radius:6px;" title="Masuk Panel Penjual"><i class="fas fa-user-shield"></i> Admin Panel (v2.7)</span>
         </div>
 
         <nav class="bottom-nav">
@@ -206,8 +198,8 @@
         </nav>
     </div>
 
-    <!-- MODAL ADMIN LOGIN (HANYA BISA DIAKSES VIA HASH URL: #admin) -->
-    <div class="modal-overlay center" id="adminPinModal">
+    <!-- MODAL ADMIN LOGIN -->
+    <div class="no-print modal-overlay center" id="adminPinModal">
         <div class="modal-content" style="max-width: 300px; text-align: center; position: relative;">
             <div class="modal-close-btn" onclick="closeAdminLoginModal()">X</div>
             <h3 style="margin-bottom:16px;">Verifikasi Penjual</h3>
@@ -217,7 +209,7 @@
     </div>
 
     <!-- MODAL DETAIL PRODUK -->
-    <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
+    <div class="no-print modal-overlay" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('detailModal')">X</div>
             <div id="btnShareProduct" class="modal-close-btn" style="right: 60px; border-color: var(--primary); color: var(--primary); display:none;" title="Bagikan Produk Ke WA"><i class="fab fa-whatsapp"></i></div>
             <div id="detailContent"></div>
@@ -225,17 +217,17 @@
     </div>
 
     <!-- MODAL KERANJANG -->
-    <div class="modal-overlay" id="cartModal" onclick="if(event.target===this) closeModal('cartModal')">
+    <div class="no-print modal-overlay" id="cartModal" onclick="if(event.target===this) closeModal('cartModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('cartModal')">X</div><h2 style="margin-bottom: 20px;">Keranjang Belanja</h2><div id="cartContent"></div></div>
     </div>
     
     <!-- MODAL WISHLIST -->
-    <div class="modal-overlay" id="wishlistModal" onclick="if(event.target===this) closeModal('wishlistModal')">
+    <div class="no-print modal-overlay" id="wishlistModal" onclick="if(event.target===this) closeModal('wishlistModal')">
         <div class="modal-content"><div class="modal-close-btn" onclick="closeModal('wishlistModal')">X</div><h2 style="margin-bottom: 20px;">Produk Favorit</h2><div id="wishlistContent"></div></div>
     </div>
     
     <!-- MODAL CHECKOUT -->
-    <div class="modal-overlay" id="checkoutModal" onclick="if(event.target===this) closeModal('checkoutModal')">
+    <div class="no-print modal-overlay" id="checkoutModal" onclick="if(event.target===this) closeModal('checkoutModal')">
         <div class="modal-content">
             <div class="modal-close-btn" onclick="closeModal('checkoutModal')">X</div><h2>Informasi Pengiriman</h2>
             <div style="background: var(--bg); padding: 16px; border-radius: 16px; margin: 16px 0;">
@@ -275,7 +267,7 @@
     </div>
 
     <!-- PANEL ADMIN -->
-    <div id="adminView">
+    <div id="adminView" class="no-print">
         <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
         
         <nav class="admin-bottom-nav">
@@ -288,7 +280,6 @@
 
         <div class="admin-container admin-tab-content" id="adminTab_laporan">
             <h3 style="margin-bottom:16px;">Statistik & Laporan Toko</h3>
-            
             <div class="form-row" style="margin-bottom:16px;">
                 <div style="background:#334155; padding:16px; border-radius:12px; text-align:center;">
                     <div style="font-size:12px; color:#cbd5e1;">Total Pengunjung</div>
@@ -300,28 +291,25 @@
                 </div>
             </div>
 
-            <!-- Omset Harian -->
+            <!-- Omset Harian, Mingguan, Bulanan... -->
             <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
                 <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-day" style="color:var(--primary);"></i> Hari Ini</h4>
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repHariOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
                 <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repHariLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
             </div>
 
-            <!-- Omset Mingguan -->
             <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
                 <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-week" style="color:var(--primary);"></i> Minggu Ini</h4>
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repMingguOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
                 <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repMingguLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
             </div>
 
-            <!-- Omset Bulanan -->
             <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
                 <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-alt" style="color:var(--primary);"></i> Bulan Ini</h4>
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repBulanOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
                 <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repBulanLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
             </div>
             
-            <!-- Omset Semua Waktu -->
             <div style="background:var(--primary-gradient); border-radius:16px; padding:16px; color:white;">
                 <h4 style="margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:8px;"><i class="fas fa-chart-line"></i> Total Keseluruhan Waktu</h4>
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total Omset:</span> <b id="repSemuaOmset" style="font-size:16px;">Rp0</b></div>
@@ -335,7 +323,13 @@
             <div id="adminProductList">Memuat data produk...</div>
         </div>
         
-        <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;"><div id="adminOrderList">Memuat pesanan masuk...</div></div>
+        <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;">
+            <!-- TOMBOL RESET RIWAYAT PESANAN -->
+            <button class="btn btn-danger" style="width: 100%; margin-bottom: 20px; background: #991b1b; border: 1px solid #7f1d1d;" onclick="resetAllOrdersAdmin()">
+                <i class="fas fa-exclamation-triangle"></i> Hapus / Reset Semua Pesanan
+            </button>
+            <div id="adminOrderList">Memuat pesanan masuk...</div>
+        </div>
         
         <div class="admin-container admin-tab-content" id="adminTab_banner" style="display:none;">
             <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="openBannerModal()">+ Tambah Banner Promosi</button>
@@ -364,8 +358,24 @@
         </div>
     </div>
 
+    <!-- MODAL CETAK NOTA (NEW) -->
+    <div class="modal-overlay center" id="notaModal" onclick="if(event.target===this) closeModal('notaModal')">
+        <div class="modal-content" style="max-width: 350px; background: white; color: black; border-radius: 12px; padding: 24px; position: relative;">
+            <div class="no-print modal-close-btn" onclick="closeModal('notaModal')" style="background: #f1f5f9; color: #64748b; border: none; top:10px; right:10px; z-index: 999;">X</div>
+            
+            <div id="notaPrintArea" style="font-family: 'Courier New', Courier, monospace; margin-bottom: 24px;">
+                <!-- Isi Nota di-generate dari JS -->
+            </div>
+            
+            <div class="no-print" style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" style="flex:1; border-color:#cbd5e1; color:black;" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                <button class="btn btn-success" style="flex:1;" id="btnShareNota"><i class="fab fa-whatsapp"></i> Share WA</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PRODUK -->
-    <div class="modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
+    <div class="no-print modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
         <div class="modal-content" style="background:#1e293b; color:white; border-top-left-radius: 28px; border-top-right-radius: 28px;">
             <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white; border-color:#334155;">X</div>
             <h3 style="margin-bottom: 16px;"><i class="fas fa-box"></i> Detail Produk Lengkap</h3>
@@ -419,7 +429,7 @@
     </div>
 
     <!-- MODAL CEK STATUS & RIWAYAT PESANAN PEMBELI -->
-    <div class="modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
+    <div class="no-print modal-overlay" id="customerOrdersModal" onclick="if(event.target===this) closeModal('customerOrdersModal')">
         <div class="modal-content" style="max-height: 95vh; padding-bottom: 40px;">
             <div class="modal-close-btn" onclick="closeModal('customerOrdersModal')">X</div>
             <h2 style="margin-bottom:12px;"><i class="fas fa-receipt" style="color:var(--primary);"></i> Riwayat Pesanan Saya</h2>
@@ -442,6 +452,7 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
         
         let allProducts = [], storeSettings = {}, customerOrdersCache = [];
+        let adminOrdersCache = [], adminOrderDetailsCache = [];
         let cart = [], wishlist = [];
         let tarifKurir = 0, globalSubtotal = 0;
         
@@ -450,33 +461,25 @@
 
         let activeCategory = "Semua", currentSort = "terbaru";
 
-        // LOGIC ANIMASI SLOWMO (AUTO-SCROLL)
-        let scrollAnimCategory, scrollAnimSpecial;
-        let speedCat = 0.5, speedSpecial = 0.5;
-
-        function startAutoScroll(containerId, speedRef) {
-            const container = document.getElementById(containerId);
-            if(!container) return null;
-            if(container.scrollWidth <= container.clientWidth) return null; // ga perlu scroll kalau konten dikit
-
-            let interval = setInterval(() => {
-                container.scrollLeft += (containerId === 'categoryContainer' ? speedCat : speedSpecial);
-                
-                // Balik arah kalau mentok
+        let catScrollInterval;
+        let catScrollSpeed = 0.5; 
+        function startCategoryScroll() {
+            const container = document.getElementById('categoryContainer');
+            if(!container) return;
+            clearInterval(catScrollInterval);
+            if(container.scrollWidth <= container.clientWidth) return;
+            catScrollInterval = setInterval(() => {
+                container.scrollLeft += catScrollSpeed;
                 if(container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
-                    if(containerId === 'categoryContainer') speedCat = -0.5; else speedSpecial = -0.5;
+                    catScrollSpeed = -0.5; 
                 } else if (container.scrollLeft <= 0) {
-                    if(containerId === 'categoryContainer') speedCat = 0.5; else speedSpecial = 0.5;
+                    catScrollSpeed = 0.5; 
                 }
-            }, 25);
-
-            // Berhenti saat disentuh / hover
-            container.onmouseenter = () => clearInterval(interval);
-            container.ontouchstart = () => clearInterval(interval);
-            container.onmouseleave = () => { interval = startAutoScroll(containerId, speedRef); };
-            container.ontouchend = () => { setTimeout(() => { interval = startAutoScroll(containerId, speedRef); }, 1500); };
-            
-            return interval;
+            }, 30);
+            container.onmouseenter = () => clearInterval(catScrollInterval);
+            container.ontouchstart = () => clearInterval(catScrollInterval);
+            container.onmouseleave = startCategoryScroll;
+            container.ontouchend = () => setTimeout(startCategoryScroll, 1000);
         }
 
         try {
@@ -648,48 +651,6 @@
             container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner"></div>`).join('');
         }
 
-        function renderScrollingCatalog(products) {
-            const wrapper = document.getElementById('scrollKatalogWrapper');
-            const container = document.getElementById('scrollKatalogContainer');
-            
-            clearInterval(scrollAnimSpecial); // reset animasi jika dirender ulang
-            
-            let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
-            
-            if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
-            
-            wrapper.style.display = 'block';
-            let html = "";
-            promoProducts.slice(0, 10).forEach(p => {
-                let badge = p.Label_Promo ? p.Label_Promo : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
-                let satuan = p.Satuan ? p.Satuan : "pcs";
-                
-                // Samakan format harga Spesial dengan format harga Produk Grid Utama
-                let hrgHtml = "";
-                if (Number(p.Harga_Promo) > 0) { hrgHtml = `<div class="scroll-price-final">${formatRp(p.Harga_Promo)}<span style="font-size:9px; font-weight:normal;">/${satuan}</span></div><span class="scroll-price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; } 
-                else if (Number(p.Harga_Grosir) > 0) { hrgHtml = `<div class="scroll-price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:9px; font-weight:normal;">/${satuan} (≥5)</span></div><span class="scroll-price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; } 
-                else { hrgHtml = `<div class="scroll-price-final">${formatRp(p.Harga_Normal)}<span style="font-size:9px; font-weight:normal;">/${satuan}</span></div>`; }
-
-                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
-                
-                html += `
-                <div class="scroll-card" onclick="openProductDetail('${p.ID_Produk}')">
-                    <div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:2;">${badge}</div>
-                    <img src="${p.Foto_URL}" loading="lazy">
-                    <div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;">
-                        <div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.Nama_Produk}</div>
-                        <div style="margin-bottom:6px;">${hrgHtml}</div>
-                        ${btn}
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-            
-            // Start Animasi
-            scrollAnimSpecial = startAutoScroll('scrollKatalogContainer', speedSpecial);
-        }
-
-        // FUNGSI RENDER UTAMA UNTUK UI
         function applyDataToUI(data) {
             allProducts = data.products || []; 
             if(data.banners) renderBanners(data.banners);
@@ -698,38 +659,32 @@
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
             document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
             
-            // Render Alamat di Header
             if(storeSettings.Alamat_Toko) { 
-                document.getElementById('uiStoreAddress').innerHTML = storeSettings.Alamat_Toko;
                 document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko;
             } else {
-                document.getElementById('uiStoreAddress').innerHTML = "Belanja Aman Terpercaya";
                 document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda";
             }
 
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
-            
             if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
             tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
             
             renderScrollingCatalog(allProducts);
             renderCategoriesMenu(); 
-            handleSort(); // otomatis memanggil renderKatalogVisitor
+            handleSort();
         }
 
-        // INIT APP DENGAN SISTEM FAST LOAD (CACHE)
         async function initApp() {
             if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
             
             let cachedData = localStorage.getItem("TokoCache_Catalog");
             let isSilentFetch = false;
-            
             if (cachedData) {
                 try {
                     let parsedData = JSON.parse(cachedData);
                     applyDataToUI(parsedData);
                     isSilentFetch = true; 
-                } catch(e) { console.error("Cache Error", e); }
+                } catch(e) {}
             }
 
             const res = await fetchAPI("get_catalog", "GET", {}, isSilentFetch);
@@ -747,14 +702,38 @@
             }
         }
 
+        function renderScrollingCatalog(products) {
+            const wrapper = document.getElementById('scrollKatalogWrapper');
+            const container = document.getElementById('scrollKatalogContainer');
+            let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
+            
+            if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
+            wrapper.style.display = 'block';
+            let html = "";
+            promoProducts.slice(0, 10).forEach(p => {
+                let badge = p.Label_Promo ? p.Label_Promo : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
+                let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : formatRp(p.Harga_Normal);
+                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
+                
+                html += `
+                <div class="scroll-card" onclick="openProductDetail('${p.ID_Produk}')">
+                    <div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:2;">${badge}</div>
+                    <img src="${p.Foto_URL}" loading="lazy">
+                    <div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;">
+                        <div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.Nama_Produk}</div>
+                        <div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:6px;">${harga}</div>
+                        ${btn}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
         function renderCategoriesMenu() {
             const c = document.getElementById('categoryContainer');
-            clearInterval(scrollAnimCategory);
-            
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
             c.innerHTML = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`).join("");
-            
-            scrollAnimCategory = startAutoScroll('categoryContainer', speedCat);
+            startCategoryScroll();
         }
 
         function filterCategory(cat) { activeCategory = cat; renderCategoriesMenu(); handleSort(); }
@@ -798,7 +777,6 @@
                 else { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>`; }
 
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
-                
                 let isW = wishlist.find(w => w && w.id === p.ID_Produk);
                 let heart = isW ? '<i class="fas fa-heart" style="color:var(--danger);"></i>' : '<i class="far fa-heart" style="color:var(--text-muted);"></i>';
                 let wBtn = `<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${heart}</button>`;
@@ -923,7 +901,6 @@
         function handleImageUpload(e, base64Id, previewId) {
             const file = e.target.files[0]; if (!file) return; 
             const statusEl = document.getElementById(base64Id === 'checkoutBuktiBase64' ? 'uploadStatusText' : 'formFotoBase64');
-            
             const reader = new FileReader(); reader.readAsDataURL(file);
             reader.onload = (ev) => { 
                 const img = new Image(); img.src = ev.target.result; 
@@ -966,12 +943,9 @@
             try {
                 const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
                 if(res.status === 'success') {
-                    
                     let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
-                    
                     let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
                     let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
-                    
                     let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
                     
                     cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
@@ -981,7 +955,6 @@
                             <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i>
                             <h3 style="margin-bottom:6px;">Pesanan Berhasil!</h3>
                             <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${res.orderId}</b></p>
-                            
                             <a href="${waUrl}" target="_blank" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; text-decoration:none; margin-bottom:12px; justify-content:center; display:flex;">
                                 <i class="fab fa-whatsapp" style="font-size:20px;"></i> Chat / Share Ke WA Admin
                             </a>
@@ -992,18 +965,13 @@
                     document.getElementById('detailModal').style.display = 'flex';
                     
                 } else { 
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
-                    showToast(res.message || "Gagal memproses pesanan.", "error"); 
+                    submitBtn.disabled = false; submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`; showToast(res.message || "Gagal memproses pesanan.", "error"); 
                 }
             } catch(err) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
-                showToast("Terjadi kesalahan koneksi.", "error");
+                submitBtn.disabled = false; submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`; showToast("Terjadi kesalahan koneksi.", "error");
             }
         }
 
-        // KONTROL AKSES ADMIN & HASH ROUTING
         window.addEventListener("hashchange", checkAdminAccess);
         
         function checkAdminAccess() {
@@ -1021,25 +989,9 @@
             }
         }
 
-        // FUNGSI UNTUK MENGAKSES PANEL ADMIN TANPA TOMBOL
-        // Panggil fungsi ini dari console browser (atau dengan ketik "#admin" di URL bar)
-        function forceAdmin() {
-            window.location.hash = "#admin";
-        }
-
         function openAdminLogin() { document.getElementById('adminPinModal').style.display = 'flex'; }
-
-        function closeAdminLoginModal() {
-            document.getElementById('adminPinModal').style.display = 'none';
-            window.location.hash = "";
-            document.getElementById('userView').style.display = 'block';
-        }
-
-        function closeAdmin() { 
-            sessionStorage.removeItem("Toko_AdminToken"); 
-            window.location.hash = "";
-            checkAdminAccess(); 
-        }
+        function closeAdminLoginModal() { document.getElementById('adminPinModal').style.display = 'none'; window.location.hash = ""; document.getElementById('userView').style.display = 'block'; }
+        function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
         
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; 
@@ -1060,16 +1012,12 @@
                     let r = res.data.laporan;
                     document.getElementById('repPengunjung').innerText = r.pengunjung;
                     document.getElementById('repTotalOrder').innerText = r.totalPesanan;
-                    
                     document.getElementById('repHariOmset').innerText = formatRp(r.hari.pendapatan);
                     document.getElementById('repHariLaba').innerText = formatRp(r.hari.laba);
-                    
                     document.getElementById('repMingguOmset').innerText = formatRp(r.minggu.pendapatan);
                     document.getElementById('repMingguLaba').innerText = formatRp(r.minggu.laba);
-                    
                     document.getElementById('repBulanOmset').innerText = formatRp(r.bulan.pendapatan);
                     document.getElementById('repBulanLaba').innerText = formatRp(r.bulan.laba);
-                    
                     document.getElementById('repSemuaOmset').innerText = formatRp(r.semua.pendapatan);
                     document.getElementById('repSemuaLaba').innerText = formatRp(r.semua.laba);
                     document.getElementById('repSemuaSelesai').innerText = r.semua.pesanan + " Order Selesai";
@@ -1098,12 +1046,12 @@
                         <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
                     </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
-                let orders = res.data.orders || [];
-                let orderDetails = res.data.orderDetails || [];
-                orders.reverse();
+                adminOrdersCache = res.data.orders || [];
+                adminOrderDetailsCache = res.data.orderDetails || [];
                 
+                let orders = [...adminOrdersCache].reverse();
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
-                    let items = orderDetails.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
+                    let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let itemsHtml = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${i.Nama_Produk} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
                     let statusColor = String(o.Status_Pesanan).trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan).trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
                     
@@ -1128,7 +1076,7 @@
                         </div>
                         
                         <div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">
-                            <div style="font-size:11px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">DETAIL PRODUK DIPESAN:</div>
+                            <div style="font-size:11px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">DETAIL PRODUK:</div>
                             ${itemsHtml}
                             <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;">
                                 <span>Total Bayar:</span>
@@ -1136,17 +1084,23 @@
                             </div>
                         </div>
                         
-                        ${o.Bukti_Transfer ? `<div style="width:100%;"><a href="${o.Bukti_Transfer}" target="_blank" class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981; text-decoration:none;"><i class="fas fa-image"></i> Lihat Bukti Transfer</a></div>` : ""}
+                        ${o.Bukti_Transfer ? `<div style="width:100%;"><a href="${o.Bukti_Transfer}" target="_blank" class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981; text-decoration:none;"><i class="fas fa-image"></i> Lihat Bukti</a></div>` : ""}
                         
                         <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
-                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px;">
-                                <option value="" disabled selected>Status: ${currentStatus}</option>
+                            <select onchange="updateStatus('${o.ID_Pesanan}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;">
+                                <option value="" disabled selected>Ubah Status</option>
                                 <option value="Baru">Baru</option>
                                 <option value="Diproses">Diproses</option>
                                 <option value="Dikirim">Dikirim</option>
                                 <option value="Selesai">Selesai</option>
                                 <option value="Dibatalkan">Dibatalkan</option>
                             </select>
+                        </div>
+
+                        <!-- TOMBOL NOTA & HAPUS -->
+                        <div style="display:flex; gap:10px; width:100%; margin-top:4px;">
+                            <button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${o.ID_Pesanan}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button>
+                            <button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${o.ID_Pesanan}')"><i class="fas fa-trash"></i> Hapus</button>
                         </div>
                     </div>`;
                 }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px; width:100%;'>Belum ada pesanan masuk.</div>";
@@ -1165,15 +1119,72 @@
         
         async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(); }
 
+        // FUNGSI NOTA (PRINT & SHARE WA)
+        function openNota(orderId) {
+            let o = adminOrdersCache.find(x => x.ID_Pesanan === orderId);
+            if(!o) return;
+            let items = adminOrderDetailsCache.filter(x => String(x.ID_Pesanan) === String(orderId));
+            
+            let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
+            let total = Number(o.Total) || totalItems;
+            let ongkir = total - totalItems;
+
+            let itemsHtml = items.map(i => `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; border-bottom:1px dashed #ccc; padding-bottom:4px;"><span>${i.Nama_Produk}<br><small>${i.Jumlah} x ${formatRp(i.Harga)}</small></span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
+
+            let notaHtml = `
+                <div style="text-align:center; margin-bottom: 16px;">
+                    <h2 style="margin:0; font-size:20px;">${storeSettings.Nama_Toko || 'TokoKu'}</h2>
+                    <div style="font-size:12px; color:#555;">${storeSettings.Alamat_Toko || ''}</div>
+                    <div style="font-size:12px; color:#555;">WA: ${storeSettings.WhatsApp_Admin || ''}</div>
+                </div>
+                <div style="font-size:12px; margin-bottom: 16px; border-top:1px dashed #000; border-bottom:1px dashed #000; padding:8px 0;">
+                    <div><b>ID:</b> ${o.ID_Pesanan}</div>
+                    <div><b>Tgl:</b> ${o.Tanggal}</div>
+                    <div><b>Plg:</b> ${o.Nama_Pembeli}</div>
+                    <div><b>Hp:</b> ${o.WhatsApp}</div>
+                    <div><b>Kirim:</b> ${o.Metode_Pengiriman || 'Ambil di Toko'}</div>
+                </div>
+                <div style="margin-bottom: 16px;">${itemsHtml}</div>
+                <div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal:</span> <span>${formatRp(totalItems)}</span></div>
+                <div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkir:</span> <span>${formatRp(ongkir)}</span></div>
+                <div style="font-size:14px; font-weight:bold; display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px dashed #000;"><span>TOTAL:</span> <span>${formatRp(total)}</span></div>
+                <div style="text-align:center; font-size:11px; margin-top:20px; color:#555;">Terima Kasih Telah Berbelanja!</div>`;
+
+            document.getElementById('notaPrintArea').innerHTML = notaHtml;
+
+            let waText = `*NOTA PESANAN - ${storeSettings.Nama_Toko}*\n\nID: ${o.ID_Pesanan}\nTanggal: ${o.Tanggal}\n\n*Pelanggan:* ${o.Nama_Pembeli}\n*Metode:* ${o.Metode_Pengiriman}\n\n*Rincian:*\n`;
+            items.forEach(i => { waText += `- ${i.Nama_Produk} (${i.Jumlah}x) = ${formatRp(i.Subtotal)}\n`; });
+            waText += `\nSubtotal: ${formatRp(totalItems)}\nOngkir: ${formatRp(ongkir)}\n*TOTAL: ${formatRp(total)}*\n\nTerima kasih telah berbelanja!`;
+            
+            document.getElementById('btnShareNota').onclick = function() {
+                let waUrl = `https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(waText)}`;
+                window.open(waUrl, '_blank');
+            };
+
+            document.getElementById('notaModal').style.display = 'flex';
+        }
+
+        // FUNGSI HAPUS SATUAN & RESET SEMUA
+        async function deleteOrderAdmin(id) {
+            if(!confirm("Yakin ingin menghapus pesanan ini secara permanen?")) return;
+            const r = await fetchAPI("delete_order", "POST", {id: id});
+            if(r.status === 'success') { showToast("Pesanan Dihapus"); loadAdminData(); } else { showToast(r.message, "error"); }
+        }
+
+        async function resetAllOrdersAdmin() {
+            if(!confirm("PERINGATAN! Anda akan menghapus SEMUA riwayat pesanan (baik yang selesai maupun baru). Lanjutkan?")) return;
+            let pinConfirm = prompt("Masukkan PIN Admin Anda untuk konfirmasi reset:");
+            if(pinConfirm !== sessionStorage.getItem("Toko_AdminToken")) { showToast("PIN tidak cocok! Batal reset.", "error"); return; }
+            
+            const r = await fetchAPI("reset_orders", "POST", {});
+            if(r.status === 'success') { showToast("Semua riwayat pesanan berhasil direset!"); loadAdminData(); } else { showToast(r.message, "error"); }
+        }
+
         async function changePinAdmin() {
             let newPin = document.getElementById('setNewPin').value;
             if(!newPin || newPin.length < 4) { showToast("PIN baru minimal 4 karakter!", "error"); return; }
             const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin });
-            if(r.status === 'success') {
-                showToast("PIN Admin berhasil diubah!");
-                sessionStorage.setItem("Toko_AdminToken", newPin);
-                document.getElementById('setNewPin').value = "";
-            } else { showToast("Gagal mengubah PIN.", "error"); }
+            if(r.status === 'success') { showToast("PIN Admin diubah!"); sessionStorage.setItem("Toko_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } else { showToast("Gagal mengubah PIN.", "error"); }
         }
 
         function openBannerModal() { let url = prompt("URL Banner:"); if (url) submitBannerAdmin(url); }
@@ -1215,35 +1226,20 @@
             if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
         }
         
-        async function deleteProductAdmin(id) {
-            if(!confirm("Hapus?")) return;
-            const r = await fetchAPI("delete_product", "POST", {id: id});
-            if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); }
-        }
-
+        async function deleteProductAdmin(id) { if(!confirm("Hapus?")) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); } }
         async function saveSettings() {
             const s = { 
-                Nama_Toko: document.getElementById('setNamaToko').value, 
-                Alamat_Toko: document.getElementById('setAlamatToko').value,
-                WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
-                Logo_URL: document.getElementById('setLogoUrl').value, 
-                Info_Rekening: document.getElementById('setInfoRekening').value, 
-                QRIS_URL: document.getElementById('setQrisUrl').value,
-                Warna_Tema: document.getElementById('setWarnaTema').value, 
-                Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
+                Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, 
+                Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value,
+                Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value
             };
             const r = await fetchAPI("save_settings", "POST", s);
             if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
         }
 
         document.addEventListener("DOMContentLoaded", async function() {
-            try {
-                updateCartBadge(); updateWishlistBadge();
-                await initApp(); checkAdminAccess();
-            } catch(e) {
-                console.error("Init Error: ", e);
-                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Periksa izin deploy apps script Anda.</b></div>`;
-            }
+            try { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); } 
+            catch(e) { document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Periksa izin deploy apps script Anda.</b></div>`; }
         });
     </script>
 </body>
