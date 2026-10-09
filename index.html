@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.6</title>
+    <title>Toko Serba Ada - v3.7</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -53,15 +53,16 @@
         #userView { padding-bottom: 110px; }
         .header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         
-        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: contain; flex-shrink: 0; background: var(--bg); } 
-        .logo-text-container { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        #uiStoreName { font-size: 20px; font-weight: 800; color: var(--primary); line-height: 1.1; }
-        #uiHeaderAlamat { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-        
+        /* Modifikasi Header (Alamat dan Logo) agar lebih besar dan teks tidak terpotong */
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; }
+        .logo { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; flex: 1; }
+        .logo img { width: 44px; height: 44px; border-radius: 10px; display: none; object-fit: contain; flex-shrink: 0; background: var(--bg); border: 1px solid var(--border); } 
+        .logo-text-container { display: flex; flex-direction: column; justify-content: center; }
+        #uiStoreName { font-size: 20px; font-weight: 800; color: var(--primary); line-height: 1.2; margin-bottom: 4px; }
+        #uiHeaderAlamat { font-size: 11px; font-weight: 500; color: var(--text-muted); line-height: 1.5; }
         .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
         .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -195,7 +196,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.6</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.7</span>
             </div>
         </div>
 
@@ -748,6 +749,7 @@
             container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner"></div>`).join('');
         }
 
+        // === FUNGSI MENAMPILKAN DATA KE TAMPILAN PENGGUNA ===
         function applyDataToUI(data) {
             allProducts = data.products || []; 
             if(data.banners) renderBanners(data.banners);
@@ -757,8 +759,17 @@
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
             document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
             
-            if(storeSettings.Alamat_Toko) {
-                document.getElementById('uiHeaderAlamat').innerHTML = storeSettings.Alamat_Toko;
+            // Menggabungkan Alamat dan Nomor WA dalam satu wadah
+            let alamatGabung = "";
+            if(storeSettings.Alamat_Toko) alamatGabung += storeSettings.Alamat_Toko;
+            
+            if(storeSettings.WhatsApp_Admin) {
+                if(alamatGabung !== "") alamatGabung += "<br>";
+                alamatGabung += `<i class="fab fa-whatsapp" style="color:var(--success); margin-right:4px;"></i>` + storeSettings.WhatsApp_Admin;
+            }
+
+            if(alamatGabung !== "") {
+                document.getElementById('uiHeaderAlamat').innerHTML = alamatGabung;
                 document.getElementById('uiHeaderAlamat').style.display = "block";
             } else {
                 document.getElementById('uiHeaderAlamat').style.display = "none";
@@ -1138,17 +1149,15 @@
                 adminOrdersCache = res.data.orders || [];
                 adminOrderDetailsCache = res.data.orderDetails || [];
                 
-                // === PERBAIKAN: HITUNG ULANG STATISTIK DI FRONTEND ===
                 let today = new Date();
                 let startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-                let dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1; // Start week from Monday
+                let dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1; 
                 let startOfWeek = startOfDay - (dayOfWeek * 24 * 60 * 60 * 1000);
                 let startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
 
                 let stat = { hari: { o: 0, l: 0 }, minggu: { o: 0, l: 0 }, bulan: { o: 0, l: 0 }, semua: { o: 0, l: 0, sel: 0 } };
 
                 adminOrdersCache.forEach(o => {
-                    // Hanya memproses order yang berstatus Selesai
                     if (String(o.Status_Pesanan).trim().toLowerCase() === 'selesai') {
                         stat.semua.sel++;
                         
@@ -1168,17 +1177,14 @@
 
                         items.forEach(item => {
                             let qty = Number(item.Jumlah) || 0;
-                            // Menghitung subtotal order
                             let subtotal = Number(item.Subtotal) || (Number(item.Harga) * qty);
                             omsetP += subtotal;
                             
-                            // Menghitung HPP untuk mencari laba bersih
                             let p = allProducts.find(x => String(x.ID_Produk) === String(item.ID_Produk));
                             let hpp = p ? (Number(p.HPP) || 0) : 0;
                             labaP += (subtotal - (hpp * qty));
                         });
 
-                        // Mendistribusikan Omset dan Laba ke rentang waktu
                         stat.semua.o += omsetP; stat.semua.l += labaP;
                         if (orderTime >= startOfDay) { stat.hari.o += omsetP; stat.hari.l += labaP; }
                         if (orderTime >= startOfWeek) { stat.minggu.o += omsetP; stat.minggu.l += labaP; }
@@ -1186,7 +1192,6 @@
                     }
                 });
 
-                // Terapkan hasil perhitungan ke UI Dasbor
                 document.getElementById('repHariOmset').innerText = formatRp(stat.hari.o);
                 document.getElementById('repHariLaba').innerText = formatRp(stat.hari.l);
                 document.getElementById('repMingguOmset').innerText = formatRp(stat.minggu.o);
@@ -1201,7 +1206,6 @@
                     document.getElementById('repPengunjung').innerText = res.data.laporan.pengunjung || 0; 
                     document.getElementById('repTotalOrder').innerText = res.data.laporan.totalPesanan || 0;
                 }
-                // === AKHIR PERBAIKAN ===
                 
                 renderAdminProductList();
                 
