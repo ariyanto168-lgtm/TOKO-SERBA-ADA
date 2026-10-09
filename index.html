@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.2</title>
+    <title>Toko Serba Ada - v3.4</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -197,7 +197,7 @@
             
             <!-- Tombol Rahasia Admin Panel: Disamarkan sebagai tulisan versi -->
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.2</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.4</span>
             </div>
         </div>
 
@@ -1072,15 +1072,27 @@
             } else { document.getElementById('adminView').style.display = 'none'; document.getElementById('userView').style.display = 'block'; }
         }
 
-        function openAdminLogin() { document.getElementById('adminPinModal').style.display = 'flex'; }
+        function openAdminLogin() { 
+            window.location.hash = "#admin"; 
+            document.getElementById('adminPinModal').style.display = 'flex'; 
+        }
+
         function closeAdminLoginModal() { document.getElementById('adminPinModal').style.display = 'none'; window.location.hash = ""; document.getElementById('userView').style.display = 'block'; }
         function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
         
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; 
             const r = await fetchAPI("verify_pin", "POST", { pin: p });
-            if (r.status === 'success') { sessionStorage.setItem("Toko_AdminToken", p); document.getElementById('adminPinModal').style.display = 'none'; checkAdminAccess(); } 
-            else { showToast("PIN Salah", "error"); }
+            if (r.status === 'success') { 
+                sessionStorage.setItem("Toko_AdminToken", p); 
+                document.getElementById('adminPinModal').style.display = 'none'; 
+                document.getElementById('userView').style.display = 'none'; 
+                document.getElementById('adminView').style.display = 'block'; 
+                window.location.hash = "#admin";
+                loadAdminData(); 
+            } else { 
+                showToast("PIN Salah", "error"); 
+            }
         }
         
         function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
@@ -1257,7 +1269,17 @@
 
         function openProductModal() {
             ['formIdProduk', 'formFotoUrl', 'formFotoBase64', 'formFileFoto', 'formNama', 'formKategori', 'formDeskripsi', 'formHargaPromo', 'formLabelPromo', 'formHargaNormal', 'formHpp', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = "");
-            document.getElementById('formStok').value = "10"; document.getElementById('formSatuan').value = "pcs"; document.getElementById('formBadge').value = ""; document.getElementById('imagePreview').style.display = 'none'; document.getElementById('productModal').style.display = 'flex';
+            document.getElementById('formStok').value = "10"; 
+            document.getElementById('formSatuan').value = "pcs"; 
+            document.getElementById('formBadge').value = ""; 
+            document.getElementById('imagePreview').style.display = 'none';
+            
+            // Otomatis isi kategori jika sedang membuka kategori tertentu (selain "Semua")
+            if (typeof adminActiveCategory !== 'undefined' && adminActiveCategory && adminActiveCategory !== "Semua") {
+                document.getElementById('formKategori').value = adminActiveCategory;
+            }
+            
+            document.getElementById('productModal').style.display = 'flex';
         }
 
         function editProduct(p) {
