@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.8</title>
+    <title>Toko Serba Ada - v3.9</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -54,7 +54,6 @@
         .header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
         
-        /* Modifikasi Header (Alamat dan Logo) agar lebih besar dan teks tidak terpotong */
         .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; }
         .logo { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; flex: 1; }
         .logo img { width: 44px; height: 44px; border-radius: 10px; display: none; object-fit: contain; flex-shrink: 0; background: var(--bg); border: 1px solid var(--border); } 
@@ -196,7 +195,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.8</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.9</span>
             </div>
         </div>
 
@@ -434,10 +433,11 @@
             <div class="form-group" style="background:#0f172a; padding:12px; border-radius:12px; margin-bottom:12px; border:1px solid #334155;">
                 <label>Foto Produk (Pilih salah satu)*</label>
                 <input type="file" id="formFileFoto" accept="image/*" onchange="handleImageUpload(event, 'formFotoBase64', 'imagePreview')">
+                <div id="imageUploadStatus" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Pilih foto dari galeri HP Anda.</div>
                 <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU paste URL foto:</div>
                 <input type="text" id="formFotoUrl" placeholder="https://..." oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
                 <input type="hidden" id="formFotoBase64">
-                <img id="imagePreview" style="max-height:120px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569; object-fit: contain; background: #0f172a; width: 100%;">
+                <img id="imagePreview" style="max-height:140px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569; object-fit: contain; background: #0f172a; width: 100%;">
             </div>
 
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama" placeholder="Contoh: Kemeja Polos"></div>
@@ -749,7 +749,6 @@
             container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner"></div>`).join('');
         }
 
-        // === FUNGSI MENAMPILKAN DATA KE TAMPILAN PENGGUNA ===
         function applyDataToUI(data) {
             allProducts = data.products || []; 
             if(data.banners) renderBanners(data.banners);
@@ -759,7 +758,6 @@
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
             document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
             
-            // Menggabungkan Alamat dan Nomor WA dalam satu wadah
             let alamatGabung = "";
             if(storeSettings.Alamat_Toko) alamatGabung += storeSettings.Alamat_Toko;
             
@@ -1008,7 +1006,13 @@
 
         function handleImageUpload(e, base64Id, previewId) {
             const file = e.target.files[0]; if (!file) return; 
-            const statusEl = document.getElementById(base64Id === 'checkoutBuktiBase64' ? 'uploadStatusText' : 'formFotoBase64');
+            const statusEl = document.getElementById(base64Id === 'checkoutBuktiBase64' ? 'uploadStatusText' : 'imageUploadStatus');
+            
+            if(base64Id === 'formFotoBase64') {
+                statusEl.innerText = "⏳ Sedang memproses gambar...";
+                statusEl.style.color = "#f59e0b";
+            }
+
             const reader = new FileReader(); reader.readAsDataURL(file);
             reader.onload = (ev) => { 
                 const img = new Image(); img.src = ev.target.result; 
@@ -1019,8 +1023,15 @@
                     document.getElementById(base64Id).value = data; 
                     document.getElementById(previewId).src = data; 
                     document.getElementById(previewId).style.display = 'block'; 
-                    if(base64Id === 'checkoutBuktiBase64'){ statusEl.innerText = "✓ Gambar siap di-upload!"; statusEl.style.color = "var(--success)"; }
-                    if(base64Id === 'formFotoBase64'){ document.getElementById('formFotoUrl').value = ""; }
+                    
+                    if(base64Id === 'checkoutBuktiBase64'){ 
+                        statusEl.innerText = "✓ Gambar siap di-upload!"; 
+                        statusEl.style.color = "var(--success)"; 
+                    } else {
+                        statusEl.innerText = "✓ Foto berhasil dimuat & siap disimpan!"; 
+                        statusEl.style.color = "var(--success)";
+                        document.getElementById('formFotoUrl').value = ""; 
+                    }
                 }
             }
         }
@@ -1098,7 +1109,6 @@
             const btn = document.getElementById('btnSubmitPin');
             const originalText = btn.innerHTML;
             
-            // Ubah tombol menjadi mode loading agar tidak diklik berkali-kali
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memeriksa...';
 
@@ -1109,17 +1119,15 @@
                     document.getElementById('adminPinModal').style.display = 'none'; 
                     document.getElementById('userView').style.display = 'none'; 
                     document.getElementById('adminView').style.display = 'block'; 
-                    document.getElementById('adminPinInput').value = ""; // Bersihkan kolom PIN
+                    document.getElementById('adminPinInput').value = ""; 
                     window.location.hash = "#admin";
                     loadAdminData(); 
                 } else { 
-                    // Menampilkan pesan gagal yang sebenarnya dari server
                     showToast(r.message || "PIN Salah! Silakan coba lagi.", "error"); 
                 }
             } catch (error) {
                 showToast("Koneksi gagal. Pastikan internet stabil.", "error");
             } finally {
-                // Kembalikan tombol ke kondisi semula
                 btn.disabled = false;
                 btn.innerHTML = originalText;
             }
@@ -1352,6 +1360,8 @@
             document.getElementById('formSatuan').value = "pcs"; 
             document.getElementById('formBadge').value = ""; 
             document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('imageUploadStatus').innerText = "Pilih foto dari galeri HP Anda.";
+            document.getElementById('imageUploadStatus').style.color = "#94a3b8";
             
             if (typeof adminActiveCategory !== 'undefined' && adminActiveCategory && adminActiveCategory !== "Semua") {
                 document.getElementById('formKategori').value = adminActiveCategory;
@@ -1391,25 +1401,21 @@
                 Foto_Base64: document.getElementById('formFotoBase64').value
             };
 
-            // 1. Validasi Kolom Wajib
             if(!p.Nama_Produk) { showToast("Nama Produk wajib diisi!", "error"); return; }
             if(!p.Kategori) { showToast("Kategori wajib diisi!", "error"); return; }
             if(p.HPP <= 0) { showToast("Harga Beli (Modal) wajib diisi angka!", "error"); return; }
             if(p.Harga_Normal <= 0) { showToast("Harga Jual Normal wajib diisi angka!", "error"); return; }
 
-            // 2. Validasi URL Gambar (Jika URL diisi tapi tidak pakai awalan http/https)
             if(p.Foto_URL && !p.Foto_URL.startsWith('http')) {
                 showToast("URL Foto harus diawali dengan http:// atau https://", "error"); 
                 return; 
             }
 
-            // 3. Validasi Keberadaan Foto
             if(!p.Foto_URL && !p.Foto_Base64) { 
-                showToast("Foto wajib diisi! Gunakan tombol Pilih File.", "error"); 
+                showToast("Foto wajib diisi! Pilih file foto terlebih dahulu.", "error"); 
                 return; 
             }
 
-            // Ubah tombol jadi loading
             const btnSubmit = document.querySelector('#productModal .btn-primary');
             const originalText = btnSubmit.innerHTML;
             btnSubmit.disabled = true;
@@ -1428,7 +1434,6 @@
             } catch (error) {
                 showToast("Koneksi bermasalah, gagal menyimpan.", "error");
             } finally {
-                // Kembalikan tombol seperti semula
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = originalText;
             }
