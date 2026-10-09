@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.0</title>
+    <title>Toko Serba Ada - v3.2</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -54,9 +54,14 @@
         .header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .logo { font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        
+        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
-        .header-actions { display: flex; gap: 8px; }
+        .logo-text-container { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        #uiStoreName { font-size: 20px; font-weight: 800; color: var(--primary); line-height: 1.1; }
+        #uiHeaderAlamat { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+        
+        .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .action-icon-btn { width: 38px; height: 38px; background: var(--primary-light); border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); }
         .search-box { position: relative; }
         .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -144,7 +149,10 @@
             <div class="header-top">
                 <div class="logo" onclick="location.reload()">
                     <img id="uiLogoImg" src="" alt="Logo">
-                    <span id="uiStoreName">TokoKu</span>
+                    <div class="logo-text-container">
+                        <span id="uiStoreName">TokoKu</span>
+                        <span id="uiHeaderAlamat"></span>
+                    </div>
                 </div>
                 <div class="header-actions">
                     <div class="action-icon-btn" onclick="shareStoreLink()" title="Bagikan Toko"><i class="fas fa-share-alt"></i></div>
@@ -185,12 +193,11 @@
 
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
-            <span id="footerAlamat" style="font-size:11px; display:block; margin-top:4px; line-height:1.4;"></span>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <!-- Tombol Rahasia Admin Panel: Disamarkan sebagai tulisan versi -->
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.0</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.2</span>
             </div>
         </div>
 
@@ -369,7 +376,8 @@
         </div>
 
         <div class="admin-container admin-tab-content" id="adminTab_produk" style="display:none;">
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="openProductModal()">+ Tambah Produk Baru</button>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 16px;" onclick="openProductModal()">+ Tambah Produk Baru</button>
+            <div id="adminCategoryFilter" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:16px; scrollbar-width:none;"></div>
             <div id="adminProductList">Memuat data produk...</div>
         </div>
         
@@ -473,6 +481,7 @@
         let adminOrdersCache = [], adminOrderDetailsCache = [], allReviews = [];
         let cart = [], wishlist = [];
         let tarifKurir = 0, globalSubtotal = 0;
+        let adminActiveCategory = "Semua";
         
         try { let c = JSON.parse(localStorage.getItem("TokoCart_v2")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
         try { let w = JSON.parse(localStorage.getItem("TokoWishlist_v2")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
@@ -750,7 +759,12 @@
             document.getElementById('uiStoreName').innerHTML = storeSettings.Nama_Toko || "TokoKu";
             document.getElementById('footerName').innerHTML = storeSettings.Nama_Toko || "Toko Serba Ada";
             
-            if(storeSettings.Alamat_Toko) { document.getElementById('footerAlamat').innerHTML = storeSettings.Alamat_Toko; } else { document.getElementById('footerAlamat').innerHTML = "Pusat Perbelanjaan Terpercaya Anda"; }
+            if(storeSettings.Alamat_Toko) {
+                document.getElementById('uiHeaderAlamat').innerHTML = storeSettings.Alamat_Toko;
+                document.getElementById('uiHeaderAlamat').style.display = "block";
+            } else {
+                document.getElementById('uiHeaderAlamat').style.display = "none";
+            }
 
             if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
             if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
@@ -1071,6 +1085,40 @@
         
         function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
 
+        function renderAdminProductList() {
+            const container = document.getElementById('adminCategoryFilter');
+            let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
+            
+            container.innerHTML = cats.map(cat => `
+                <button class="btn ${adminActiveCategory === cat ? 'btn-primary' : 'btn-outline'}" style="padding: 6px 14px; font-size: 11px; white-space:nowrap; border-color:${adminActiveCategory === cat ? 'var(--primary)' : '#334155'}; color:${adminActiveCategory === cat ? 'white' : '#cbd5e1'}; background:${adminActiveCategory === cat ? 'var(--primary)' : '#1e293b'};" onclick="filterAdminCategory('${cat}')">${cat}</button>
+            `).join("");
+
+            let filtered = adminActiveCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === adminActiveCategory);
+
+            document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => `
+                <div class="admin-card">
+                    <img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:cover;border-radius: 10px;">
+                    <div style="flex:1; margin-left: 12px;">
+                        <b>${p.Nama_Produk}</b><br>
+                        <div style="display:flex; gap:6px; align-items:center; margin-top:3px;">
+                            <span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> 
+                            <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">${p.Kategori || 'Tanpa Kategori'}</span>
+                        </div>
+                        <span style="font-size:12px; display:block; margin-top:3px;">${formatRp(p.Harga_Normal)}</span>
+                        <div style="font-size:10px; color:#818cf8;">Modal: ${formatRp(p.HPP)}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-secondary" style="padding:6px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" style="padding:6px;" onclick="deleteProductAdmin('${p.ID_Produk}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Tidak ada produk dalam kategori ini.</div>";
+        }
+
+        function filterAdminCategory(cat) {
+            adminActiveCategory = cat;
+            renderAdminProductList();
+        }
+
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
@@ -1085,20 +1133,7 @@
                 }
 
                 allProducts = res.data.products || []; 
-                document.getElementById('adminProductList').innerHTML = allProducts.map(p => `
-                    <div class="admin-card">
-                        <img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:cover;border-radius: 10px;">
-                        <div style="flex:1; margin-left: 12px;">
-                            <b>${p.Nama_Produk}</b><br>
-                            <span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${p.Status}</span> 
-                            <span style="font-size:12px;">${formatRp(p.Harga_Normal)}</span>
-                            <div style="font-size:10px; color:#818cf8;">Modal: ${formatRp(p.HPP)}</div>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn btn-secondary" style="padding:6px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-danger" style="padding:6px;" onclick="deleteProductAdmin('${p.ID_Produk}')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>`).join("");
+                renderAdminProductList();
                 
                 let banners = res.data.banners || [];
                 document.getElementById('adminBannerList').innerHTML = banners.length ? banners.map(b => `
