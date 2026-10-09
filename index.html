@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.4</title>
+    <title>Toko Serba Ada - v3.5</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -56,7 +56,7 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         
         .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: cover; flex-shrink: 0; } 
+        .logo img { width: 36px; height: 36px; border-radius: 10px; display: none; object-fit: contain; flex-shrink: 0; background: var(--bg); } 
         .logo-text-container { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
         #uiStoreName { font-size: 20px; font-weight: 800; color: var(--primary); line-height: 1.1; }
         #uiHeaderAlamat { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
@@ -69,14 +69,14 @@
         
         .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; display: none; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
-        .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; }
-        .banner-item img { width: 100%; max-height: 220px; object-fit: cover; display: block; margin: 0 auto; }
+        .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--bg); }
+        .banner-item img { width: 100%; max-height: 220px; object-fit: contain; display: block; margin: 0 auto; }
         
         .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
         .scrolling-title { font-size: 15px; font-weight: 800; padding: 0 20px; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
         .scrolling-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; }
         .scroll-card { min-width: 160px; max-width: 160px; scroll-snap-align: start; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .scroll-card img { width: 100%; height: 100px; object-fit: cover; }
+        .scroll-card img { width: 100%; height: 110px; object-fit: contain; background: var(--bg); }
         
         .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
         .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; white-space: nowrap; }
@@ -88,9 +88,8 @@
         .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
         .product-card { background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; }
-        .product-img-wrapper { position: relative; width: 100%; height: 120px; background: #f1f5f9; overflow: hidden; }
-        body.dark-theme .product-img-wrapper { background: #334155; }
-        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        .product-img-wrapper { position: relative; width: 100%; height: 130px; background: var(--bg); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .product-img { width: 100%; height: 100%; object-fit: contain; }
         .wishlist-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 2; font-size: 14px; }
         
         .badge-katalog { position: absolute; top: 8px; left: 8px; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; z-index: 2; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
@@ -195,9 +194,8 @@
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
-            <!-- Tombol Rahasia Admin Panel: Disamarkan sebagai tulisan versi -->
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.4</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.5</span>
             </div>
         </div>
 
@@ -310,7 +308,7 @@
             <div id="paymentBox" style="background: var(--primary-light); padding: 16px; border-radius: 16px; margin-bottom: 16px; border: 1px solid var(--primary);">
                 <h4 style="color: var(--text-main); margin-bottom:8px;">Metode Pembayaran (Transfer/QRIS)</h4>
                 <div id="uiInfoRekening" style="font-weight:bold; color:var(--primary); white-space:pre-wrap;"></div>
-                <img id="uiQrisImage" src="" style="width:100%; max-width:200px; border-radius:10px; display:none; margin:10px auto; border: 1px solid var(--border);">
+                <img id="uiQrisImage" src="" style="width:100%; max-width:200px; border-radius:10px; display:none; margin:10px auto; border: 1px solid var(--border); object-fit: contain;">
             </div>
             
             <div class="form-group" id="uploadBuktiGroup">
@@ -318,7 +316,7 @@
                 <input type="file" id="inputFileBukti" accept="image/*" onchange="handleImageUpload(event, 'checkoutBuktiBase64', 'checkoutBuktiPreview')">
                 <div id="uploadStatusText" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Belum ada gambar dipilih.</div>
                 <input type="hidden" id="checkoutBuktiBase64">
-                <img id="checkoutBuktiPreview" style="max-height: 120px; display:none; margin-top:10px; border-radius: 10px;">
+                <img id="checkoutBuktiPreview" style="max-height: 120px; display:none; margin-top:10px; border-radius: 10px; object-fit: contain;">
             </div>
             <button id="btnSubmitOrder" class="btn btn-success" style="width:100%; margin-top:20px; padding: 14px;" onclick="processCheckout()"><i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang</button>
         </div>
@@ -438,7 +436,7 @@
                 <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU paste URL foto:</div>
                 <input type="text" id="formFotoUrl" placeholder="https://..." oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
                 <input type="hidden" id="formFotoBase64">
-                <img id="imagePreview" style="max-height:100px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569;">
+                <img id="imagePreview" style="max-height:120px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569; object-fit: contain; background: #0f172a; width: 100%;">
             </div>
 
             <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama" placeholder="Contoh: Kemeja Polos"></div>
@@ -592,7 +590,7 @@
             if (wishlist.length === 0) c.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Belum ada produk favorit.</div>';
             else c.innerHTML = wishlist.map((item) => {
                 if(!item) return "";
-                return `<div class="cart-item"><img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
+                return `<div class="cart-item"><img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
             }).join("");
             document.getElementById('wishlistModal').style.display = 'flex';
         }
@@ -899,7 +897,9 @@
             let labelBadge = p.Label_Promo ? `<span style="background:var(--danger); color:white; padding: 4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-right:8px;">${p.Label_Promo}</span>` : "";
             
             document.getElementById('detailContent').innerHTML = `
-                <img src="${p.Foto_URL}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border);">
+                <div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="${p.Foto_URL}" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div style="margin-bottom:8px;">${labelBadge}</div>
                 <div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${p.Nama_Produk}</div>
                 <div style="margin-bottom: 12px;">${hargaHtml}</div>
@@ -956,7 +956,7 @@
                     let note = Number(p.Harga_Promo) > 0 ? `<span style="font-size:10px; color:var(--danger);">Promo</span>` : "";
                     
                     return `<div class="cart-item">
-                                <img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;">
+                                <img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);">
                                 <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div>${note}</div>
                                 <div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><b style="width:20px;text-align:center;">${item.qty}</b><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div>
                              </div>`; 
@@ -1109,7 +1109,7 @@
 
             document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => `
                 <div class="admin-card">
-                    <img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:cover;border-radius: 10px;">
+                    <img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a;">
                     <div style="flex:1; margin-left: 12px;">
                         <b>${p.Nama_Produk}</b><br>
                         <div style="display:flex; gap:6px; align-items:center; margin-top:3px;">
@@ -1150,7 +1150,7 @@
                 let banners = res.data.banners || [];
                 document.getElementById('adminBannerList').innerHTML = banners.length ? banners.map(b => `
                     <div class="admin-card">
-                        <img src="${b.Foto_URL}" style="width:120px; height: 50px; object-fit:cover;border-radius: 8px;">
+                        <img src="${b.Foto_URL}" style="width:120px; height: 50px; object-fit:contain; border-radius: 8px; background:#0f172a;">
                         <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
                     </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
@@ -1274,7 +1274,6 @@
             document.getElementById('formBadge').value = ""; 
             document.getElementById('imagePreview').style.display = 'none';
             
-            // Otomatis isi kategori jika sedang membuka kategori tertentu (selain "Semua")
             if (typeof adminActiveCategory !== 'undefined' && adminActiveCategory && adminActiveCategory !== "Semua") {
                 document.getElementById('formKategori').value = adminActiveCategory;
             }
