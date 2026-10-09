@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.7</title>
+    <title>Toko Serba Ada - v3.8</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -196,7 +196,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.7</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.8</span>
             </div>
         </div>
 
@@ -269,8 +269,8 @@
         <div class="modal-content" style="max-width: 300px; text-align: center; position: relative;">
             <div class="modal-close-btn" onclick="closeAdminLoginModal()">X</div>
             <h3 style="margin-bottom:16px;">Verifikasi Penjual</h3>
-            <input type="password" id="adminPinInput" placeholder="Masukkan PIN" style="text-align: center; letter-spacing: 2px; margin-bottom:16px;">
-            <button class="btn btn-primary" style="width:100%;" onclick="submitAdminPin()">Masuk Panel</button>
+            <input type="password" id="adminPinInput" placeholder="Masukkan PIN" style="text-align: center; letter-spacing: 2px; margin-bottom:16px;" onkeypress="if(event.key === 'Enter') submitAdminPin()">
+            <button id="btnSubmitPin" class="btn btn-primary" style="width:100%;" onclick="submitAdminPin()">Masuk Panel</button>
         </div>
     </div>
 
@@ -1093,16 +1093,35 @@
         
         async function submitAdminPin() {
             const p = document.getElementById('adminPinInput').value; 
-            const r = await fetchAPI("verify_pin", "POST", { pin: p });
-            if (r.status === 'success') { 
-                sessionStorage.setItem("Toko_AdminToken", p); 
-                document.getElementById('adminPinModal').style.display = 'none'; 
-                document.getElementById('userView').style.display = 'none'; 
-                document.getElementById('adminView').style.display = 'block'; 
-                window.location.hash = "#admin";
-                loadAdminData(); 
-            } else { 
-                showToast("PIN Salah", "error"); 
+            if(!p) { showToast("Masukkan PIN terlebih dahulu!", "error"); return; }
+            
+            const btn = document.getElementById('btnSubmitPin');
+            const originalText = btn.innerHTML;
+            
+            // Ubah tombol menjadi mode loading agar tidak diklik berkali-kali
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memeriksa...';
+
+            try {
+                const r = await fetchAPI("verify_pin", "POST", { pin: p });
+                if (r.status === 'success') { 
+                    sessionStorage.setItem("Toko_AdminToken", p); 
+                    document.getElementById('adminPinModal').style.display = 'none'; 
+                    document.getElementById('userView').style.display = 'none'; 
+                    document.getElementById('adminView').style.display = 'block'; 
+                    document.getElementById('adminPinInput').value = ""; // Bersihkan kolom PIN
+                    window.location.hash = "#admin";
+                    loadAdminData(); 
+                } else { 
+                    // Menampilkan pesan gagal yang sebenarnya dari server
+                    showToast(r.message || "PIN Salah! Silakan coba lagi.", "error"); 
+                }
+            } catch (error) {
+                showToast("Koneksi gagal. Pastikan internet stabil.", "error");
+            } finally {
+                // Kembalikan tombol ke kondisi semula
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
         
@@ -1353,15 +1372,66 @@
         async function submitProduct() {
             let badgeVal = document.getElementById('formBadge').value;
             const p = { 
-                ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama').value, Kategori: document.getElementById('formKategori').value, Deskripsi: document.getElementById('formDeskripsi').value,
-                Stok: parseInt(document.getElementById('formStok').value) || 0, HPP: parseInt(document.getElementById('formHpp').value) || 0, Harga_Normal: parseInt(document.getElementById('formHargaNormal').value) || 0, 
-                Harga_Grosir: parseInt(document.getElementById('formHargaGrosir').value) || 0, Harga_Promo: parseInt(document.getElementById('formHargaPromo').value) || 0, Satuan: document.getElementById('formSatuan').value || "pcs", Label_Promo: document.getElementById('formLabelPromo').value || "",
-                Terbaru: badgeVal === "Terbaru" ? "Ya" : "", Terlaris: badgeVal === "Terlaris" ? "Ya" : "", Unggulan: badgeVal === "Unggulan" ? "Ya" : "", Status: document.getElementById('formStatus').value, Foto_URL: document.getElementById('formFotoUrl').value, Foto_Base64: document.getElementById('formFotoBase64').value
+                ID_Produk: document.getElementById('formIdProduk').value, 
+                Nama_Produk: document.getElementById('formNama').value, 
+                Kategori: document.getElementById('formKategori').value, 
+                Deskripsi: document.getElementById('formDeskripsi').value,
+                Stok: parseInt(document.getElementById('formStok').value) || 0, 
+                HPP: parseInt(document.getElementById('formHpp').value) || 0, 
+                Harga_Normal: parseInt(document.getElementById('formHargaNormal').value) || 0, 
+                Harga_Grosir: parseInt(document.getElementById('formHargaGrosir').value) || 0, 
+                Harga_Promo: parseInt(document.getElementById('formHargaPromo').value) || 0, 
+                Satuan: document.getElementById('formSatuan').value || "pcs", 
+                Label_Promo: document.getElementById('formLabelPromo').value || "",
+                Terbaru: badgeVal === "Terbaru" ? "Ya" : "", 
+                Terlaris: badgeVal === "Terlaris" ? "Ya" : "", 
+                Unggulan: badgeVal === "Unggulan" ? "Ya" : "", 
+                Status: document.getElementById('formStatus').value, 
+                Foto_URL: document.getElementById('formFotoUrl').value, 
+                Foto_Base64: document.getElementById('formFotoBase64').value
             };
-            if(!p.Nama_Produk || !p.Harga_Normal || !p.HPP || !p.Kategori) { showToast("Lengkapi data wajib!", "error"); return; }
-            if(!p.Foto_URL && !p.Foto_Base64) { showToast("Foto produk wajib diisi/upload!", "error"); return; }
-            const r = await fetchAPI("save_product", "POST", p);
-            if(r.status==='success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan"); }
+
+            // 1. Validasi Kolom Wajib
+            if(!p.Nama_Produk) { showToast("Nama Produk wajib diisi!", "error"); return; }
+            if(!p.Kategori) { showToast("Kategori wajib diisi!", "error"); return; }
+            if(p.HPP <= 0) { showToast("Harga Beli (Modal) wajib diisi angka!", "error"); return; }
+            if(p.Harga_Normal <= 0) { showToast("Harga Jual Normal wajib diisi angka!", "error"); return; }
+
+            // 2. Validasi URL Gambar (Jika URL diisi tapi tidak pakai awalan http/https)
+            if(p.Foto_URL && !p.Foto_URL.startsWith('http')) {
+                showToast("URL Foto harus diawali dengan http:// atau https://", "error"); 
+                return; 
+            }
+
+            // 3. Validasi Keberadaan Foto
+            if(!p.Foto_URL && !p.Foto_Base64) { 
+                showToast("Foto wajib diisi! Gunakan tombol Pilih File.", "error"); 
+                return; 
+            }
+
+            // Ubah tombol jadi loading
+            const btnSubmit = document.querySelector('#productModal .btn-primary');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+            try {
+                const r = await fetchAPI("save_product", "POST", p);
+                if(r.status === 'success') { 
+                    closeModal('productModal'); 
+                    loadAdminData(); 
+                    initApp(); 
+                    showToast("Produk Berhasil Disimpan!"); 
+                } else {
+                    showToast(r.message || "Gagal menyimpan produk", "error");
+                }
+            } catch (error) {
+                showToast("Koneksi bermasalah, gagal menyimpan.", "error");
+            } finally {
+                // Kembalikan tombol seperti semula
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalText;
+            }
         }
         
         async function deleteProductAdmin(id) { if(!confirm("Hapus?")) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); } }
