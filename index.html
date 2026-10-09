@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v3.5</title>
+    <title>Toko Serba Ada - v3.6</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -195,7 +195,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.5</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v3.6</span>
             </div>
         </div>
 
@@ -1134,17 +1134,75 @@
         async function loadAdminData() {
             const res = await fetchAPI("get_admin_data", "POST");
             if (res.status === "success") {
-                if (res.data.laporan) {
-                    let r = res.data.laporan;
-                    document.getElementById('repPengunjung').innerText = r.pengunjung; document.getElementById('repTotalOrder').innerText = r.totalPesanan;
-                    document.getElementById('repHariOmset').innerText = formatRp(r.hari.pendapatan); document.getElementById('repHariLaba').innerText = formatRp(r.hari.laba);
-                    document.getElementById('repMingguOmset').innerText = formatRp(r.minggu.pendapatan); document.getElementById('repMingguLaba').innerText = formatRp(r.minggu.laba);
-                    document.getElementById('repBulanOmset').innerText = formatRp(r.bulan.pendapatan); document.getElementById('repBulanLaba').innerText = formatRp(r.bulan.laba);
-                    document.getElementById('repSemuaOmset').innerText = formatRp(r.semua.pendapatan); document.getElementById('repSemuaLaba').innerText = formatRp(r.semua.laba);
-                    document.getElementById('repSemuaSelesai').innerText = r.semua.pesanan + " Order Selesai";
-                }
-
                 allProducts = res.data.products || []; 
+                adminOrdersCache = res.data.orders || [];
+                adminOrderDetailsCache = res.data.orderDetails || [];
+                
+                // === PERBAIKAN: HITUNG ULANG STATISTIK DI FRONTEND ===
+                let today = new Date();
+                let startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+                let dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1; // Start week from Monday
+                let startOfWeek = startOfDay - (dayOfWeek * 24 * 60 * 60 * 1000);
+                let startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
+
+                let stat = { hari: { o: 0, l: 0 }, minggu: { o: 0, l: 0 }, bulan: { o: 0, l: 0 }, semua: { o: 0, l: 0, sel: 0 } };
+
+                adminOrdersCache.forEach(o => {
+                    // Hanya memproses order yang berstatus Selesai
+                    if (String(o.Status_Pesanan).trim().toLowerCase() === 'selesai') {
+                        stat.semua.sel++;
+                        
+                        let orderTime = today.getTime();
+                        try {
+                            if (o.Tanggal) {
+                                let parts = o.Tanggal.split(', ');
+                                if(parts.length > 1) {
+                                    let dp = parts[0].split('/'); let tp = parts[1].split('.');
+                                    orderTime = new Date(dp[2], dp[1]-1, dp[0], tp[0], tp[1], tp[2]).getTime();
+                                } else { orderTime = new Date(o.Tanggal).getTime(); }
+                            }
+                        } catch(e) {}
+
+                        let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
+                        let omsetP = 0, labaP = 0;
+
+                        items.forEach(item => {
+                            let qty = Number(item.Jumlah) || 0;
+                            // Menghitung subtotal order
+                            let subtotal = Number(item.Subtotal) || (Number(item.Harga) * qty);
+                            omsetP += subtotal;
+                            
+                            // Menghitung HPP untuk mencari laba bersih
+                            let p = allProducts.find(x => String(x.ID_Produk) === String(item.ID_Produk));
+                            let hpp = p ? (Number(p.HPP) || 0) : 0;
+                            labaP += (subtotal - (hpp * qty));
+                        });
+
+                        // Mendistribusikan Omset dan Laba ke rentang waktu
+                        stat.semua.o += omsetP; stat.semua.l += labaP;
+                        if (orderTime >= startOfDay) { stat.hari.o += omsetP; stat.hari.l += labaP; }
+                        if (orderTime >= startOfWeek) { stat.minggu.o += omsetP; stat.minggu.l += labaP; }
+                        if (orderTime >= startOfMonth) { stat.bulan.o += omsetP; stat.bulan.l += labaP; }
+                    }
+                });
+
+                // Terapkan hasil perhitungan ke UI Dasbor
+                document.getElementById('repHariOmset').innerText = formatRp(stat.hari.o);
+                document.getElementById('repHariLaba').innerText = formatRp(stat.hari.l);
+                document.getElementById('repMingguOmset').innerText = formatRp(stat.minggu.o);
+                document.getElementById('repMingguLaba').innerText = formatRp(stat.minggu.l);
+                document.getElementById('repBulanOmset').innerText = formatRp(stat.bulan.o);
+                document.getElementById('repBulanLaba').innerText = formatRp(stat.bulan.l);
+                document.getElementById('repSemuaOmset').innerText = formatRp(stat.semua.o);
+                document.getElementById('repSemuaLaba').innerText = formatRp(stat.semua.l);
+                document.getElementById('repSemuaSelesai').innerText = stat.semua.sel + " Order Selesai";
+
+                if (res.data.laporan) {
+                    document.getElementById('repPengunjung').innerText = res.data.laporan.pengunjung || 0; 
+                    document.getElementById('repTotalOrder').innerText = res.data.laporan.totalPesanan || 0;
+                }
+                // === AKHIR PERBAIKAN ===
+                
                 renderAdminProductList();
                 
                 let banners = res.data.banners || [];
@@ -1154,8 +1212,6 @@
                         <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
                     </div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
-                adminOrdersCache = res.data.orders || [];
-                adminOrderDetailsCache = res.data.orderDetails || [];
                 let orders = [...adminOrdersCache].reverse();
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
