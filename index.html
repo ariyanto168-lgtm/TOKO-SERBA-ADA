@@ -49,7 +49,7 @@
             -moz-user-drag: none;
             -o-user-drag: none;
             user-select: none;
-            -webkit-touch-callout: none; /* Cegah pop-up download di HP */
+            -webkit-touch-callout: none;
         }
 
         /* WATERMARK OTOMATIS DI GAMBAR PRODUK */
@@ -63,7 +63,7 @@
             font-size: 15px;
             font-weight: 900;
             letter-spacing: 2px;
-            pointer-events: none; /* Wajib agar gambar tetap bisa diklik */
+            pointer-events: none;
             z-index: 3;
             text-shadow: 1px 1px 4px rgba(0,0,0,0.5); 
             width: 100%;
@@ -145,7 +145,7 @@
         .product-info { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
         .product-title { font-size: 12px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .price-normal { font-size: 10px; color: var(--text-muted); text-decoration: line-through; display: block; }
-        .price-final {font-size: 13px; font-weight: 800; color: var(--primary); }
+        .price-final { font-size: 13px; font-weight: 800; color: var(--primary); }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 99; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; position: relative; flex:1; }
@@ -179,7 +179,6 @@
         .admin-nav-item.active i { transform: scale(1.15); }
         .admin-container { padding: 24px 20px; max-width: 800px; margin: 0 auto; }
         
-        /* PERBAIKAN TAMPILAN KARTU PRODUK ADMIN DI HP */
         .admin-card { 
             background: #1e293b; 
             border-radius: 18px; 
@@ -901,7 +900,7 @@
             let html = "";
             promoProducts.slice(0, 10).forEach(p => {
                 let badge = p.Label_Promo ? escapeHTML(p.Label_Promo) : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
-                let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : formatRp(p.Harga_Normal);
+                let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : (Number(p.Harga_Grosir) > 0 ? formatRp(p.Harga_Grosir) : formatRp(p.Harga_Normal));
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
 
                 html += `
@@ -961,9 +960,13 @@
                 if (p.Label_Promo) { badgeHtml += `<div class="badge-katalog bg-promo" style="top: ${topOffset}px;">${escapeHTML(p.Label_Promo)}</div>`; }
 
                 let hrgHtml = "";
-                if (Number(p.Harga_Promo) > 0) { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; } 
-                else if (Number(p.Harga_Grosir) > 0) { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;">/${satuan} (≥5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; } 
-                else { hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>`; }
+                if (Number(p.Harga_Promo) > 0) { 
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; 
+                } else if (Number(p.Harga_Grosir) > 0) { 
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;">/${satuan} (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; 
+                } else { 
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}<span style="font-size:10px; font-weight:normal;">/${satuan}</span></div>`; 
+                }
 
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
                 let isW = wishlist.find(w => w && w.id === p.ID_Produk);
@@ -987,9 +990,13 @@
             let satuan = p.Satuan ? escapeHTML(p.Satuan) : "pcs";
             let hargaHtml = "";
             
-            if (Number(p.Harga_Promo) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>`; } 
-            else if (Number(p.Harga_Grosir) > 0) { hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Grosir)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>`; } 
-            else { hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`; }
+            if (Number(p.Harga_Promo) > 0) { 
+                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>`; 
+            } else if (Number(p.Harga_Grosir) > 0) { 
+                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Min 5 Pcs)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>`; 
+            } else { 
+                hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`; 
+            }
             
             let labelBadge = p.Label_Promo ? `<span style="background:var(--danger); color:white; padding: 4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-right:8px;">${escapeHTML(p.Label_Promo)}</span>` : "";
             
@@ -1101,10 +1108,10 @@
                 
                 let promoBanner = "";
                 if (totalCartQty >= 5) {
-                    promoBanner = `<div style="background:var(--success); color:white; padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="fas fa-gift"></i> Hore! Harga Grosir (Item Campur) Aktif!</div>`;
+                    promoBanner = `<div style="background:var(--success); color:white; padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="fas fa-gift"></i> Hore! Harga Grosir (Min 5 Pcs Campur) Aktif!</div>`;
                 } else {
                     let sisa = 5 - totalCartQty;
-                    promoBanner = `<div style="background:var(--primary-light); color:var(--primary); padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--primary);"><i class="fas fa-info-circle"></i> Tambah ${sisa} barang lagi untuk aktifkan Harga Grosir!</div>`;
+                    promoBanner = `<div style="background:var(--primary-light); color:var(--primary); padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--primary);"><i class="fas fa-info-circle"></i> Tambah ${sisa} barang lagi untuk aktifkan Harga Grosir (Min 5 Pcs)!</div>`;
                 }
 
                 c.innerHTML = promoBanner + cart.map((item, i) => { 
@@ -1116,7 +1123,7 @@
                     if (Number(p.Harga_Promo) > 0 && item.harga === Number(p.Harga_Promo)) {
                         note = `<span style="font-size:10px; background:var(--danger); color:white; padding:2px 6px; border-radius:4px;">Promo</span>`;
                     } else if (totalCartQty >= 5 && Number(p.Harga_Grosir) > 0 && item.harga === Number(p.Harga_Grosir)) {
-                        note = `<span style="font-size:10px; background:var(--success); color:white; padding:2px 6px; border-radius:4px;">Grosir Campur</span>`;
+                        note = `<span style="font-size:10px; background:var(--success); color:white; padding:2px 6px; border-radius:4px;">Grosir Min 5 Pcs</span>`;
                     }
                     
                     return `<div class="cart-item">
@@ -1643,9 +1650,6 @@
             catch(e) { document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Periksa izin deploy apps script Anda.</b></div>`; }
         });
 
-        // ==========================================
-        // SISTEM KEAMANAN BLOKIR KLIK KANAN GAMBAR
-        // ==========================================
         document.addEventListener('contextmenu', function(e) {
             if (e.target.tagName === 'IMG') {
                 e.preventDefault();
