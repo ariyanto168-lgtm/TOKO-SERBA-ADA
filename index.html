@@ -7,8 +7,8 @@
     <!-- SISTEM KEAMANAN (FIREWALL FRONTEND) -->
     <!-- 1. Mencegah aplikasi dibajak dalam iFrame (Anti-Clickjacking) -->
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <!-- 2. Content Security Policy (Mencegah injeksi Malware asing) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com https://cdnjs.cloudflare.com https://api.whatsapp.com; img-src 'self' data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com;">
+    <!-- 2. Content Security Policy (Mencegah injeksi Malware asing & mengizinkan database Google) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
     <!-- 3. Mencegah browser salah menebak tipe data -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
@@ -51,7 +51,7 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary); }
         
         input[type="file"] { background: var(--surface); color: var(--text-main); border: 2px dashed var(--primary); padding: 10px; border-radius: 12px; cursor: pointer; }
-        input[type="file"]::file-selector-button { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-right: 10px; }
+        input[type="file"]::file-selector-button { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: margin-right: 10px; }
 
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 380px; pointer-events: none; }
         .toast { color: #ffffff !important; padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideDown 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
@@ -505,7 +505,6 @@
         let activeCategory = "Semua", currentSort = "terbaru";
 
         // KEAMANAN: Fungsi Sanitasi Input (Anti-XSS)
-        // Menetralkan teks yang mungkin berisi kode script jahat
         function escapeHTML(str) {
             if (typeof str !== 'string') return str;
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
@@ -725,7 +724,6 @@
             `;
             listContent.innerHTML = allReviews.map(r => {
                 let stars = '<i class="fas fa-star"></i>'.repeat(Number(r.Rating) || 5);
-                // KEAMANAN: Sanitasi komentar dari pembeli
                 let komentar = r.Komentar ? escapeHTML(r.Komentar) : "<i>Tidak ada komentar.</i>";
                 let namaPembeli = escapeHTML(r.Nama_Pembeli);
                 
@@ -754,7 +752,7 @@
             let orderId = document.getElementById('revOrderId').value;
             let nama = document.getElementById('revCustomerName').value;
             let rating = document.getElementById('revRating').value;
-            let komentar = document.getElementById('revComment').value; // Sanitasi dilakukan di sisi server juga
+            let komentar = document.getElementById('revComment').value; 
             
             let btn = document.getElementById('btnSubmitReview');
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
@@ -1116,7 +1114,6 @@
             let ok = mt === "Kurir Toko" ? tarifKurir : 0;
             let finalTotal = globalSubtotal + ok;
             
-            // Mengambil dan membersihkan input nama & alamat
             let n = document.getElementById('checkoutNama').value.trim();
             let w = document.getElementById('checkoutWA').value.trim();
             let a = document.getElementById('checkoutAlamat').value.trim();
@@ -1178,7 +1175,6 @@
         function closeAdminLoginModal() { document.getElementById('adminPinModal').style.display = 'none'; window.location.hash = ""; document.getElementById('userView').style.display = 'block'; }
         function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
         
-        // KEAMANAN: Modifikasi Login PIN dengan Anti-Brute Force
         async function submitAdminPin() {
             if (Date.now() < pinLockoutTime) {
                 let waitTime = Math.ceil((pinLockoutTime - Date.now()) / 1000);
@@ -1198,7 +1194,7 @@
             try {
                 const r = await fetchAPI("verify_pin", "POST", { pin: p });
                 if (r.status === 'success') { 
-                    failedPinAttempts = 0; // Reset counter jika sukses
+                    failedPinAttempts = 0; 
                     sessionStorage.setItem("Toko_AdminToken", p); 
                     document.getElementById('adminPinModal').style.display = 'none'; 
                     document.getElementById('userView').style.display = 'none'; 
@@ -1209,7 +1205,7 @@
                 } else { 
                     failedPinAttempts++;
                     if (failedPinAttempts >= 3) {
-                        pinLockoutTime = Date.now() + 30000; // Kunci 30 detik
+                        pinLockoutTime = Date.now() + 30000; 
                         showToast("PIN Salah 3 kali! Terkunci 30 detik.", "error");
                     } else {
                         showToast(r.message || "PIN Salah! Silakan coba lagi.", "error"); 
@@ -1332,7 +1328,7 @@
                     return `
                     <div class="admin-card">
                         <img src="${escapeHTML(b.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:120px; height: 50px; object-fit:contain; border-radius: 8px; background:#0f172a;">
-                        <button class="btn btn-danger" onclick="deleteBannerAdmin('${escapeHTML(b.ID_Banner}')"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-danger" onclick="deleteBannerAdmin('${escapeHTML(b.ID_Banner)}')"><i class="fas fa-trash"></i></button>
                     </div>`}).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
                 let orders = [...adminOrdersCache].reverse();
