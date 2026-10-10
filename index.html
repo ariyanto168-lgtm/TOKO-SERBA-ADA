@@ -18,7 +18,7 @@
     <meta property="og:type" content="website">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" type="image/png">
 
-    <title>TOKO PRISMA - v4.8</title>
+    <title>TOKO PRISMA - v4.9</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -178,7 +178,28 @@
         .admin-nav-item.active { color: #6366f1; }
         .admin-nav-item.active i { transform: scale(1.15); }
         .admin-container { padding: 24px 20px; max-width: 800px; margin: 0 auto; }
-        .admin-card { background: #1e293b; border-radius: 18px; padding: 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #334155; color: #f8fafc; }
+        
+        /* PERBAIKAN TAMPILAN KARTU PRODUK ADMIN DI HP */
+        .admin-card { 
+            background: #1e293b; 
+            border-radius: 18px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: stretch; 
+            gap: 12px;
+            border: 1px solid #334155; 
+            color: #f8fafc; 
+        }
+        @media (min-width: 768px) {
+            .admin-card {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
         .badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; color: white; font-weight: 700; display: inline-block; }
         .badge.aktif { background: var(--success); } .badge.nonaktif { background: var(--danger); }
         .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
@@ -241,7 +262,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.8 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.9 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
             </div>
         </div>
 
@@ -1302,21 +1323,23 @@
             document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => {
                 return `
                 <div class="admin-card">
-                    <img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a;">
-                    <div style="flex:1; margin-left: 12px;">
-                        <b>${escapeHTML(p.Nama_Produk)}</b><br>
-                        <div style="display:flex; gap:6px; align-items:center; margin-top:3px;">
-                            <span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${escapeHTML(p.Status)}</span> 
-                            <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">${escapeHTML(p.Kategori) || 'Tanpa Kategori'}</span>
+                    <div style="display:flex; align-items:center; gap:12px; width:100%;">
+                        <img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a; flex-shrink:0;">
+                        <div style="flex:1; min-width:0;">
+                            <b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(p.Nama_Produk)}</b>
+                            <div style="display:flex; gap:6px; align-items:center; margin-top:3px;">
+                                <span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${escapeHTML(p.Status)}</span> 
+                                <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">${escapeHTML(p.Kategori) || 'Tanpa Kategori'}</span>
+                            </div>
+                            <span style="font-size:12px; display:block; margin-top:3px; font-weight:bold;">${formatRp(p.Harga_Normal)}</span>
+                            <div style="font-size:10px; color:#818cf8;">Modal: ${formatRp(p.HPP)}</div>
                         </div>
-                        <span style="font-size:12px; display:block; margin-top:3px;">${formatRp(p.Harga_Normal)}</span>
-                        <div style="font-size:10px; color:#818cf8;">Modal: ${formatRp(p.HPP)}</div>
                     </div>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn btn-secondary" style="padding:6px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" style="padding:6px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i></button>
+                    <div style="display:flex; gap:8px; width:100%; justify-content:flex-end; border-top:1px solid #334155; padding-top:10px;">
+                        <button class="btn btn-secondary" style="padding:6px 14px; font-size:12px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-danger" style="padding:6px 14px; font-size:12px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i> Hapus</button>
                     </div>
-                `}).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Tidak ada produk dalam kategori ini.</div>";
+                </div>`}).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Tidak ada produk dalam kategori ini.</div>";
         }
 
         function filterAdminCategory(cat) {
@@ -1396,7 +1419,7 @@
                     return `
                     <div class="admin-card">
                         <img src="${escapeHTML(b.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:120px; height: 50px; object-fit:contain; border-radius: 8px; background:#0f172a;">
-                        <button class="btn btn-danger" onclick="deleteBannerAdmin('${escapeHTML(b.ID_Banner)}')"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-danger" onclick="deleteBannerAdmin('${escapeHTML(b.ID_Banner)}')"><i class="fas fa-trash"></i> Hapus</button>
                     </div>`}).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
                 let orders = [...adminOrdersCache].reverse();
@@ -1611,7 +1634,7 @@
                 document.getElementById('repPengunjung').innerText = "0";
                 showToast("Pengunjung berhasil direset menjadi 0!");
             } else {
-                showToast(r.message || "Gagal mereset. Pastikan Anda sudah menambah kode reset di Apps Script.", "error");
+                showToast(r.message || "Gagal mereset. Pastikan Anda sudah menambahkan kode reset di Apps Script.", "error");
             }
         }
 
