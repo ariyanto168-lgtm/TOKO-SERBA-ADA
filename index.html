@@ -18,7 +18,7 @@
     <meta property="og:type" content="website">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" type="image/png">
 
-    <title>Toko Serba Ada - v4.5</title>
+    <title>Toko Serba Ada - v4.7</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -40,6 +40,34 @@
             .modal-content { box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; max-width: 100% !important; }
             .no-print { display: none !important; }
             #notaPrintArea, #notaPrintArea * { color: black !important; font-family: 'Courier New', Courier, monospace !important; }
+        }
+
+        /* KEAMANAN GAMBAR: ANTI DRAG & ANTI SELEKSI */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-select: none;
+            -webkit-touch-callout: none; /* Cegah pop-up download di HP */
+        }
+
+        /* WATERMARK OTOMATIS DI GAMBAR PRODUK */
+        .product-img-wrapper::after, .watermark-wrapper::after {
+            content: 'HAK CIPTA TOKO'; /* Ubah teks ini sesuai nama toko Anda jika mau */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            color: rgba(255, 255, 255, 0.4); 
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            pointer-events: none; /* Wajib agar gambar tetap bisa diklik */
+            z-index: 3;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5); 
+            width: 100%;
+            text-align: center;
         }
 
         .loading-bar { height: 3px; background: var(--primary); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
@@ -213,7 +241,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.5 <i class="fas fa-box-open" style="color:var(--success);" title="Grosir Campur"></i></span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.7 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
             </div>
         </div>
 
@@ -354,10 +382,12 @@
 
         <div class="admin-container admin-tab-content" id="adminTab_laporan">
             <h3 style="margin-bottom:16px;">Statistik & Laporan Toko</h3>
+            
             <div class="form-row" style="margin-bottom:16px;">
-                <div style="background:#334155; padding:16px; border-radius:12px; text-align:center;">
-                    <div style="font-size:12px; color:#cbd5e1;">Total Pengunjung</div>
+                <div style="background:#334155; padding:16px; border-radius:12px; text-align:center; position:relative;">
+                    <div style="font-size:12px; color:#cbd5e1;">Pengunjung Hari Ini</div>
                     <div style="font-size:20px; font-weight:bold; color:var(--secondary);" id="repPengunjung">0</div>
+                    <button class="btn btn-outline" style="font-size:10px; padding:4px 8px; margin-top:10px; border-color:#475569; color:#cbd5e1; width:100%;" onclick="resetPengunjungAdmin()"><i class="fas fa-sync-alt"></i> Reset Nol</button>
                 </div>
                 <div style="background:#334155; padding:16px; border-radius:12px; text-align:center;">
                     <div style="font-size:12px; color:#cbd5e1;">Total Order Masuk</div>
@@ -943,7 +973,7 @@
             let labelBadge = p.Label_Promo ? `<span style="background:var(--danger); color:white; padding: 4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-right:8px;">${escapeHTML(p.Label_Promo)}</span>` : "";
             
             document.getElementById('detailContent').innerHTML = `
-                <div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <div class="watermark-wrapper" style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
                     <img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div style="margin-bottom:8px;">${labelBadge}</div>
@@ -966,7 +996,6 @@
             return Number(p.Harga_Normal);
         }
 
-        // FUNGSI BARU: Hitung ulang harga grosir campur seluruh keranjang
         function updateAllCartPrices() {
             let totalCartQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
             cart.forEach(item => {
@@ -1049,7 +1078,6 @@
                 globalSubtotal = 0;
                 let totalCartQty = cart.reduce((sum, item) => sum + item.qty, 0);
                 
-                // NOTIFIKASI GROSIR CAMPUR
                 let promoBanner = "";
                 if (totalCartQty >= 5) {
                     promoBanner = `<div style="background:var(--success); color:white; padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="fas fa-gift"></i> Hore! Harga Grosir (Item Campur) Aktif!</div>`;
@@ -1063,7 +1091,6 @@
                     globalSubtotal += (item.harga * item.qty); 
                     const p = allProducts.find(x => x && x.ID_Produk === item.id) || {};
                     
-                    // LABEL HARGA DI KERANJANG
                     let note = "";
                     if (Number(p.Harga_Promo) > 0 && item.harga === Number(p.Harga_Promo)) {
                         note = `<span style="font-size:10px; background:var(--danger); color:white; padding:2px 6px; border-radius:4px;">Promo</span>`;
@@ -1577,10 +1604,33 @@
             if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
         }
 
+        // FUNGSI BARU: Reset Pengunjung Admin
+        async function resetPengunjungAdmin() {
+            if(!confirm("Yakin ingin mereset angka pengunjung hari ini menjadi 0?")) return;
+            const r = await fetchAPI("reset_visitor", "POST", {});
+            if(r.status === 'success') {
+                document.getElementById('repPengunjung').innerText = "0";
+                showToast("Pengunjung berhasil direset menjadi 0!");
+            } else {
+                showToast(r.message || "Gagal mereset. Pastikan Anda sudah menambah kode reset di Apps Script.", "error");
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", async function() {
             try { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); } 
             catch(e) { document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database! Periksa izin deploy apps script Anda.</b></div>`; }
         });
+
+        // ==========================================
+        // SISTEM KEAMANAN BLOKIR KLIK KANAN GAMBAR
+        // ==========================================
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                showToast("Gambar dilindungi hak cipta", "error");
+            }
+        });
+
     </script>
 </body>
 </html>
