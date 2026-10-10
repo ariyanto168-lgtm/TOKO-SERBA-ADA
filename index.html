@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- SISTEM KEAMANAN (FIREWALL FRONTEND) -->
-    <!-- 1. Mencegah aplikasi dibajak dalam iFrame (Anti-Clickjacking) -->
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <!-- 2. Content Security Policy (Mencegah injeksi Malware asing & mengizinkan database Google) -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
-    <!-- 3. Mencegah browser salah menebak tipe data -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
     <!-- IDENTITAS WEB & SEO DASAR (ANTI-PHISHING) -->
     <meta name="description" content="TokoKu - Toko online terpercaya. Belanja mudah, aman, dan langsung diproses via WhatsApp.">
-    <meta name="keywords" content="toko online, belanja, murah, aman, tokoku">
+    <meta name="keywords" content="toko online, belanja, murah, aman, grosir, tokoku">
     <meta name="author" content="Admin TokoKu">
     <meta property="og:title" content="TokoKu - Pusat Belanja Hemat">
-    <meta property="og:description" content="Cek katalog lengkap kami di sini. Harga terbaik, transaksi aman!">
+    <meta property="og:description" content="Cek katalog lengkap kami di sini. Beli campur 5 pcs langsung dapat Harga Grosir!">
     <meta property="og:type" content="website">
-    <!-- Favicon (Ikon keranjang kecil di tab browser) -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" type="image/png">
 
-    <title>Toko Serba Ada - v4.4</title>
+    <title>Toko Serba Ada - v4.5</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -47,7 +43,7 @@
         }
 
         .loading-bar { height: 3px; background: var(--primary); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
-        .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: gap: 8px; text-decoration: none; }
+        .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn:active { transform: scale(0.97); }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-primary { background: var(--primary); color: white; }
@@ -217,7 +213,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.4 <i class="fas fa-shield-alt" style="color:var(--success);" title="Secured & SEO"></i></span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.5 <i class="fas fa-box-open" style="color:var(--success);" title="Grosir Campur"></i></span>
             </div>
         </div>
 
@@ -456,8 +452,8 @@
                 <label>Foto Produk (Pilih salah satu)*</label>
                 <input type="file" id="formFileFoto" accept="image/*" onchange="handleImageUpload(event, 'formFotoBase64', 'imagePreview')">
                 <div id="imageUploadStatus" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Pilih foto dari galeri HP Anda.</div>
-                <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU paste URL foto:</div>
-                <input type="text" id="formFotoUrl" placeholder="https://..." oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
+                <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU ketik nama file dari GitHub:</div>
+                <input type="text" id="formFotoUrl" placeholder="Contoh: vivan-q17.jpg" oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
                 <input type="hidden" id="formFotoBase64">
                 <img id="imagePreview" style="max-height:140px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569; object-fit: contain; background: #0f172a; width: 100%;">
             </div>
@@ -505,7 +501,6 @@
         let tarifKurir = 0, globalSubtotal = 0;
         let adminActiveCategory = "Semua";
 
-        // KEAMANAN: Variabel untuk Anti-Spam PIN
         let failedPinAttempts = 0;
         let pinLockoutTime = 0;
 
@@ -514,7 +509,6 @@
 
         let activeCategory = "Semua", currentSort = "terbaru";
 
-        // KEAMANAN: Fungsi Sanitasi Input (Anti-XSS)
         function escapeHTML(str) {
             if (typeof str !== 'string') return str;
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
@@ -972,6 +966,24 @@
             return Number(p.Harga_Normal);
         }
 
+        // FUNGSI BARU: Hitung ulang harga grosir campur seluruh keranjang
+        function updateAllCartPrices() {
+            let totalCartQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
+            cart.forEach(item => {
+                const p = allProducts.find(x => x && x.ID_Produk === item.id);
+                if(p) {
+                    if (Number(p.Harga_Promo) > 0) {
+                        item.harga = Number(p.Harga_Promo);
+                    } else if (totalCartQty >= 5 && Number(p.Harga_Grosir) > 0) {
+                        item.harga = Number(p.Harga_Grosir);
+                    } else {
+                        item.harga = Number(p.Harga_Normal);
+                    }
+                }
+            });
+            localStorage.setItem("TokoCart_v2", JSON.stringify(cart));
+        }
+
         function addToCart(id, qty = 1) {
             const p = allProducts.find(x => x && x.ID_Produk === id); 
             if(!p) return;
@@ -979,18 +991,21 @@
             let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
             if (currentQty > Number(p.Stok)) { showToast("Stok tidak mencukupi!", "error"); return; }
             
-            let finalHarga = getFinalPrice(p, currentQty);
-            if (idx > -1) { cart[idx].qty = currentQty; cart[idx].harga = finalHarga; } 
-            else { cart.push({ id: p.ID_Produk, nama: p.Nama_Produk, harga: finalHarga, foto: p.Foto_URL, qty: qty, satuan: p.Satuan||'pcs' }); }
+            if (idx > -1) { 
+                cart[idx].qty = currentQty; 
+            } else { 
+                cart.push({ id: p.ID_Produk, nama: p.Nama_Produk, foto: p.Foto_URL, qty: qty, satuan: p.Satuan||'pcs', harga: 0 }); 
+            }
             
-            localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); updateCartBadge(); showToast("Masuk keranjang");
+            updateAllCartPrices();
+            updateCartBadge(); 
+            showToast("Masuk keranjang");
         }
         
         function updateQty(i, d) { 
             const cartItem = cart[i]; if(!cartItem) return;
             const p = allProducts.find(x => x && x.ID_Produk === cartItem.id); if(!p) return;
             let newQty = cartItem.qty + d;
-            
             handleQtyChange(i, newQty, p);
         }
 
@@ -1017,32 +1032,48 @@
                 } else {
                     newQty = 1; 
                 }
-            } 
-            
-            if (cart[i]) { 
-                cart[i].qty = newQty; 
-                cart[i].harga = getFinalPrice(p, newQty); 
+            } else {
+                if (cart[i]) { cart[i].qty = newQty; }
             }
             
-            localStorage.setItem("TokoCart_v2", JSON.stringify(cart)); 
+            updateAllCartPrices(); 
             openCart(); 
             updateCartBadge(); 
         }
 
         function openCart() {
             closeModal('detailModal'); const c = document.getElementById('cartContent');
-            if (cart.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted);">Keranjang kosong.</div>`; } 
-            else {
-                globalSubtotal = 0; 
-                c.innerHTML = cart.map((item, i) => { 
+            if (cart.length === 0) { 
+                c.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted);">Keranjang kosong.</div>`; 
+            } else {
+                globalSubtotal = 0;
+                let totalCartQty = cart.reduce((sum, item) => sum + item.qty, 0);
+                
+                // NOTIFIKASI GROSIR CAMPUR
+                let promoBanner = "";
+                if (totalCartQty >= 5) {
+                    promoBanner = `<div style="background:var(--success); color:white; padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="fas fa-gift"></i> Hore! Harga Grosir (Item Campur) Aktif!</div>`;
+                } else {
+                    let sisa = 5 - totalCartQty;
+                    promoBanner = `<div style="background:var(--primary-light); color:var(--primary); padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--primary);"><i class="fas fa-info-circle"></i> Tambah ${sisa} barang lagi untuk aktifkan Harga Grosir!</div>`;
+                }
+
+                c.innerHTML = promoBanner + cart.map((item, i) => { 
                     if(!item) return "";
                     globalSubtotal += (item.harga * item.qty); 
                     const p = allProducts.find(x => x && x.ID_Produk === item.id) || {};
-                    let note = Number(p.Harga_Promo) > 0 ? `<span style="font-size:10px; color:var(--danger);">Promo</span>` : "";
+                    
+                    // LABEL HARGA DI KERANJANG
+                    let note = "";
+                    if (Number(p.Harga_Promo) > 0 && item.harga === Number(p.Harga_Promo)) {
+                        note = `<span style="font-size:10px; background:var(--danger); color:white; padding:2px 6px; border-radius:4px;">Promo</span>`;
+                    } else if (totalCartQty >= 5 && Number(p.Harga_Grosir) > 0 && item.harga === Number(p.Harga_Grosir)) {
+                        note = `<span style="font-size:10px; background:var(--success); color:white; padding:2px 6px; border-radius:4px;">Grosir Campur</span>`;
+                    }
                     
                     return `<div class="cart-item">
                                 <img src="${escapeHTML(item.foto)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);">
-                                <div style="flex: 1; margin-left:14px;"><b>${escapeHTML(item.nama)}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div>${note}</div>
+                                <div style="flex: 1; margin-left:14px;"><b>${escapeHTML(item.nama)}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div><div style="margin-top:2px;">${note}</div></div>
                                 <div class="qty-control">
                                     <div class="qty-btn" onclick="updateQty(${i}, -1)">-</div>
                                     <input type="number" class="qty-input" value="${item.qty}" onchange="handleManualInput(${i}, event)">
@@ -1504,13 +1535,13 @@
             if(p.HPP <= 0) { showToast("Harga Beli (Modal) wajib diisi angka!", "error"); return; }
             if(p.Harga_Normal <= 0) { showToast("Harga Jual Normal wajib diisi angka!", "error"); return; }
 
-            if(p.Foto_URL && !p.Foto_URL.startsWith('http')) {
-                showToast("URL Foto harus diawali dengan http:// atau https://", "error"); 
+            if(p.Foto_URL && !p.Foto_URL.startsWith('http') && !p.Foto_URL.includes('.jpg') && !p.Foto_URL.includes('.png')) {
+                showToast("URL/Nama File harus valid (berakhiran .jpg / .png)", "error"); 
                 return; 
             }
 
             if(!p.Foto_URL && !p.Foto_Base64) { 
-                showToast("Foto wajib diisi! Pilih file foto terlebih dahulu.", "error"); 
+                showToast("Foto wajib diisi! Pilih file foto atau ketik nama filenya.", "error"); 
                 return; 
             }
 
