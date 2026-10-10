@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toko Serba Ada - v4.0</title>
+    <title>Toko Serba Ada - v4.1</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -197,7 +197,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.0</span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.1</span>
             </div>
         </div>
 
@@ -484,17 +484,6 @@
         let tarifKurir = 0, globalSubtotal = 0;
         let adminActiveCategory = "Semua";
         
-        // Cache buster unik saat load pertama kali
-        const cacheBuster = new Date().getTime();
-        
-        // Fungsi untuk menambahkan parameter anti-cache ke URL gambar
-        function getAntiCacheUrl(url) {
-            if (!url) return "";
-            if (url.includes('data:image')) return url; // Base64 jangan diubah
-            if (url.includes('?')) return url + '&cb=' + cacheBuster;
-            return url + '?cb=' + cacheBuster;
-        }
-
         try { let c = JSON.parse(localStorage.getItem("TokoCart_v2")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
         try { let w = JSON.parse(localStorage.getItem("TokoWishlist_v2")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
 
@@ -604,8 +593,7 @@
             if (wishlist.length === 0) c.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Belum ada produk favorit.</div>';
             else c.innerHTML = wishlist.map((item) => {
                 if(!item) return "";
-                let safeUrl = getAntiCacheUrl(item.foto);
-                return `<div class="cart-item"><img src="${safeUrl}" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
+                return `<div class="cart-item"><img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex:1;margin-left:14px;"><b>${item.nama}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`;
             }).join("");
             document.getElementById('wishlistModal').style.display = 'flex';
         }
@@ -760,7 +748,7 @@
             const container = document.getElementById('bannerContainer');
             if (!banners || banners.length === 0) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
-            container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${getAntiCacheUrl(b.Foto_URL)}" alt="Banner"></div>`).join('');
+            container.innerHTML = banners.map(b => `<div class="banner-item"><img src="${b.Foto_URL}" alt="Banner"></div>`).join('');
         }
 
         function applyDataToUI(data) {
@@ -787,7 +775,7 @@
                 document.getElementById('uiHeaderAlamat').style.display = "none";
             }
 
-            if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = getAntiCacheUrl(storeSettings.Logo_URL); document.getElementById('uiLogoImg').style.display = "block"; }
+            if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = storeSettings.Logo_URL; document.getElementById('uiLogoImg').style.display = "block"; }
             if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
             tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
             
@@ -832,12 +820,11 @@
                 let badge = p.Label_Promo ? p.Label_Promo : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
                 let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : formatRp(p.Harga_Normal);
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; border-radius:8px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
-                let safeUrl = getAntiCacheUrl(p.Foto_URL);
 
                 html += `
                 <div class="scroll-card" onclick="openProductDetail('${p.ID_Produk}')">
                     <div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:2;">${badge}</div>
-                    <img src="${safeUrl}" loading="lazy">
+                    <img src="${p.Foto_URL}" loading="lazy">
                     <div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;">
                         <div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.Nama_Produk}</div>
                         <div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:6px;">${harga}</div>
@@ -899,10 +886,9 @@
                 let isW = wishlist.find(w => w && w.id === p.ID_Produk);
                 let heart = isW ? '<i class="fas fa-heart" style="color:var(--danger);"></i>' : '<i class="far fa-heart" style="color:var(--text-muted);"></i>';
                 let wBtn = `<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${heart}</button>`;
-                let safeUrl = getAntiCacheUrl(p.Foto_URL);
 
                 html += `<div class="product-card" onclick="openProductDetail('${p.ID_Produk}')">
-                            <div class="product-img-wrapper">${badgeHtml}${wBtn}<img src="${safeUrl}" class="product-img" loading="lazy"></div>
+                            <div class="product-img-wrapper">${badgeHtml}${wBtn}<img src="${p.Foto_URL}" class="product-img" loading="lazy"></div>
                             <div class="product-info"><div><div class="product-title">${p.Nama_Produk}</div>${hrgHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; color:var(--text-muted);">Sisa: ${p.Stok}</span>${btn}</div></div>
                          </div>`;
             });
@@ -920,11 +906,10 @@
             else { hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`; }
             
             let labelBadge = p.Label_Promo ? `<span style="background:var(--danger); color:white; padding: 4px 8px; border-radius:6px; font-size:12px; font-weight:bold; margin-right:8px;">${p.Label_Promo}</span>` : "";
-            let safeUrl = getAntiCacheUrl(p.Foto_URL);
             
             document.getElementById('detailContent').innerHTML = `
                 <div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <img src="${safeUrl}" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="${p.Foto_URL}" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div style="margin-bottom:8px;">${labelBadge}</div>
                 <div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${p.Nama_Produk}</div>
@@ -1015,10 +1000,9 @@
                     globalSubtotal += (item.harga * item.qty); 
                     const p = allProducts.find(x => x && x.ID_Produk === item.id) || {};
                     let note = Number(p.Harga_Promo) > 0 ? `<span style="font-size:10px; color:var(--danger);">Promo</span>` : "";
-                    let safeUrl = getAntiCacheUrl(item.foto);
                     
                     return `<div class="cart-item">
-                                <img src="${safeUrl}" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);">
+                                <img src="${item.foto}" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);">
                                 <div style="flex: 1; margin-left:14px;"><b>${item.nama}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div>${note}</div>
                                 <div class="qty-control">
                                     <div class="qty-btn" onclick="updateQty(${i}, -1)">-</div>
@@ -1057,7 +1041,7 @@
             submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
 
             if(storeSettings.Info_Rekening) document.getElementById('uiInfoRekening').innerText = storeSettings.Info_Rekening;
-            if(storeSettings.QRIS_URL) { document.getElementById('uiQrisImage').src = getAntiCacheUrl(storeSettings.QRIS_URL); document.getElementById('uiQrisImage').style.display = 'block'; }
+            if(storeSettings.QRIS_URL) { document.getElementById('uiQrisImage').src = storeSettings.QRIS_URL; document.getElementById('uiQrisImage').style.display = 'block'; }
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
@@ -1203,10 +1187,9 @@
             let filtered = adminActiveCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === adminActiveCategory);
 
             document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => {
-                let safeUrl = getAntiCacheUrl(p.Foto_URL);
                 return `
                 <div class="admin-card">
-                    <img src="${safeUrl}" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a;">
+                    <img src="${p.Foto_URL}" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a;">
                     <div style="flex:1; margin-left: 12px;">
                         <b>${p.Nama_Produk}</b><br>
                         <div style="display:flex; gap:6px; align-items:center; margin-top:3px;">
@@ -1297,10 +1280,9 @@
                 
                 let banners = res.data.banners || [];
                 document.getElementById('adminBannerList').innerHTML = banners.length ? banners.map(b => {
-                    let safeUrl = getAntiCacheUrl(b.Foto_URL);
                     return `
                     <div class="admin-card">
-                        <img src="${safeUrl}" style="width:120px; height: 50px; object-fit:contain; border-radius: 8px; background:#0f172a;">
+                        <img src="${b.Foto_URL}" style="width:120px; height: 50px; object-fit:contain; border-radius: 8px; background:#0f172a;">
                         <button class="btn btn-danger" onclick="deleteBannerAdmin('${b.ID_Banner}')"><i class="fas fa-trash"></i></button>
                     </div>`}).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
 
@@ -1437,7 +1419,7 @@
             document.getElementById('formDeskripsi').value = p.Deskripsi || ""; document.getElementById('formStok').value = p.Stok || 0; document.getElementById('formHpp').value = p.HPP || 0;
             document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaGrosir').value = p.Harga_Grosir || ""; document.getElementById('formHargaPromo').value = p.Harga_Promo || ""; document.getElementById('formSatuan').value = p.Satuan || "pcs"; document.getElementById('formLabelPromo').value = p.Label_Promo || "";
             if(p.Terbaru === "Ya") document.getElementById('formBadge').value = "Terbaru"; else if(p.Terlaris === "Ya") document.getElementById('formBadge').value = "Terlaris"; else if(p.Unggulan === "Ya") document.getElementById('formBadge').value = "Unggulan"; else document.getElementById('formBadge').value = "";
-            document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = getAntiCacheUrl(p.Foto_URL); document.getElementById('imagePreview').style.display = 'block'; }
+            document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; }
         }
 
         async function submitProduct() {
