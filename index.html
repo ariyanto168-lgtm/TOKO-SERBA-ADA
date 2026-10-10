@@ -10,15 +10,15 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
     <!-- IDENTITAS WEB & SEO DASAR (ANTI-PHISHING) -->
-    <meta name="description" content="TokoKu - Toko online terpercaya. Belanja mudah, aman, dan langsung diproses via WhatsApp.">
-    <meta name="keywords" content="toko online, belanja, murah, aman, grosir, tokoku">
-    <meta name="author" content="Admin TokoKu">
-    <meta property="og:title" content="TokoKu - Pusat Belanja Hemat">
-    <meta property="og:description" content="Cek katalog lengkap kami di sini. Beli campur 5 pcs langsung dapat Harga Grosir!">
+    <meta name="description" content="TOKO PRISMA - Toko online terpercaya. Belanja mudah, aman, dan langsung diproses via WhatsApp.">
+    <meta name="keywords" content="toko prisma, belanja, murah, aman, grosir, online shop">
+    <meta name="author" content="Admin TOKO PRISMA">
+    <meta property="og:title" content="TOKO PRISMA - Pusat Belanja Hemat">
+    <meta property="og:description" content="Cek katalog lengkap TOKO PRISMA di sini. Beli campur 5 pcs langsung dapat Harga Grosir!">
     <meta property="og:type" content="website">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" type="image/png">
 
-    <title>Toko Serba Ada - v4.7</title>
+    <title>TOKO PRISMA - v4.8</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -54,7 +54,7 @@
 
         /* WATERMARK OTOMATIS DI GAMBAR PRODUK */
         .product-img-wrapper::after, .watermark-wrapper::after {
-            content: 'HAK CIPTA TOKO'; /* Ubah teks ini sesuai nama toko Anda jika mau */
+            content: 'TOKO PRISMA';
             position: absolute;
             top: 50%;
             left: 50%;
@@ -195,7 +195,7 @@
                 <div class="logo" onclick="location.reload()">
                     <img id="uiLogoImg" src="" alt="Logo">
                     <div class="logo-text-container">
-                        <span id="uiStoreName">TokoKu</span>
+                        <span id="uiStoreName">TOKO PRISMA</span>
                         <span id="uiHeaderAlamat"></span>
                     </div>
                 </div>
@@ -231,17 +231,17 @@
             <div class="product-grid" id="productGrid">
                 <div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">
                     <i class="fas fa-circle-notch fa-spin" style="font-size: 30px; margin-bottom: 10px; color: var(--primary);"></i><br>
-                    <b>Memuat Katalog Toko...</b>
+                    <b>Memuat Katalog TOKO PRISMA...</b>
                 </div>
             </div>
         </main>
 
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
-            &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">Toko Serba Ada</span><br>
+            &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.7 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.8 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
             </div>
         </div>
 
@@ -370,7 +370,7 @@
 
     <!-- PANEL ADMIN -->
     <div id="adminView" class="no-print">
-        <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
+        <div class="admin-header"><strong><i class="fas fa-store"></i> Panel Penjual - TOKO PRISMA</strong><button class="btn btn-outline" style="padding:6px 12px; color:white; border-color: #475569;" onclick="closeAdmin()">Tutup</button></div>
         
         <nav class="admin-bottom-nav">
             <div class="admin-nav-item active" id="tabBtn_laporan" onclick="switchAdminTab('laporan')"><i class="fas fa-chart-pie"></i> Dasbor</div>
@@ -446,7 +446,7 @@
 
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
                 <h3 style="margin-bottom:16px; color:#f8fafc;"><i class="fas fa-cog"></i> Pengaturan Toko</h3>
-                <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: Toko Berkah"></div>
+                <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: TOKO PRISMA"></div>
                 <div class="form-group"><label>Alamat Lengkap Toko</label><textarea id="setAlamatToko" rows="2" placeholder="Jalan..."></textarea></div>
                 <div class="form-group"><label>Warna Tema Utama</label><input type="color" id="setWarnaTema" style="height: 50px; padding: 5px;"></div>
                 <div class="form-group"><label>Biaya Kirim Kurir Toko (Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
@@ -483,7 +483,7 @@
                 <input type="file" id="formFileFoto" accept="image/*" onchange="handleImageUpload(event, 'formFotoBase64', 'imagePreview')">
                 <div id="imageUploadStatus" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Pilih foto dari galeri HP Anda.</div>
                 <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU ketik nama file dari GitHub:</div>
-                <input type="text" id="formFotoUrl" placeholder="Contoh: vivan-q17.jpg" oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
+                <input type="text" id="formFotoUrl" placeholder="Contoh: produk-1.jpg" oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
                 <input type="hidden" id="formFotoBase64">
                 <img id="imagePreview" style="max-height:140px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569; object-fit: contain; background: #0f172a; width: 100%;">
             </div>
@@ -534,8 +534,8 @@
         let failedPinAttempts = 0;
         let pinLockoutTime = 0;
 
-        try { let c = JSON.parse(localStorage.getItem("TokoCart_v2")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoCart_v2"); }
-        try { let w = JSON.parse(localStorage.getItem("TokoWishlist_v2")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoWishlist_v2"); }
+        try { let c = JSON.parse(localStorage.getItem("TokoPrismaCart_v1")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaCart_v1"); }
+        try { let w = JSON.parse(localStorage.getItem("TokoPrismaWishlist_v1")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaWishlist_v1"); }
 
         let activeCategory = "Semua", currentSort = "terbaru";
 
@@ -567,7 +567,7 @@
 
         try {
             document.getElementById('footerYear').innerText = new Date().getFullYear();
-            if (localStorage.getItem("TokoTheme_v2") === "dark") { 
+            if (localStorage.getItem("TokoPrismaTheme_v1") === "dark") { 
                 document.body.classList.add("dark-theme"); 
                 document.getElementById("themelcon").innerText = "☀️"; 
             }
@@ -584,7 +584,7 @@
 
         function toggleTheme() {
             document.body.classList.toggle("dark-theme");
-            localStorage.setItem("TokoTheme_v2", document.body.classList.contains("dark-theme") ? "dark" : "light");
+            localStorage.setItem("TokoPrismaTheme_v1", document.body.classList.contains("dark-theme") ? "dark" : "light");
             document.getElementById("themelcon").innerText = document.body.classList.contains("dark-theme") ? "☀" : "🌙";
         }
 
@@ -602,14 +602,14 @@
 
         function shareStoreLink() {
             let url = window.location.href.split('#')[0].split('?')[0];
-            let text = `Belanja hemat dan mudah di *${storeSettings.Nama_Toko || 'Toko Kami'}*! Cek katalog lengkapnya di sini: ${url}`;
+            let text = `Belanja hemat dan mudah di *${storeSettings.Nama_Toko || 'TOKO PRISMA'}*! Cek katalog lengkapnya di sini: ${url}`;
             let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
             window.open(waUrl, '_blank');
         }
 
         function shareProductWA(idProduk, namaProduk) {
             let url = window.location.href.split('#')[0].split('?')[0] + "?product=" + idProduk;
-            let text = `Cek produk *${namaProduk}* di ${storeSettings.Nama_Toko || 'Toko Kami'}. Klik link ini: ${url}`;
+            let text = `Cek produk *${namaProduk}* di ${storeSettings.Nama_Toko || 'TOKO PRISMA'}. Klik link ini: ${url}`;
             let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
             window.open(waUrl, '_blank');
         }
@@ -617,7 +617,7 @@
         async function fetchAPI(action, method = 'POST', data = {}, silent = false) {
             if(!silent) document.getElementById('loadingBar').style.display = 'block';
             try {
-                if(sessionStorage.getItem("Toko_AdminToken")) data.admin_pin = sessionStorage.getItem("Toko_AdminToken");
+                if(sessionStorage.getItem("TokoPrisma_AdminToken")) data.admin_pin = sessionStorage.getItem("TokoPrisma_AdminToken");
                 const res = await fetch(method==='GET' ? `${GAS_URL}?action=${action}` : GAS_URL, { method: method, ...(method==='POST' && { headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action,data}) }) });
                 const resData = await res.json();
                 if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) closeAdmin();
@@ -639,7 +639,7 @@
             const idx = wishlist.findIndex(x => x && x.id === id);
             if(idx > -1) { wishlist.splice(idx, 1); showToast("Dihapus dari wishlist", "error"); }
             else { wishlist.push({id: p.ID_Produk, nama: p.Nama_Produk, foto: p.Foto_URL, harga: getFinalPrice(p, 1), satuan: p.Satuan||'pcs'}); showToast("Disimpan ke wishlist"); }
-            localStorage.setItem('TokoWishlist_v2', JSON.stringify(wishlist)); 
+            localStorage.setItem('TokoPrismaWishlist_v1', JSON.stringify(wishlist)); 
             updateWishlistBadge(); renderKatalogVisitor(allProducts);
         }
 
@@ -660,13 +660,13 @@
 
         function clearUserHistory() {
             if(confirm("Hapus riwayat pesanan (Nomor WA) dari HP ini?")) {
-                localStorage.removeItem('TokoUser_WA'); document.getElementById('checkWaInput').value = "";
+                localStorage.removeItem('TokoPrismaUser_WA'); document.getElementById('checkWaInput').value = "";
                 document.getElementById('customerOrdersResult').innerHTML = ""; showToast("Riwayat dihapus dari perangkat.");
             }
         }
 
         function openCustomerOrdersModal() {
-            let savedWa = localStorage.getItem('TokoUser_WA') || "";
+            let savedWa = localStorage.getItem('TokoPrismaUser_WA') || "";
             document.getElementById('checkWaInput').value = savedWa;
             document.getElementById('customerOrdersResult').innerHTML = "";
             document.getElementById('customerOrdersModal').style.display = 'flex';
@@ -694,7 +694,7 @@
                     let displayTotal = 0;
                     if(Number(o.Total) > 0) { displayTotal = Number(o.Total); } else if(o.items && o.items.length > 0) { displayTotal = o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0); }
 
-                    let chatText = encodeURIComponent(`Halo Admin, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
+                    let chatText = encodeURIComponent(`Halo Admin TOKO PRISMA, saya ingin konfirmasi status pesanan ${o.ID_Pesanan} atas nama ${o.Nama_Pembeli}.`);
                     let chatUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}`;
                     
                     let hasReviewed = allReviews.find(r => r.ID_Pesanan === o.ID_Pesanan);
@@ -819,8 +819,8 @@
             allReviews = data.reviews || [];
             
             storeSettings = data.settings || {};
-            document.getElementById('uiStoreName').innerHTML = escapeHTML(storeSettings.Nama_Toko) || "TokoKu";
-            document.getElementById('footerName').innerHTML = escapeHTML(storeSettings.Nama_Toko) || "Toko Serba Ada";
+            document.getElementById('uiStoreName').innerHTML = escapeHTML(storeSettings.Nama_Toko) || "TOKO PRISMA";
+            document.getElementById('footerName').innerHTML = escapeHTML(storeSettings.Nama_Toko) || "TOKO PRISMA";
             
             let alamatGabung = "";
             if(storeSettings.Alamat_Toko) alamatGabung += escapeHTML(storeSettings.Alamat_Toko);
@@ -847,9 +847,9 @@
         }
 
         async function initApp() {
-            if(!sessionStorage.getItem("Toko_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("Toko_Pinged", "1"); }
+            if(!sessionStorage.getItem("TokoPrisma_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("TokoPrisma_Pinged", "1"); }
             
-            let cachedData = localStorage.getItem("TokoCache_Catalog");
+            let cachedData = localStorage.getItem("TokoPrismaCache_Catalog");
             let isSilentFetch = false;
             if (cachedData) {
                 try { let parsedData = JSON.parse(cachedData); applyDataToUI(parsedData); isSilentFetch = true; } catch(e) {}
@@ -858,7 +858,7 @@
             const res = await fetchAPI("get_catalog", "GET", {}, isSilentFetch);
             
             if (res && res.status === "success" && res.data) {
-                localStorage.setItem("TokoCache_Catalog", JSON.stringify(res.data));
+                localStorage.setItem("TokoPrismaCache_Catalog", JSON.stringify(res.data));
                 applyDataToUI(res.data);
                 
                 let params = new URLSearchParams(window.location.search);
@@ -1010,7 +1010,7 @@
                     }
                 }
             });
-            localStorage.setItem("TokoCart_v2", JSON.stringify(cart));
+            localStorage.setItem("TokoPrismaCart_v1", JSON.stringify(cart));
         }
 
         function addToCart(id, qty = 1) {
@@ -1125,9 +1125,9 @@
             document.getElementById('checkoutMetode').value = "Ambil di Toko";
             calculateOngkir();
             
-            document.getElementById('checkoutNama').value = localStorage.getItem('TokoUser_Nama') || ""; 
-            document.getElementById('checkoutWA').value = localStorage.getItem('TokoUser_WA') || ""; 
-            document.getElementById('checkoutAlamat').value = localStorage.getItem('TokoUser_Alamat') || "";
+            document.getElementById('checkoutNama').value = localStorage.getItem('TokoPrismaUser_Nama') || ""; 
+            document.getElementById('checkoutWA').value = localStorage.getItem('TokoPrismaUser_WA') || ""; 
+            document.getElementById('checkoutAlamat').value = localStorage.getItem('TokoPrismaUser_Alamat') || "";
             document.getElementById('checkoutBuktiBase64').value = "";
             document.getElementById('inputFileBukti').value = "";
             document.getElementById('checkoutBuktiPreview').style.display = 'none';
@@ -1193,17 +1193,17 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Menyimpan Pesanan...`;
             
-            localStorage.setItem('TokoUser_Nama', n); localStorage.setItem('TokoUser_WA', w); localStorage.setItem('TokoUser_Alamat', a);
+            localStorage.setItem('TokoPrismaUser_Nama', n); localStorage.setItem('TokoPrismaUser_WA', w); localStorage.setItem('TokoPrismaUser_Alamat', a);
             
             try {
                 const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
                 if(res.status === 'success') {
                     let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
                     let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
-                    let txt = `*PESANAN BARU (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
+                    let txt = `*PESANAN BARU TOKO PRISMA (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
                     let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
                     
-                    cart = []; localStorage.removeItem("TokoCart_v2"); updateCartBadge(); closeModal('checkoutModal');
+                    cart = []; localStorage.removeItem("TokoPrismaCart_v1"); updateCartBadge(); closeModal('checkoutModal');
                     
                     document.getElementById('detailContent').innerHTML = `
                         <div style="text-align:center; padding:10px;">
@@ -1230,7 +1230,7 @@
         window.addEventListener("hashchange", checkAdminAccess);
         function checkAdminAccess() {
             if (window.location.hash.includes("#admin")) {
-                if (sessionStorage.getItem("Toko_AdminToken")) { document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; loadAdminData(); } 
+                if (sessionStorage.getItem("TokoPrisma_AdminToken")) { document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; loadAdminData(); } 
                 else { openAdminLogin(); }
             } else { document.getElementById('adminView').style.display = 'none'; document.getElementById('userView').style.display = 'block'; }
         }
@@ -1241,7 +1241,7 @@
         }
 
         function closeAdminLoginModal() { document.getElementById('adminPinModal').style.display = 'none'; window.location.hash = ""; document.getElementById('userView').style.display = 'block'; }
-        function closeAdmin() { sessionStorage.removeItem("Toko_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
+        function closeAdmin() { sessionStorage.removeItem("TokoPrisma_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
         
         async function submitAdminPin() {
             if (Date.now() < pinLockoutTime) {
@@ -1263,7 +1263,7 @@
                 const r = await fetchAPI("verify_pin", "POST", { pin: p });
                 if (r.status === 'success') { 
                     failedPinAttempts = 0; 
-                    sessionStorage.setItem("Toko_AdminToken", p); 
+                    sessionStorage.setItem("TokoPrisma_AdminToken", p); 
                     document.getElementById('adminPinModal').style.display = 'none'; 
                     document.getElementById('userView').style.display = 'none'; 
                     document.getElementById('adminView').style.display = 'block'; 
@@ -1316,7 +1316,7 @@
                         <button class="btn btn-secondary" style="padding:6px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i></button>
                         <button class="btn btn-danger" style="padding:6px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i></button>
                     </div>
-                </div>`}).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Tidak ada produk dalam kategori ini.</div>";
+                `}).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Tidak ada produk dalam kategori ini.</div>";
         }
 
         function filterAdminCategory(cat) {
@@ -1463,7 +1463,7 @@
 
             let notaHtml = `
                 <div style="text-align:center; margin-bottom: 16px;">
-                    <h2 style="margin:0; font-size:20px;">${escapeHTML(storeSettings.Nama_Toko) || 'TokoKu'}</h2>
+                    <h2 style="margin:0; font-size:20px;">${escapeHTML(storeSettings.Nama_Toko) || 'TOKO PRISMA'}</h2>
                     <div style="font-size:12px; color:#555;">${escapeHTML(storeSettings.Alamat_Toko) || ''}</div><div style="font-size:12px; color:#555;">WA: ${escapeHTML(storeSettings.WhatsApp_Admin) || ''}</div>
                 </div>
                 <div style="font-size:12px; margin-bottom: 16px; border-top:1px dashed #000; border-bottom:1px dashed #000; padding:8px 0;">
@@ -1473,13 +1473,13 @@
                 <div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal:</span> <span>${formatRp(totalItems)}</span></div>
                 <div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkir:</span> <span>${formatRp(ongkir)}</span></div>
                 <div style="font-size:14px; font-weight:bold; display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px dashed #000;"><span>TOTAL:</span> <span>${formatRp(total)}</span></div>
-                <div style="text-align:center; font-size:11px; margin-top:20px; color:#555;">Terima Kasih Telah Berbelanja!</div>`;
+                <div style="text-align:center; font-size:11px; margin-top:20px; color:#555;">Terima Kasih Telah Berbelanja di TOKO PRISMA!</div>`;
 
             document.getElementById('notaPrintArea').innerHTML = notaHtml;
 
-            let waText = `*NOTA PESANAN - ${storeSettings.Nama_Toko}*\n\nID: ${o.ID_Pesanan}\nTanggal: ${o.Tanggal}\n\n*Pelanggan:* ${o.Nama_Pembeli}\n*Metode:* ${o.Metode_Pengiriman}\n\n*Rincian:*\n`;
+            let waText = `*NOTA PESANAN - TOKO PRISMA*\n\nID: ${o.ID_Pesanan}\nTanggal: ${o.Tanggal}\n\n*Pelanggan:* ${o.Nama_Pembeli}\n*Metode:* ${o.Metode_Pengiriman}\n\n*Rincian:*\n`;
             items.forEach(i => { waText += `- ${i.Nama_Produk} (${i.Jumlah}x) = ${formatRp(i.Subtotal)}\n`; });
-            waText += `\nSubtotal: ${formatRp(totalItems)}\nOngkir: ${formatRp(ongkir)}\n*TOTAL: ${formatRp(total)}*\n\nTerima kasih telah berbelanja!`;
+            waText += `\nSubtotal: ${formatRp(totalItems)}\nOngkir: ${formatRp(ongkir)}\n*TOTAL: ${formatRp(total)}*\n\nTerima kasih telah berbelanja di TOKO PRISMA!`;
             
             document.getElementById('btnShareNota').onclick = function() { let waUrl = `https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(waText)}`; window.open(waUrl, '_blank'); };
             document.getElementById('notaModal').style.display = 'flex';
@@ -1494,7 +1494,7 @@
         async function resetAllOrdersAdmin() {
             if(!confirm("PERINGATAN! Anda akan menghapus SEMUA riwayat pesanan (baik yang selesai maupun baru). Lanjutkan?")) return;
             let pinConfirm = prompt("Masukkan PIN Admin Anda untuk konfirmasi reset:");
-            if(pinConfirm !== sessionStorage.getItem("Toko_AdminToken")) { showToast("PIN tidak cocok! Batal reset.", "error"); return; }
+            if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN tidak cocok! Batal reset.", "error"); return; }
             const r = await fetchAPI("reset_orders", "POST", {});
             if(r.status === 'success') { showToast("Semua riwayat pesanan berhasil direset!"); loadAdminData(); } else { showToast(r.message, "error"); }
         }
@@ -1503,7 +1503,7 @@
             let newPin = document.getElementById('setNewPin').value;
             if(!newPin || newPin.length < 4) { showToast("PIN baru minimal 4 karakter!", "error"); return; }
             const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin });
-            if(r.status === 'success') { showToast("PIN Admin diubah!"); sessionStorage.setItem("Toko_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } else { showToast("Gagal mengubah PIN.", "error"); }
+            if(r.status === 'success') { showToast("PIN Admin diubah!"); sessionStorage.setItem("TokoPrisma_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } else { showToast("Gagal mengubah PIN.", "error"); }
         }
 
         function openBannerModal() { let url = prompt("URL Banner:"); if (url) submitBannerAdmin(url); }
@@ -1604,7 +1604,6 @@
             if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); }
         }
 
-        // FUNGSI BARU: Reset Pengunjung Admin
         async function resetPengunjungAdmin() {
             if(!confirm("Yakin ingin mereset angka pengunjung hari ini menjadi 0?")) return;
             const r = await fetchAPI("reset_visitor", "POST", {});
