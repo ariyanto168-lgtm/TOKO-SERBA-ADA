@@ -6,19 +6,43 @@
     
     <!-- SISTEM KEAMANAN (FIREWALL FRONTEND) -->
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob: data: https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com https://cdn.phototourl.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' blob: data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
-    <!-- IDENTITAS WEB & SEO DASAR (ANTI-PHISHING) -->
+    <!-- IDENTITAS WEB & SEO DASAR -->
     <meta name="description" content="TOKO PRISMA - Toko online terpercaya. Belanja mudah, aman, dan langsung diproses via WhatsApp.">
     <meta name="keywords" content="toko prisma, belanja, murah, aman, grosir, online shop">
     <meta name="author" content="Admin TOKO PRISMA">
     <meta property="og:title" content="TOKO PRISMA - Pusat Belanja Hemat">
     <meta property="og:description" content="Cek katalog lengkap TOKO PRISMA di sini. Beli campur 5 pcs langsung dapat Harga Grosir!">
     <meta property="og:type" content="website">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" type="image/png">
+    <link rel="icon" href="tokoprisma.jpg" type="image/jpeg">
 
-    <title>TOKO PRISMA - v4.9</title>
+    <!-- PWA: PENGATURAN ICON LAYAR UTAMA (TANPA FILE MANIFEST.JSON TERPISAH) -->
+    <link id="dynamic-manifest" rel="manifest">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PRISMA">
+    <link rel="apple-touch-icon" href="tokoprisma.jpg">
+    <script>
+        const manifestJSON = {
+            "name": "TOKO PRISMA",
+            "short_name": "PRISMA",
+            "start_url": window.location.href.split('?')[0],
+            "display": "standalone",
+            "background_color": "#ffffff",
+            "theme_color": "#6366f1",
+            "icons": [{
+                "src": "tokoprisma.jpg",
+                "sizes": "512x512",
+                "type": "image/jpeg"
+            }]
+        };
+        const blob = new Blob([JSON.stringify(manifestJSON)], { type: 'application/manifest+json' });
+        document.getElementById('dynamic-manifest').href = URL.createObjectURL(blob);
+    </script>
+
+    <title>TOKO PRISMA - v5.3</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -261,7 +285,7 @@
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
             
             <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;">
-                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v4.9 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
+                <span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v5.3 <i class="fas fa-shield-alt" style="color:var(--success);" title="Keamanan Gambar"></i></span>
             </div>
         </div>
 
