@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.9 Secure Pro</title>
+    <title>TOKO PRISMA - v6.10 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -185,7 +185,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.9 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.10 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -510,7 +510,12 @@
                 if(sessionStorage.getItem("TokoPrisma_AdminToken")) data.admin_pin = sessionStorage.getItem("TokoPrisma_AdminToken");
                 const res = await fetch(method==='GET' ? `${GAS_URL}?action=${action}` : GAS_URL, { method: method, ...(method==='POST' && { headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action,data}) }) });
                 const resData = await res.json();
-                if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) closeAdmin();
+                // Hanya memunculkan closeAdmin() / menendang jika sedang berada di layar panel admin
+                if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) {
+                    if (window.location.hash.includes("#admin")) {
+                        closeAdmin();
+                    }
+                }
                 return resData;
             } catch (e) { return { status: "error", message: "Koneksi terputus." }; } finally { document.getElementById('loadingBar').style.display = 'none'; }
         }
@@ -585,7 +590,17 @@
 
         async function markOrderCompleted(orderId) {
             if(!(await customConfirm("Konfirmasi bahwa paket sudah diterima dan pesanan selesai?"))) return;
-            const res = await fetchAPI("update_order_status", "POST", {id: orderId, status: "Selesai"});
+            
+            let waInput = document.getElementById('checkWaInput').value;
+            // Kirim is_customer, role, dan wa agar backend mengenali ini sebagai permintaan pembeli (bukan admin)
+            let res = await fetchAPI("update_order_status", "POST", {id: orderId, status: "Selesai", is_customer: true, role: "customer", wa: waInput});
+            
+            // Jika backend Script lama masih diproteksi ketat & menolak karena minta PIN
+            if (res.status === 'error' && res.message && res.message.includes("Sesi Admin")) {
+                showToast("Status diproteksi sistem. Silakan konfirmasi ke Admin via Chat WA.", "error");
+                return;
+            }
+
             if(res.status === 'success') { 
                 showToast("Pesanan diselesaikan!"); 
                 await fetchCustomerOrders(); 
