@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.6 Secure Pro</title>
+    <title>TOKO PRISMA - v6.7 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -173,7 +173,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.6 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.7 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -414,6 +414,7 @@
         let tarifKurir = 0, globalSubtotal = 0;
         let adminActiveCategory = "Semua";
         let searchTimeout = null;
+        let activeCartInputIndex = -1; 
 
         try { let c = JSON.parse(localStorage.getItem("TokoPrismaCart_v1")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaCart_v1"); }
         try { let w = JSON.parse(localStorage.getItem("TokoPrismaWishlist_v1")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaWishlist_v1"); }
@@ -494,7 +495,23 @@
                 document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o) => {
                     let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
                     let htmlItems = (o.items && o.items.length) ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; color:var(--text-main);"><span>- ${escapeHTML(i.Nama_Produk)} (x${escapeHTML(i.Jumlah)})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : `<div style="font-size:12px; color:var(--text-muted);">Detail produk kosong.</div>`;
-                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : (o.items ? o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0) : 0);
+                    
+                    // Rincian seperti nota beli
+                    let totalItems = o.items ? o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0) : 0;
+                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems;
+                    let ongkir = displayTotal - totalItems;
+                    if(ongkir < 0) ongkir = 0;
+
+                    let rincianNota = `
+                    <div style="border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 10px; font-size: 12px; color: var(--text-main);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal Produk:</span><span>${formatRp(totalItems)}</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkos Kirim:</span><span>${formatRp(ongkir)}</span></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px dashed var(--border); padding-top: 8px; margin-bottom:12px;">
+                        <span style="font-size:14px; font-weight:bold;">Total Bayar:</span>
+                        <span style="font-size:16px; font-weight:800; color:var(--primary);">${formatRp(displayTotal)}</span>
+                    </div>`;
+
                     let chatText = encodeURIComponent(`Halo Admin, konfirmasi pesanan ${o.ID_Pesanan}.`);
                     
                     let reviewBtn = (o.Status_Pesanan === 'Selesai' && !allReviews.find(r => r.ID_Pesanan === o.ID_Pesanan)) ? `<button class="btn btn-outline" style="flex:1; padding:10px; font-size:13px;" onclick="openAddReview('${escapeHTML(o.ID_Pesanan)}', '${escapeHTML(o.Nama_Pembeli)}')"><i class="fas fa-star" style="color:#f59e0b;"></i> Beri Ulasan</button>` : "";
@@ -503,7 +520,7 @@
 
                     let buktiBtn = o.Bukti_Transfer ? `<div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:8px; margin-top:8px;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:8px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_cust_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti Transfer</button><img id="bukti_cust_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:220px; object-fit:contain; margin-top:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface);"></div>` : "";
 
-                    return `<div style="background:var(--surface); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.04);"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><b style="font-size:13px;">${escapeHTML(o.ID_Pesanan)}</b><span class="badge" style="background:${statusBg};">${escapeHTML(o.Status_Pesanan)}</span></div><div style="font-size:12px; color:var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;"><i class="far fa-clock"></i> ${escapeHTML(o.Tanggal)}<br><i class="fas fa-truck"></i> Pengiriman: <b>${escapeHTML(o.Metode_Pengiriman || 'Ambil di Toko')}</b></div><div style="margin-bottom: 10px;">${htmlItems}</div><div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px dashed var(--border); padding-top: 10px; margin-bottom:12px;"><span style="font-size:14px; font-weight:bold;">Total Bayar:</span><span style="font-size:16px; font-weight:800; color:var(--primary);">${formatRp(displayTotal)}</span></div><a href="https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}" target="_blank" rel="noopener noreferrer" class="btn btn-success" style="width:100%; padding:10px; font-size:13px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat Admin</a>${buktiBtn}${actionRow}</div>`;
+                    return `<div style="background:var(--surface); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.04);"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><b style="font-size:13px;">${escapeHTML(o.ID_Pesanan)}</b><span class="badge" style="background:${statusBg};">${escapeHTML(o.Status_Pesanan)}</span></div><div style="font-size:12px; color:var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;"><i class="far fa-clock"></i> ${escapeHTML(o.Tanggal)}<br><i class="fas fa-truck"></i> Pengiriman: <b>${escapeHTML(o.Metode_Pengiriman || 'Ambil di Toko')}</b></div><div style="margin-bottom: 4px;">${htmlItems}</div>${rincianNota}<a href="https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}" target="_blank" rel="noopener noreferrer" class="btn btn-success" style="width:100%; padding:10px; font-size:13px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat Admin</a>${buktiBtn}${actionRow}</div>`;
                 }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ada pesanan.</div>";
             } else { document.getElementById('customerOrdersResult').innerHTML = `<div style='text-align:center; color:var(--danger);'>${escapeHTML(res.message)}</div>`; }
         }
@@ -649,12 +666,29 @@
             updateAllCartPrices(); updateCartBadge(); showToast("Masuk keranjang");
         }
         
-        function updateQty(i, d) { let c = cart[i]; if(!c) return; let p = allProducts.find(x => x && x.ID_Produk === c.id); if(p) handleQtyChange(i, c.qty + d, p); }
-        function handleManualInput(i, e) { let v = parseInt(e.target.value); let c = cart[i]; if(!c) return; let p = allProducts.find(x => x && x.ID_Produk === c.id); if(isNaN(v) || v < 0) e.target.value = c.qty; else handleQtyChange(i, v, p); }
+        function updateQty(i, d) { 
+            let c = cart[i]; if(!c) return; 
+            let p = allProducts.find(x => x && x.ID_Produk === c.id); 
+            if(p) handleQtyChange(i, c.qty + d, p); 
+        }
+
         function handleQtyChange(i, newQty, p) {
             if(newQty > Number(p.Stok)) { showToast("Maksimal stok tercapai", "error"); newQty = Number(p.Stok); }
             if (newQty <= 0) { if(confirm("Hapus dari keranjang?")) cart.splice(i, 1); else newQty = 1; } else { cart[i].qty = newQty; }
             updateAllCartPrices(); openCart(); updateCartBadge(); 
+        }
+
+        function handleManualInput(i, el) {
+            let v = parseInt(el.value);
+            if (isNaN(v) || v <= 0) return; // Jangan proses bila kosong/nol
+            activeCartInputIndex = i; // Simpan fokus
+            let c = cart[i]; if(!c) return;
+            let p = allProducts.find(x => x && x.ID_Produk === c.id);
+            if(v > Number(p.Stok)) { showToast("Maksimal stok tercapai", "error"); v = Number(p.Stok); }
+            cart[i].qty = v;
+            updateAllCartPrices();
+            openCart();
+            updateCartBadge();
         }
 
         function openCart() {
@@ -667,10 +701,23 @@
                 c.innerHTML = promoBanner + cart.map((item, i) => { 
                     globalSubtotal += (item.harga * item.qty); const p = allProducts.find(x => x.ID_Produk === item.id) || {};
                     let note = (Number(p.Harga_Promo) > 0 && item.harga === Number(p.Harga_Promo)) ? `<span style="font-size:10px; background:var(--danger); color:white; padding:2px 6px; border-radius:4px;">Promo</span>` : (totalCartQty >= 5 && Number(p.Harga_Grosir) > 0 && item.harga === Number(p.Harga_Grosir) ? `<span style="font-size:10px; background:var(--success); color:white; padding:2px 6px; border-radius:4px;">Grosir Min 5 Pcs</span>` : "");
-                    return `<div class="cart-item"><img src="${escapeHTML(item.foto)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex: 1; margin-left:14px;"><b>${escapeHTML(item.nama)}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div><div style="margin-top:2px;">${note}</div></div><div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><input type="number" class="qty-input" value="${item.qty}" onchange="handleManualInput(${i}, event)"><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div></div>`; 
+                    
+                    // Input dengan fitur ketik manual yang otomatis update harga saat itu juga tanpa hilang fokus
+                    return `<div class="cart-item"><img src="${escapeHTML(item.foto)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex: 1; margin-left:14px;"><b>${escapeHTML(item.nama)}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div><div style="margin-top:2px;">${note}</div></div><div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><input type="number" class="qty-input" id="cart-input-${i}" value="${item.qty}" oninput="handleManualInput(${i}, this)" onblur="if(this.value==='' || parseInt(this.value)<=0){ this.value=1; handleManualInput(${i}, this); } activeCartInputIndex = -1;"><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div></div>`; 
                 }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;"><b>Total:</b> <b style="color:var(--primary);">${formatRp(globalSubtotal)}</b></div><button class="btn btn-success" style="width: 100%;" onclick="prepareCheckout()">Checkout</button></div>`;
             }
             document.getElementById('cartModal').style.display = 'flex';
+            
+            // Kembalikan kursor fokus otomatis bila sedang ngetik manual (agar tidak keluar keyboard)
+            if (activeCartInputIndex > -1) {
+                setTimeout(() => {
+                    let el = document.getElementById('cart-input-' + activeCartInputIndex);
+                    if(el) {
+                        el.focus();
+                        let val = el.value; el.value = ''; el.value = val;
+                    }
+                }, 10);
+            }
         }
 
         function calculateOngkir() { document.getElementById('checkoutOngkir').innerText = formatRp(document.getElementById('checkoutMetode').value === "Kurir Toko" ? tarifKurir : 0); document.getElementById('checkoutTotal').innerText = formatRp(globalSubtotal + (document.getElementById('checkoutMetode').value === "Kurir Toko" ? tarifKurir : 0)); }
