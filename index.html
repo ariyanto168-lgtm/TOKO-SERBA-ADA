@@ -6,7 +6,7 @@
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob: data: https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; img-src 'self' blob: data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title>TOKO PRISMA - v6.0 Pro</title>
+    <title>TOKO PRISMA - v6.2 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -139,7 +139,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.0 Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.2 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -165,8 +165,6 @@
         </div>
     </div>
 
-    <!-- MODAL ULASAN & DETAIL PRODUK & KERANJANG & CHECKOUT & ADMIN & CETAK NOTA (Semua ada di script di bawah) -->
-    
     <!-- MODAL ULASAN -->
     <div class="no-print modal-overlay" id="reviewsModal" onclick="if(event.target===this) closeModal('reviewsModal')">
         <div class="modal-content" style="max-height: 90vh;"><div class="modal-close-btn" onclick="closeModal('reviewsModal')">X</div><h2 style="margin-bottom:20px;">Ulasan Pelanggan</h2><div id="reviewsStatContent" style="display:flex; gap:16px; align-items:center; background:var(--primary-light); padding:16px; border-radius:16px; margin-bottom:20px; border:1px solid var(--primary);"></div><div id="reviewsListContent"></div></div>
@@ -220,7 +218,6 @@
             
             <div class="form-group" id="uploadBuktiGroup">
                 <label>Upload Bukti Transfer* (Maks Otomatis Dikecilkan)</label>
-                <!-- EVENT ONCHANGE MEMANGGIL FUNGSI KOMPRESI -->
                 <input type="file" id="inputFileBukti" accept="image/*" onchange="compressAndUploadImage(event, 'checkoutBuktiBase64', 'checkoutBuktiPreview')">
                 <div id="uploadStatusText" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Belum ada gambar dipilih.</div>
                 <input type="hidden" id="checkoutBuktiBase64">
@@ -332,7 +329,6 @@
             
             <div class="form-group" style="background:#0f172a; padding:12px; border-radius:12px; margin-bottom:12px; border:1px solid #334155;">
                 <label>Foto Produk (Otomatis Dikecilkan)*</label>
-                <!-- KOMPRESI GAMBAR PRODUK SAAT UPLOAD -->
                 <input type="file" id="formFileFoto" accept="image/*" onchange="compressAndUploadImage(event, 'formFotoBase64', 'imagePreview')">
                 <div id="imageUploadStatus" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Pilih foto dari galeri HP Anda.</div>
                 <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU ketik nama file link:</div>
@@ -410,7 +406,7 @@
         function applyStoreTheme(hexColor) { if (hexColor && hexColor !== "") { document.documentElement.style.setProperty('--primary', hexColor); } }
         function showToast(msg, type = "success") {
             const c = document.getElementById("toastContainer"); const t = document.createElement("div"); t.className = `toast ${type}`; 
-            t.innerHTML = `<span>${type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-shield-alt"></i>'}</span> <span>${msg}</span>`;
+            t.innerHTML = `<span>${type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-shield-alt"></i>'}</span> <span>${escapeHTML(msg)}</span>`;
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
         }
 
@@ -463,24 +459,24 @@
                 customerOrdersCache = res.data.orders || []; let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
                 document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o) => {
                     let statusBg = o.Status_Pesanan === 'Selesai' ? 'var(--success)' : (o.Status_Pesanan === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
-                    let htmlItems = (o.items && o.items.length) ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; color:var(--text-main);"><span>- ${escapeHTML(i.Nama_Produk)} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : `<div style="font-size:12px; color:var(--text-muted);">Detail produk kosong.</div>`;
+                    let htmlItems = (o.items && o.items.length) ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; color:var(--text-main);"><span>- ${escapeHTML(i.Nama_Produk)} (x${escapeHTML(i.Jumlah)})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('') : `<div style="font-size:12px; color:var(--text-muted);">Detail produk kosong.</div>`;
                     let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : (o.items ? o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0) : 0);
                     let chatText = encodeURIComponent(`Halo Admin, konfirmasi pesanan ${o.ID_Pesanan}.`);
                     
-                    let reviewBtn = (o.Status_Pesanan === 'Selesai' && !allReviews.find(r => r.ID_Pesanan === o.ID_Pesanan)) ? `<button class="btn btn-outline" style="width:100%; padding:10px; font-size:13px; margin-top:8px;" onclick="openAddReview('${o.ID_Pesanan}', '${escapeHTML(o.Nama_Pembeli)}')"><i class="fas fa-star" style="color:#f59e0b;"></i> Beri Ulasan</button>` : "";
-                    let buktiBtn = o.Bukti_Transfer ? `<button class="btn btn-outline" style="width:100%; font-size:13px; padding:10px; margin-top:8px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_cust_${o.ID_Pesanan}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_cust_${o.ID_Pesanan}" src="${o.Bukti_Transfer}" loading="lazy" style="display:none; width:100%; max-height:250px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid var(--border);">` : "";
+                    let reviewBtn = (o.Status_Pesanan === 'Selesai' && !allReviews.find(r => r.ID_Pesanan === o.ID_Pesanan)) ? `<button class="btn btn-outline" style="width:100%; padding:10px; font-size:13px; margin-top:8px;" onclick="openAddReview('${escapeHTML(o.ID_Pesanan)}', '${escapeHTML(o.Nama_Pembeli)}')"><i class="fas fa-star" style="color:#f59e0b;"></i> Beri Ulasan</button>` : "";
+                    let buktiBtn = o.Bukti_Transfer ? `<button class="btn btn-outline" style="width:100%; font-size:13px; padding:10px; margin-top:8px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_cust_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_cust_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:250px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid var(--border);">` : "";
 
                     return `<div style="background:var(--bg); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border);"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><b style="font-size:13px;">${escapeHTML(o.ID_Pesanan)}</b><span class="badge" style="background:${statusBg};">${escapeHTML(o.Status_Pesanan)}</span></div><div style="font-size:12px; color:var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;"><i class="far fa-clock"></i> ${escapeHTML(o.Tanggal)}<br><i class="fas fa-truck"></i> Pengiriman: <b>${escapeHTML(o.Metode_Pengiriman || 'Ambil di Toko')}</b></div><div style="margin-bottom: 10px;">${htmlItems}</div><div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px dashed var(--border); padding-top: 10px; margin-bottom:12px;"><span style="font-size:14px; font-weight:bold;">Total Bayar:</span><span style="font-size:16px; font-weight:800; color:var(--primary);">${formatRp(displayTotal)}</span></div><a href="https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}" target="_blank" class="btn btn-success" style="width:100%; padding:10px; font-size:13px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat Admin</a>${buktiBtn}${reviewBtn}</div>`;
                 }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ada pesanan.</div>";
-            } else { document.getElementById('customerOrdersResult').innerHTML = `<div style='text-align:center; color:var(--danger);'>${res.message}</div>`; }
+            } else { document.getElementById('customerOrdersResult').innerHTML = `<div style='text-align:center; color:var(--danger);'>${escapeHTML(res.message)}</div>`; }
         }
 
         function renderReviews() {
             if (!allReviews.length) { document.getElementById('reviewsListContent').innerHTML = "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Belum ada ulasan.</div>"; document.getElementById('reviewsStatContent').style.display = 'none'; return; }
             document.getElementById('reviewsStatContent').style.display = 'flex';
             let avgRating = (allReviews.reduce((sum, r) => sum + (Number(r.Rating)||0), 0) / allReviews.length).toFixed(1);
-            document.getElementById('reviewsStatContent').innerHTML = `<div style="font-size: 36px; font-weight: 800; color: var(--primary);">${avgRating}</div><div><div class="star-rating" style="font-size:16px;">${'<i class="fas fa-star"></i>'.repeat(Math.round(avgRating))}</div><div style="font-size:12px; color:var(--text-muted);">Total <b>${allReviews.length}</b> Ulasan</div></div>`;
-            document.getElementById('reviewsListContent').innerHTML = allReviews.map(r => `<div class="review-card"><div style="display:flex; justify-content:space-between;"><b style="font-size:13px;">${escapeHTML(r.Nama_Pembeli)}</b><div class="star-rating">${'<i class="fas fa-star"></i>'.repeat(Number(r.Rating)||5)}</div></div><div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">${escapeHTML(r.Tanggal)}</div><div style="font-size:13px;">${escapeHTML(r.Komentar) || "<i>Tidak ada komentar.</i>"}</div></div>`).join("");
+            document.getElementById('reviewsStatContent').innerHTML = `<div style="font-size: 36px; font-weight: 800; color: var(--primary);">${escapeHTML(avgRating)}</div><div><div class="star-rating" style="font-size:16px;">${'<i class="fas fa-star"></i>'.repeat(Math.round(avgRating))}</div><div style="font-size:12px; color:var(--text-muted);">Total <b>${allReviews.length}</b> Ulasan</div></div>`;
+            document.getElementById('reviewsListContent').innerHTML = allReviews.map(r => `<div class="review-card" style="background:var(--bg); padding:14px; border-radius:12px; margin-bottom:10px; border:1px solid var(--border);"><div style="display:flex; justify-content:space-between;"><b style="font-size:13px;">${escapeHTML(r.Nama_Pembeli)}</b><div class="star-rating">${'<i class="fas fa-star"></i>'.repeat(Number(r.Rating)||5)}</div></div><div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">${escapeHTML(r.Tanggal)}</div><div style="font-size:13px;">${escapeHTML(r.Komentar) || "<i>Tidak ada komentar.</i>"}</div></div>`).join("");
         }
 
         function openReviewsModal() { renderReviews(); document.getElementById('reviewsModal').style.display = 'flex'; }
@@ -531,8 +527,8 @@
             document.getElementById('scrollKatalogContainer').innerHTML = promoProducts.slice(0, 10).map(p => {
                 let badge = p.Label_Promo ? escapeHTML(p.Label_Promo) : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
                 let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : (Number(p.Harga_Grosir) > 0 ? formatRp(p.Harga_Grosir) : formatRp(p.Harga_Normal));
-                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
-                return `<div class="scroll-card" onclick="openProductDetail('${p.ID_Produk}')"><div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:2;">${badge}</div><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"><div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;"><div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(p.Nama_Produk)}</div><div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:6px;">${harga}</div>${btn}</div></div>`;
+                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}', 1)">+ Beli</button>`;
+                return `<div class="scroll-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:2;">${badge}</div><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"><div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;"><div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(p.Nama_Produk)}</div><div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:6px;">${harga}</div>${btn}</div></div>`;
             }).join('');
         }
 
@@ -563,8 +559,8 @@
                 if (p.Label_Promo) { badgeHtml += `<div class="badge-katalog bg-promo" style="top: ${topOffset}px;">${escapeHTML(p.Label_Promo)}</div>`; }
                 let hrgHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>` : `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`);
                 let isW = wishlist.find(w => w.id === p.ID_Produk);
-                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${p.ID_Produk}', 1)">+ Beli</button>`;
-                return `<div class="product-card" onclick="openProductDetail('${p.ID_Produk}')"><div class="product-img-wrapper">${badgeHtml}<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${p.ID_Produk}')">${isW ? '<i class="fas fa-heart" style="color:var(--danger);"></i>' : '<i class="far fa-heart" style="color:var(--text-muted);"></i>'}</button><img src="${escapeHTML(p.Foto_URL)}" class="product-img" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"></div><div class="product-info"><div><div class="product-title">${escapeHTML(p.Nama_Produk)}</div>${hrgHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; color:var(--text-muted);">Sisa: ${p.Stok}</span>${btn}</div></div></div>`;
+                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}', 1)">+ Beli</button>`;
+                return `<div class="product-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div class="product-img-wrapper">${badgeHtml}<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${escapeHTML(p.ID_Produk)}')">${isW ? '<i class="fas fa-heart" style="color:var(--danger);"></i>' : '<i class="far fa-heart" style="color:var(--text-muted);"></i>'}</button><img src="${escapeHTML(p.Foto_URL)}" class="product-img" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"></div><div class="product-info"><div><div class="product-title">${escapeHTML(p.Nama_Produk)}</div>${hrgHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; color:var(--text-muted);">Sisa: ${escapeHTML(p.Stok)}</span>${btn}</div></div></div>`;
             }).join("");
         }
 
@@ -573,7 +569,7 @@
             let satuan = p.Satuan ? escapeHTML(p.Satuan) : "pcs";
             let hargaHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Min 5)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>` : `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`);
             
-            document.getElementById('detailContent').innerHTML = `<div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden;"><img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width: 100%; height: 100%; object-fit: contain;"></div><div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${escapeHTML(p.Nama_Produk)}</div><div style="margin-bottom: 12px;">${hargaHtml}</div><div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;"><i class="fas fa-box"></i> Stok: ${p.Stok}</div><div style="white-space: pre-wrap; margin-bottom:20px; font-size:14px; background:var(--bg); padding:16px; border-radius:12px; border: 1px solid var(--border);">${escapeHTML(p.Deskripsi) || "Tidak ada deskripsi."}</div><div class="sticky-bottom-bar">${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${p.ID_Produk}', 1); openCart();">Beli Sekarang</button>`}</div>`;
+            document.getElementById('detailContent').innerHTML = `<div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden;"><img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width: 100%; height: 100%; object-fit: contain;"></div><div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${escapeHTML(p.Nama_Produk)}</div><div style="margin-bottom: 12px;">${hargaHtml}</div><div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;"><i class="fas fa-box"></i> Stok: ${escapeHTML(p.Stok)}</div><div style="white-space: pre-wrap; margin-bottom:20px; font-size:14px; background:var(--bg); padding:16px; border-radius:12px; border: 1px solid var(--border);">${escapeHTML(p.Deskripsi) || "Tidak ada deskripsi."}</div><div class="sticky-bottom-bar">${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${escapeHTML(p.ID_Produk)}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${escapeHTML(p.ID_Produk)}', 1); openCart();">Beli Sekarang</button>`}</div>`;
             document.getElementById('btnShareProduct').style.display = 'flex'; document.getElementById('btnShareProduct').onclick = () => shareProductWA(p.ID_Produk, p.Nama_Produk);
             document.getElementById('detailModal').style.display = 'flex';
         }
@@ -581,14 +577,14 @@
         function updateAllCartPrices() {
             let totalQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
             cart.forEach(item => {
-                const p = allProducts.find(x => x.ID_Produk === item.id);
+                const p = allProducts.find(x => x && x.ID_Produk === item.id);
                 if(p) { item.harga = Number(p.Harga_Promo) > 0 ? Number(p.Harga_Promo) : (totalQty >= 5 && Number(p.Harga_Grosir) > 0 ? Number(p.Harga_Grosir) : Number(p.Harga_Normal)); }
             });
             localStorage.setItem("TokoPrismaCart_v1", JSON.stringify(cart));
         }
 
         function addToCart(id, qty = 1) {
-            const p = allProducts.find(x => x.ID_Produk === id); if(!p) return;
+            const p = allProducts.find(x => x && x.ID_Produk === id); if(!p) return;
             const idx = cart.findIndex(i => i.id === id);
             let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
             if (currentQty > Number(p.Stok)) { showToast("Stok tidak cukup!", "error"); return; }
@@ -596,8 +592,8 @@
             updateAllCartPrices(); updateCartBadge(); showToast("Masuk keranjang");
         }
         
-        function updateQty(i, d) { let c = cart[i]; if(!c) return; let p = allProducts.find(x => x.ID_Produk === c.id); if(p) handleQtyChange(i, c.qty + d, p); }
-        function handleManualInput(i, e) { let v = parseInt(e.target.value); let c = cart[i]; if(!c) return; let p = allProducts.find(x => x.ID_Produk === c.id); if(isNaN(v) || v < 0) e.target.value = c.qty; else handleQtyChange(i, v, p); }
+        function updateQty(i, d) { let c = cart[i]; if(!c) return; let p = allProducts.find(x => x && x.ID_Produk === c.id); if(p) handleQtyChange(i, c.qty + d, p); }
+        function handleManualInput(i, e) { let v = parseInt(e.target.value); let c = cart[i]; if(!c) return; let p = allProducts.find(x => x && x.ID_Produk === c.id); if(isNaN(v) || v < 0) e.target.value = c.qty; else handleQtyChange(i, v, p); }
         function handleQtyChange(i, newQty, p) {
             if(newQty > Number(p.Stok)) { showToast("Maksimal stok tercapai", "error"); newQty = Number(p.Stok); }
             if (newQty <= 0) { if(confirm("Hapus dari keranjang?")) cart.splice(i, 1); else newQty = 1; } else { cart[i].qty = newQty; }
@@ -632,9 +628,6 @@
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
-        // ==========================================
-        // ALGORITMA KOMPRESI GAMBAR ULTRA-RINGAN V6.0
-        // ==========================================
         function compressAndUploadImage(e, base64Id, previewId) {
             const file = e.target.files[0]; if (!file) return; 
             const statusEl = document.getElementById(base64Id === 'checkoutBuktiBase64' ? 'uploadStatusText' : 'imageUploadStatus');
@@ -645,7 +638,6 @@
                 const img = new Image(); img.src = ev.target.result; 
                 img.onload = () => { 
                     const canvas = document.createElement('canvas'); 
-                    // Maksimal dimensi dikecilkan jadi 500px agar tidak memenuhi memori Spreadsheet
                     let MAX_WIDTH = 500; let MAX_HEIGHT = 500;
                     let width = img.width; let height = img.height;
                     
@@ -656,7 +648,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height); 
                     
-                    // Kualitas kompresi di-set 0.5 (50%) -> Menurunkan ukuran Base64 secara drastis
                     const compressedData = canvas.toDataURL('image/jpeg', 0.5); 
                     
                     document.getElementById(base64Id).value = compressedData; 
@@ -679,7 +670,6 @@
             localStorage.setItem('TokoPrismaUser_Nama', n); localStorage.setItem('TokoPrismaUser_WA', w); localStorage.setItem('TokoPrismaUser_Alamat', a);
             
             try {
-                // Mengirim payload ke Backend
                 const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
                 if(res.status === 'success') {
                     let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
@@ -694,9 +684,6 @@
             } catch(err) { submitBtn.disabled = false; submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`; showToast("Koneksi bermasalah.", "error"); }
         }
 
-        // ==========================================
-        // SCRIPT PANEL ADMIN - ANTI CRASH & RINGAN
-        // ==========================================
         window.addEventListener("hashchange", checkAdminAccess);
         function checkAdminAccess() {
             if (window.location.hash.includes("#admin")) {
@@ -714,7 +701,7 @@
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
             document.getElementById('adminCategoryFilter').innerHTML = cats.map(cat => `<button class="btn ${adminActiveCategory === cat ? 'btn-primary' : 'btn-outline'}" style="padding: 6px 14px; font-size: 11px; white-space:nowrap; border-color:${adminActiveCategory === cat ? 'var(--primary)' : '#334155'}; color:${adminActiveCategory === cat ? 'white' : '#cbd5e1'}; background:${adminActiveCategory === cat ? 'var(--primary)' : '#1e293b'};" onclick="adminActiveCategory = '${escapeHTML(cat)}'; renderAdminProductList();">${escapeHTML(cat)}</button>`).join("");
             let filtered = adminActiveCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === adminActiveCategory);
-            document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => `<div class="admin-card"><div style="display:flex; align-items:center; gap:12px; width:100%;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a; flex-shrink:0;"><div style="flex:1; min-width:0;"><b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(p.Nama_Produk)}</b><div style="display:flex; gap:6px; align-items:center; margin-top:3px;"><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${escapeHTML(p.Status)}</span> <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">Stok: ${p.Stok}</span></div><span style="font-size:12px; display:block; margin-top:3px; font-weight:bold;">${formatRp(p.Harga_Normal)}</span></div></div><div style="display:flex; gap:8px; width:100%; justify-content:flex-end; border-top:1px solid #334155; padding-top:10px;"><button class="btn btn-secondary" style="padding:6px 14px; font-size:12px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button><button class="btn btn-danger" style="padding:6px 14px; font-size:12px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i></button></div></div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Tidak ada produk.</div>";
+            document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => `<div class="admin-card"><div style="display:flex; align-items:center; gap:12px; width:100%;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a; flex-shrink:0;"><div style="flex:1; min-width:0;"><b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(p.Nama_Produk)}</b><div style="display:flex; gap:6px; align-items:center; margin-top:3px;"><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${escapeHTML(p.Status)}</span> <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">Stok: ${escapeHTML(p.Stok)}</span></div><span style="font-size:12px; display:block; margin-top:3px; font-weight:bold;">${formatRp(p.Harga_Normal)}</span></div></div><div style="display:flex; gap:8px; width:100%; justify-content:flex-end; border-top:1px solid #334155; padding-top:10px;"><button class="btn btn-secondary" style="padding:6px 14px; font-size:12px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button><button class="btn btn-danger" style="padding:6px 14px; font-size:12px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i></button></div></div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Tidak ada produk.</div>";
         }
 
         async function loadAdminData() {
@@ -735,11 +722,11 @@
                 let orders = [...adminOrdersCache].reverse();
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
-                    let statusColor = String(o.Status_Pesanan).trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan).trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
+                    let statusColor = String(o.Status_Pesanan || '').trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan || '').trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
                     let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
-                    let buktiHtml = o.Bukti_Transfer ? `<div style="width:100%;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_${o.ID_Pesanan}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti (Tanpa Crash)</button><img id="bukti_${o.ID_Pesanan}" src="${o.Bukti_Transfer}" loading="lazy" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid #334155; background:var(--bg);"></div>` : "";
+                    let buktiHtml = o.Bukti_Transfer ? `<div style="width:100%;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid #334155; background:var(--bg);"></div>` : "";
 
-                    return `<div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;"><div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;"><div><b>${escapeHTML(o.ID_Pesanan)}</b><br><span style="font-size:11px; color:#94a3b8;">${escapeHTML(o.Tanggal)}</span></div><span class="badge ${statusColor}">${escapeHTML(o.Status_Pesanan || 'Baru')}</span></div><div style="width:100%; font-size:13px; line-height:1.5;"><div><i class="fas fa-user"></i> <b>${escapeHTML(o.Nama_Pembeli)}</b></div><div><i class="fas fa-phone"></i> <a href="https://wa.me/${formatWaNumber(o.WhatsApp)}" target="_blank" style="color:#818cf8; text-decoration:none;">${escapeHTML(o.WhatsApp)}</a></div><div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(o.Alamat)}</div></div><div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">${items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${escapeHTML(i.Nama_Produk)} (x${i.Jumlah})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('')}<div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div></div>${buktiHtml}<div style="display:flex; gap:10px; width:100%; margin-top:4px;"><select onchange="updateStatus('${escapeHTML(o.ID_Pesanan)}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;"><option value="" disabled selected>Ubah Status</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div><div style="display:flex; gap:10px; width:100%; margin-top:4px;"><button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button><button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-trash"></i> Hapus</button></div></div>`;
+                    return `<div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;"><div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;"><div><b>${escapeHTML(o.ID_Pesanan)}</b><br><span style="font-size:11px; color:#94a3b8;">${escapeHTML(o.Tanggal)}</span></div><span class="badge ${statusColor}">${escapeHTML(o.Status_Pesanan || 'Baru')}</span></div><div style="width:100%; font-size:13px; line-height:1.5;"><div><i class="fas fa-user"></i> <b>${escapeHTML(o.Nama_Pembeli)}</b></div><div><i class="fas fa-phone"></i> <a href="https://wa.me/${formatWaNumber(o.WhatsApp)}" target="_blank" style="color:#818cf8; text-decoration:none;">${escapeHTML(o.WhatsApp)}</a></div><div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(o.Alamat)}</div></div><div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">${items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:2px;"><span>- ${escapeHTML(i.Nama_Produk)} (x${escapeHTML(i.Jumlah)})</span><span>${formatRp(i.Subtotal)}</span></div>`).join('')}<div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div></div>${buktiHtml}<div style="display:flex; gap:10px; width:100%; margin-top:4px;"><select onchange="updateStatus('${escapeHTML(o.ID_Pesanan)}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;"><option value="" disabled selected>Ubah Status</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div><div style="display:flex; gap:10px; width:100%; margin-top:4px;"><button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button><button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-trash"></i> Hapus</button></div></div>`;
                 }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Belum ada pesanan masuk.</div>";
                 
                 let s = res.data.settings || {}; document.getElementById('setNamaToko').value = s.Nama_Toko || ""; document.getElementById('setAlamatToko').value = s.Alamat_Toko || ""; document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || ""; document.getElementById('setLogoUrl').value = s.Logo_URL || ""; document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; document.getElementById('setQrisUrl').value = s.QRIS_URL || ""; document.getElementById('setWarnaTema').value = s.Warna_Tema || "#6366f1"; document.getElementById('setTarifKurir').value = s.Tarif_Kurir_Toko || "10000";
@@ -752,7 +739,7 @@
             let items = adminOrderDetailsCache.filter(x => String(x.ID_Pesanan) === String(orderId));
             let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
             let total = Number(o.Total) || totalItems; let ongkir = total - totalItems;
-            let itemsHtml = items.map(i => `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; border-bottom:1px dashed #ccc; padding-bottom:4px;"><span>${escapeHTML(i.Nama_Produk)}<br><small>${i.Jumlah} x ${formatRp(i.Harga)}</small></span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
+            let itemsHtml = items.map(i => `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; border-bottom:1px dashed #ccc; padding-bottom:4px;"><span>${escapeHTML(i.Nama_Produk)}<br><small>${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</small></span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
             document.getElementById('notaPrintArea').innerHTML = `<div style="text-align:center; margin-bottom: 16px;"><h2 style="margin:0; font-size:20px;">${escapeHTML(storeSettings.Nama_Toko) || 'TOKO PRISMA'}</h2><div style="font-size:12px; color:#555;">${escapeHTML(storeSettings.Alamat_Toko) || ''}</div><div style="font-size:12px; color:#555;">WA: ${escapeHTML(storeSettings.WhatsApp_Admin) || ''}</div></div><div style="font-size:12px; margin-bottom: 16px; border-top:1px dashed #000; border-bottom:1px dashed #000; padding:8px 0;"><div><b>ID:</b> ${escapeHTML(o.ID_Pesanan)}</div><div><b>Tgl:</b> ${escapeHTML(o.Tanggal)}</div><div><b>Plg:</b> ${escapeHTML(o.Nama_Pembeli)}</div><div><b>Kirim:</b> ${escapeHTML(o.Metode_Pengiriman) || 'Ambil di Toko'}</div></div><div style="margin-bottom: 16px;">${itemsHtml}</div><div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal:</span> <span>${formatRp(totalItems)}</span></div><div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkir:</span> <span>${formatRp(ongkir)}</span></div><div style="font-size:14px; font-weight:bold; display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px dashed #000;"><span>TOTAL:</span> <span>${formatRp(total)}</span></div>`;
             document.getElementById('btnShareNota').onclick = function() { window.open(`https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(`*NOTA PESANAN*\nID: ${o.ID_Pesanan}\nTotal:${formatRp(total)}\nTerima kasih.`)}`, '_blank'); };
             document.getElementById('notaModal').style.display = 'flex';
