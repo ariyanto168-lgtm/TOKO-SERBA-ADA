@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.8 Secure Pro</title>
+    <title>TOKO PRISMA - v6.9 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -185,7 +185,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.8 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.9 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -217,7 +217,7 @@
     </div>
 
     <!-- MODAL TAMBAH ULASAN -->
-    <div class="no-print modal-overlay center" id="addReviewModal" onclick="if(event.target===this) closeModal('addReviewModal')">
+    <div class="no-print modal-overlay center" id="addReviewModal" onclick="if(event.target===this) closeModal('addReviewModal')" style="z-index: 10002;">
         <div class="modal-content" style="max-width: 350px;">
             <div class="modal-close-btn" onclick="closeModal('addReviewModal')">X</div><h3 style="margin-bottom:16px;">Tulis Ulasan</h3>
             <input type="hidden" id="revOrderId"><input type="hidden" id="revCustomerName">
@@ -324,7 +324,10 @@
         </div>
         
         <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;">
-            <button class="btn btn-danger" style="width: 100%; margin-bottom: 20px; background: #991b1b; border: 1px solid #7f1d1d;" onclick="resetAllOrdersAdmin()"><i class="fas fa-exclamation-triangle"></i> Hapus Semua Pesanan</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="loadAdminData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                <button class="btn btn-danger" style="flex: 1; background: #991b1b; border: 1px solid #7f1d1d;" onclick="resetAllOrdersAdmin()"><i class="fas fa-trash"></i> Hapus Semua</button>
+            </div>
             <div id="adminOrderList">Memuat pesanan masuk...</div>
         </div>
         
@@ -583,7 +586,16 @@
         async function markOrderCompleted(orderId) {
             if(!(await customConfirm("Konfirmasi bahwa paket sudah diterima dan pesanan selesai?"))) return;
             const res = await fetchAPI("update_order_status", "POST", {id: orderId, status: "Selesai"});
-            if(res.status === 'success') { showToast("Pesanan diselesaikan!"); fetchCustomerOrders(); }
+            if(res.status === 'success') { 
+                showToast("Pesanan diselesaikan!"); 
+                await fetchCustomerOrders(); 
+                let order = customerOrdersCache.find(o => String(o.ID_Pesanan) === String(orderId));
+                if (order) {
+                    setTimeout(() => {
+                        openAddReview(order.ID_Pesanan, order.Nama_Pembeli);
+                    }, 400);
+                }
+            }
             else { showToast(res.message || "Gagal memperbarui status", "error"); }
         }
 
@@ -853,7 +865,14 @@
         function closeAdminLoginModal() { document.getElementById('adminPinModal').style.display = 'none'; window.location.hash = ""; document.getElementById('userView').style.display = 'block'; }
         function closeAdmin() { sessionStorage.removeItem("TokoPrisma_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
         async function submitAdminPin() { const p = document.getElementById('adminPinInput').value; if(!p) { showToast("Masukkan PIN!", "error"); return; } const btn = document.getElementById('btnSubmitPin'); btn.disabled = true; btn.innerHTML = 'Memeriksa...'; try { const r = await fetchAPI("verify_pin", "POST", { pin: p }); if (r.status === 'success') { sessionStorage.setItem("TokoPrisma_AdminToken", p); document.getElementById('adminPinModal').style.display = 'none'; document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; document.getElementById('adminPinInput').value = ""; window.location.hash = "#admin"; loadAdminData(); } else { showToast("PIN Salah!", "error"); } } catch (e) { showToast("Koneksi gagal.", "error"); } finally { btn.disabled = false; btn.innerHTML = 'Masuk Panel'; } }
-        function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; }
+        
+        function switchAdminTab(t) { 
+            document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); 
+            document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); 
+            document.getElementById('tabBtn_'+t).classList.add('active'); 
+            document.getElementById('adminTab_'+t).style.display = 'block'; 
+            if(t === 'pesanan' || t === 'laporan') loadAdminData(true); // Auto sync diam-diam saat tab dibuka
+        }
 
         function renderAdminProductList() {
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
@@ -862,8 +881,8 @@
             document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => `<div class="admin-card"><div style="display:flex; align-items:center; gap:12px; width:100%;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a; flex-shrink:0;"><div style="flex:1; min-width:0;"><b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(p.Nama_Produk)}</b><div style="display:flex; gap:6px; align-items:center; margin-top:3px;"><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${escapeHTML(p.Status)}</span> <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">Stok: ${escapeHTML(p.Stok)}</span></div><span style="font-size:12px; display:block; margin-top:3px; font-weight:bold;">${formatRp(p.Harga_Normal)}</span></div></div><div style="display:flex; gap:8px; width:100%; justify-content:flex-end; border-top:1px solid #334155; padding-top:10px;"><button class="btn btn-secondary" style="padding:6px 14px; font-size:12px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button><button class="btn btn-danger" style="padding:6px 14px; font-size:12px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i></button></div></div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Tidak ada produk.</div>";
         }
 
-        async function loadAdminData() {
-            const res = await fetchAPI("get_admin_data", "POST");
+        async function loadAdminData(silent = false) {
+            const res = await fetchAPI("get_admin_data", "POST", {}, silent);
             if (res.status === "success") {
                 allProducts = res.data.products || []; adminOrdersCache = res.data.orders || []; adminOrderDetailsCache = res.data.orderDetails || [];
                 if (res.data.laporan) {
@@ -881,17 +900,32 @@
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let statusColor = String(o.Status_Pesanan || '').trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan || '').trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
-                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
-                    let buktiHtml = o.Bukti_Transfer ? `<div style="width:100%;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid #334155; background:var(--bg);"></div>` : "";
+                    
+                    // Rincian produk gaya nota untuk Admin
+                    let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
+                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems;
+                    let ongkir = displayTotal - totalItems;
+                    if(ongkir < 0) ongkir = 0;
 
-                    return `<div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;"><div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;"><div><b>${escapeHTML(o.ID_Pesanan)}</b><br><span style="font-size:11px; color:#94a3b8;">${escapeHTML(o.Tanggal)}</span></div><span class="badge ${statusColor}">${escapeHTML(o.Status_Pesanan || 'Baru')}</span></div><div style="width:100%; font-size:13px; line-height:1.5;"><div><i class="fas fa-user"></i> <b>${escapeHTML(o.Nama_Pembeli)}</b></div><div><i class="fas fa-phone"></i> <a href="https://wa.me/${formatWaNumber(o.WhatsApp)}" target="_blank" rel="noopener noreferrer" style="color:#818cf8; text-decoration:none;">${escapeHTML(o.WhatsApp)}</a></div><div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(o.Alamat)}</div></div><div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">${items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:4px; border-bottom:1px dashed #334155; padding-bottom:6px;"><span>${escapeHTML(i.Nama_Produk)}<br><span style="opacity:0.7; font-size:11px;">${escapeHTML(i.Jumlah)} x${formatRp(i.Harga)}</span></span><span style="font-weight:bold;">${formatRp(i.Subtotal)}</span></div>`).join('')}<div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div></div>${buktiHtml}<div style="display:flex; gap:10px; width:100%; margin-top:4px;"><select onchange="updateStatus('${escapeHTML(o.ID_Pesanan)}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;"><option value="" disabled selected>Ubah Status</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div><div style="display:flex; gap:10px; width:100%; margin-top:4px;"><button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button><button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-trash"></i> Hapus</button></div></div>`;
+                    let htmlItems = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:4px; border-bottom:1px dashed #334155; padding-bottom:6px;"><span>${escapeHTML(i.Nama_Produk)}<br><span style="opacity:0.7; font-size:11px;">${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</span></span><span style="font-weight:bold;">${formatRp(i.Subtotal)}</span></div>`).join('');
+                    
+                    let rincianNotaAdmin = `
+                    <div style="border-top: 1px dashed #334155; margin-top: 10px; padding-top: 10px; font-size: 12px; color: #cbd5e1;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal Produk:</span><span>${formatRp(totalItems)}</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkos Kirim:</span><span>${formatRp(ongkir)}</span></div>
+                    </div>
+                    <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div>`;
+
+                    let buktiHtml = o.Bukti_Transfer ? `<div style="width:100%; margin-top:10px;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid #334155; background:var(--bg);"></div>` : "";
+
+                    return `<div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;"><div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;"><div><b>${escapeHTML(o.ID_Pesanan)}</b><br><span style="font-size:11px; color:#94a3b8;">${escapeHTML(o.Tanggal)}</span></div><span class="badge ${statusColor}">${escapeHTML(o.Status_Pesanan || 'Baru')}</span></div><div style="width:100%; font-size:13px; line-height:1.5;"><div><i class="fas fa-user"></i> <b>${escapeHTML(o.Nama_Pembeli)}</b></div><div><i class="fas fa-phone"></i> <a href="https://wa.me/${formatWaNumber(o.WhatsApp)}" target="_blank" rel="noopener noreferrer" style="color:#818cf8; text-decoration:none;">${escapeHTML(o.WhatsApp)}</a></div><div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(o.Alamat)}</div></div><div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">${htmlItems}${rincianNotaAdmin}</div>${buktiHtml}<div style="display:flex; gap:10px; width:100%; margin-top:4px;"><select onchange="updateStatus('${escapeHTML(o.ID_Pesanan)}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;"><option value="" disabled selected>Ubah Status</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div><div style="display:flex; gap:10px; width:100%; margin-top:4px;"><button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button><button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-trash"></i> Hapus</button></div></div>`;
                 }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Belum ada pesanan masuk.</div>";
                 
                 let s = res.data.settings || {}; document.getElementById('setNamaToko').value = s.Nama_Toko || ""; document.getElementById('setAlamatToko').value = s.Alamat_Toko || ""; document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || ""; document.getElementById('setLogoUrl').value = s.Logo_URL || ""; document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; document.getElementById('setQrisUrl').value = s.QRIS_URL || ""; document.getElementById('setWarnaTema').value = s.Warna_Tema || "#6366f1"; document.getElementById('setTarifKurir').value = s.Tarif_Kurir_Toko || "10000";
             }
         }
         
-        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(); }
+        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(true); }
         function openNota(orderId) {
             let o = adminOrdersCache.find(x => x.ID_Pesanan === orderId); if(!o) return;
             let items = adminOrderDetailsCache.filter(x => String(x.ID_Pesanan) === String(orderId));
@@ -902,12 +936,12 @@
             document.getElementById('btnShareNota').onclick = function() { window.open(`https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(`*NOTA PESANAN*\nID: ${o.ID_Pesanan}\nTotal:${formatRp(total)}\nTerima kasih.`)}`, '_blank', 'noopener,noreferrer'); };
             document.getElementById('notaModal').style.display = 'flex';
         }
-        async function deleteOrderAdmin(id) { if(!(await customConfirm("Hapus pesanan ini permanen?"))) return; const r = await fetchAPI("delete_order", "POST", {id: id}); if(r.status === 'success') { showToast("Pesanan Dihapus"); loadAdminData(); } else { showToast(r.message, "error"); } }
+        async function deleteOrderAdmin(id) { if(!(await customConfirm("Hapus pesanan ini permanen?"))) return; const r = await fetchAPI("delete_order", "POST", {id: id}); if(r.status === 'success') { showToast("Pesanan Dihapus"); loadAdminData(true); } else { showToast(r.message, "error"); } }
         async function resetAllOrdersAdmin() { if(!(await customConfirm("PERINGATAN! Hapus SEMUA riwayat pesanan?"))) return; let pinConfirm = await customPrompt("Masukkan PIN Admin:", "password"); if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN salah!", "error"); return; } const r = await fetchAPI("reset_orders", "POST", {}); if(r.status === 'success') { showToast("Semua riwayat pesanan dihapus!"); loadAdminData(); } }
         async function changePinAdmin() { let newPin = document.getElementById('setNewPin').value; if(newPin.length < 4) { showToast("PIN minimal 4 karakter!", "error"); return; } const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin }); if(r.status === 'success') { showToast("PIN diubah!"); sessionStorage.setItem("TokoPrisma_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } }
         async function openBannerModal() { let url = await customPrompt("URL Banner (Contoh: https://i.ibb.co/banner.jpg):", "text"); if (url) submitBannerAdmin(url); }
-        async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Banner ditambah"); } }
-        async function deleteBannerAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); } }
+        async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Banner ditambah"); } }
+        async function deleteBannerAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Dihapus"); } }
         function openProductModal() { ['formIdProduk', 'formFotoUrl', 'formFotoBase64', 'formFileFoto', 'formNama', 'formKategori', 'formDeskripsi', 'formHargaPromo', 'formLabelPromo', 'formHargaNormal', 'formHpp', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = ""); document.getElementById('formStok').value = "10"; document.getElementById('formSatuan').value = "pcs"; document.getElementById('formBadge').value = ""; document.getElementById('imagePreview').style.display = 'none'; document.getElementById('imageUploadStatus').innerText = "Pilih foto."; if (adminActiveCategory !== "Semua") { document.getElementById('formKategori').value = adminActiveCategory; } document.getElementById('productModal').style.display = 'flex'; }
         function editProduct(p) { openProductModal(); document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formFotoUrl').value = p.Foto_URL; document.getElementById('formNama').value = p.Nama_Produk; document.getElementById('formKategori').value = p.Kategori; document.getElementById('formDeskripsi').value = p.Deskripsi || ""; document.getElementById('formStok').value = p.Stok || 0; document.getElementById('formHpp').value = p.HPP || 0; document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaGrosir').value = p.Harga_Grosir || ""; document.getElementById('formHargaPromo').value = p.Harga_Promo || ""; document.getElementById('formSatuan').value = p.Satuan || "pcs"; document.getElementById('formLabelPromo').value = p.Label_Promo || ""; document.getElementById('formBadge').value = p.Terbaru === "Ya" ? "Terbaru" : (p.Terlaris === "Ya" ? "Terlaris" : (p.Unggulan === "Ya" ? "Unggulan" : "")); document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; } }
         async function submitProduct() {
@@ -916,10 +950,10 @@
             if(!p.Nama_Produk || !p.Kategori || p.HPP <= 0 || p.Harga_Normal <= 0) { showToast("Lengkapi form penting (Nama, Kategori, Harga)!", "error"); return; }
             if(!p.Foto_URL && !p.Foto_Base64) { showToast("Foto wajib diisi!", "error"); return; }
             const btnSubmit = document.querySelector('#productModal .btn-primary'); btnSubmit.disabled = true; btnSubmit.innerHTML = 'Menyimpan (Antre)...';
-            try { const r = await fetchAPI("save_product", "POST", p); if(r.status === 'success') { closeModal('productModal'); loadAdminData(); initApp(); showToast("Produk Disimpan!"); } else { showToast(r.message || "Gagal", "error"); } } catch (e) { showToast("Koneksi bermasalah.", "error"); } finally { btnSubmit.disabled = false; btnSubmit.innerHTML = 'Simpan Data Produk'; }
+            try { const r = await fetchAPI("save_product", "POST", p); if(r.status === 'success') { closeModal('productModal'); loadAdminData(true); initApp(); showToast("Produk Disimpan!"); } else { showToast(r.message || "Gagal", "error"); } } catch (e) { showToast("Koneksi bermasalah.", "error"); } finally { btnSubmit.disabled = false; btnSubmit.innerHTML = 'Simpan Data Produk'; }
         }
-        async function deleteProductAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(); initApp(); showToast("Dihapus"); } }
-        async function saveSettings() { const s = { Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value, Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value }; const r = await fetchAPI("save_settings", "POST", s); if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(); initApp(); } }
+        async function deleteProductAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Dihapus"); } }
+        async function saveSettings() { const s = { Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value, Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value }; const r = await fetchAPI("save_settings", "POST", s); if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(true); initApp(); } }
         async function resetPengunjungAdmin() { if(!(await customConfirm("Reset pengunjung hari ini menjadi 0?"))) return; const r = await fetchAPI("reset_visitor", "POST", {}); if(r.status === 'success') { document.getElementById('repPengunjung').innerText = "0"; showToast("Berhasil direset!"); } }
         document.addEventListener("DOMContentLoaded", async function() { try { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); } catch(e) {} });
         document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'IMG') { e.preventDefault(); showToast("Gambar dilindungi", "error"); } });
