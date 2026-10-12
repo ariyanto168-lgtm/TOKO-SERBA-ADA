@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.12 Secure Pro</title>
+    <title>TOKO PRISMA - v6.13 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -185,7 +185,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.12 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.13 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -676,14 +676,39 @@
 
         async function initApp() {
             if(!sessionStorage.getItem("TokoPrisma_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("TokoPrisma_Pinged", "1"); }
+            
+            // PERBAIKAN: Baca parameter URL untuk langsung menampilkan detail produk saat di-share
+            let params = new URLSearchParams(window.location.search); 
+            let productIdUrl = params.get('product');
+            let isProductOpened = false;
+
             let cachedData = localStorage.getItem("TokoPrismaCache_Catalog_v2");
-            if (cachedData) { try { applyDataToUI(JSON.parse(cachedData)); } catch(e) {} }
+            
+            // Jika ada cache (pengunjung yang sudah pernah buka aplikasi), gunakan itu agar cepat
+            if (cachedData) { 
+                try { 
+                    applyDataToUI(JSON.parse(cachedData)); 
+                    // Jika ada ID produk di URL, segera buka modalnya
+                    if (productIdUrl) {
+                        setTimeout(() => openProductDetail(productIdUrl), 400);
+                        isProductOpened = true; // Tandai bahwa modal sudah dibuka
+                    }
+                } catch(e) {} 
+            }
+            
+            // Tetap panggil update dari database di latar belakang
             const res = await fetchAPI("get_catalog", "GET", {}, !!cachedData);
             if (res && res.status === "success" && res.data) {
-                localStorage.setItem("TokoPrismaCache_Catalog_v2", JSON.stringify(res.data)); applyDataToUI(res.data);
-                let params = new URLSearchParams(window.location.search); let productIdUrl = params.get('product');
-                if (productIdUrl && !cachedData) setTimeout(() => openProductDetail(productIdUrl), 500);
-            } else if (!cachedData) { document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`; }
+                localStorage.setItem("TokoPrismaCache_Catalog_v2", JSON.stringify(res.data)); 
+                applyDataToUI(res.data);
+                
+                // Jika belum dibuka dari cache (misal pengunjung pertama kali), buka sekarang
+                if (productIdUrl && !isProductOpened) {
+                    setTimeout(() => openProductDetail(productIdUrl), 500);
+                }
+            } else if (!cachedData) { 
+                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`; 
+            }
         }
 
         function renderScrollingCatalog(products) {
