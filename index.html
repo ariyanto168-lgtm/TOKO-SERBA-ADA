@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.11 Secure Pro</title>
+    <title>TOKO PRISMA - v6.12 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -185,7 +185,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.11 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.12 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -691,7 +691,7 @@
             let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
             if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
-            let wmText = `<div class="watermark" style="font-size:11px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}<br>ANTI COMOT</div>`;
+            let wmText = `<div class="watermark" style="font-size:11px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
 
             document.getElementById('scrollKatalogContainer').innerHTML = promoProducts.slice(0, 10).map(p => {
                 let badge = p.Label_Promo ? escapeHTML(p.Label_Promo) : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
@@ -722,7 +722,7 @@
         function renderKatalogVisitor(products) {
             const grid = document.getElementById('productGrid');
             if (!products.length) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">Tidak ada produk.</div>`; return; }
-            let wmText = `<div class="watermark">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}<br>ANTI COMOT</div>`;
+            let wmText = `<div class="watermark">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
 
             grid.innerHTML = products.map(p => {
                 let badgeHtml = "", topOffset = 8;
@@ -739,7 +739,7 @@
 
         function openProductDetail(id) {
             const p = allProducts.find(x => x.ID_Produk === id); if(!p) return;
-            let wmText = `<div class="watermark" style="font-size:24px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}<br>ANTI COMOT</div>`;
+            let wmText = `<div class="watermark" style="font-size:24px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
             let satuan = p.Satuan ? escapeHTML(p.Satuan) : "pcs";
             let hargaHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Min 5)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>` : `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`);
             
