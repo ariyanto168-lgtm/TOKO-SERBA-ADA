@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.13 Secure Pro</title>
+    <title>TOKO PRISMA - v6.14 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -54,13 +54,17 @@
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--bg); }
         .banner-item img { width: 100%; max-height: 220px; object-fit: contain; display: block; margin: 0 auto; }
+        
+        /* SLOWMO ANIMATION CSS CHANGES */
         .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
         .scrolling-title { font-size: 15px; font-weight: 800; padding: 0 20px; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        .scrolling-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding: 0 20px 15px 20px; scrollbar-width: none; }
-        .scroll-card { min-width: 160px; max-width: 160px; scroll-snap-align: start; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .scrolling-slider { padding: 0 20px 15px 20px; white-space: nowrap; overflow: hidden; }
+        .scroll-card { display: inline-flex; vertical-align: top; margin-right: 15px; white-space: normal; min-width: 160px; max-width: 160px; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
+        
         .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
-        .category-menu-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); scrollbar-width: none; white-space: nowrap; }
-        .category-menu-item { font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; flex-shrink: 0; }
+        .category-menu-scroll { padding-bottom: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; overflow: hidden; }
+        .category-menu-item { display: inline-block; margin-right: 20px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; }
+        
         .category-menu-item.active { color: var(--primary); font-weight: 800; }
         .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
         .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -161,13 +165,13 @@
 
         <div class="scrolling-catalog-wrapper" id="scrollKatalogWrapper">
             <div class="scrolling-title"><i class="fas fa-fire" style="color:var(--danger);"></i> Spesial Buat Anda</div>
-            <div class="scrolling-slider" id="scrollKatalogContainer"></div>
+            <!-- MARQUEE UNTUK PRODUK SPESIAL SLOWMO -->
+            <marquee behavior="alternate" scrollamount="1" class="scrolling-slider" id="scrollKatalogContainer"></marquee>
         </div>
 
         <div class="categories-wrapper">
-            <!-- Teks Kategori Bergerak Slowmo Kiri Kanan -->
-            <marquee behavior="alternate" scrollamount="1" style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 12px; letter-spacing: 1px;">&lt;&lt; GESER KIRI / KANAN UNTUK PILIH KATEGORI LAINNYA &gt;&gt;</marquee>
-            <div class="category-menu-scroll" id="categoryContainer"></div>
+            <!-- MARQUEE UNTUK KATEGORI Teks SLOWMO -->
+            <marquee behavior="alternate" scrollamount="1" class="category-menu-scroll" id="categoryContainer"></marquee>
         </div>
 
         <main class="container">
@@ -185,7 +189,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.13 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.14 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
