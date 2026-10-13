@@ -608,8 +608,8 @@
             document.getElementById('bannerContainer').innerHTML = banners.map(b => `<div class="banner-item"><img src="${escapeHTML(b.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"></div>`).join('');
         }
 
-        // --- SISTEM AUTO-SCROLL INFINITE LOOP (ANTI-KEJEDOT) ---
-        function initAutoScroll(elementId, speed = 1) {
+        // --- SISTEM AUTO-SCROLL MONDAR-MANDIR (PING-PONG & SLOWMO) ---
+        function initAutoScroll(elementId, speed = 0.8) {
             const el = document.getElementById(elementId);
             if (!el) return;
 
@@ -618,6 +618,11 @@
 
             let isInteracting = false;
             let resumeTimeout;
+            let direction = 1; // 1 untuk ke kanan, -1 untuk ke kiri
+            
+            // Gunakan variabel pecahan (float) agar pergerakan slowmo sangat halus
+            // karena elemen HTML scrollLeft selalu memotong nilai menjadi angka bulat (integer)
+            let exactScroll = el.scrollLeft; 
 
             function pause() {
                 isInteracting = true;
@@ -627,7 +632,10 @@
             function resume() {
                 clearTimeout(resumeTimeout);
                 // Beri jeda 1,5 detik setelah dilepas agar ayunan geseran berhenti
-                resumeTimeout = setTimeout(() => { isInteracting = false; }, 1500);
+                resumeTimeout = setTimeout(() => { 
+                    isInteracting = false; 
+                    exactScroll = el.scrollLeft; // sinkronisasi posisi terkini setelah digeser manual
+                }, 1500);
             }
 
             // Mendeteksi interaksi murni tanpa mengganggu fungsi scroll asli HP
@@ -640,13 +648,21 @@
             // Interval ringan yang berjalan di background
             el.autoScrollTimer = setInterval(() => {
                 if (!isInteracting) {
-                    el.scrollLeft += speed;
+                    exactScroll += speed * direction;
+                    el.scrollLeft = exactScroll;
+
+                    // Cek batasan ujung (mentok kanan atau mentok kiri)
+                    let maxScroll = el.scrollWidth - el.clientWidth;
                     
-                    // RAHASIA INFINITE LOOP: 
-                    // Saat scroll mencapai setengah dari total panjang (karena isi digandakan 2x),
-                    // diam-diam kembalikan ke 0. Mata tidak akan sadar karena wujudnya kembar.
-                    if (el.scrollLeft >= el.scrollWidth / 2) {
-                        el.scrollLeft = 0;
+                    if (maxScroll <= 0) return; // Tidak perlu mondar-mandir jika isinya sedikit (muat di layar)
+
+                    // Jika menyentuh ujung kanan (dikurangi 1 agar tidak terjebak di pixel pecahan)
+                    if (el.scrollLeft >= maxScroll - 1) {
+                        direction = -1; // Balik ke kiri
+                    } 
+                    // Jika menyentuh ujung kiri awal
+                    else if (el.scrollLeft <= 1) {
+                        direction = 1; // Balik ke kanan
                     }
                 }
             }, 30);
@@ -675,10 +691,11 @@
                 return `<div class="scroll-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:15;">${badge}</div><div style="position:relative; width:100%; height:110px; background:var(--bg); overflow:hidden; display:flex; align-items:center; justify-content:center;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:100%; height:100%; object-fit:contain; z-index:1;">${wmText}</div><div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;"><div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(p.Nama_Produk)}</div><div>${hargaHtml}</div>${btn}</div></div>`;
             }).join('');
             
-            // PENTING: Gandakan isinya (htmlCards + htmlCards) agar efek infinite loop berjalan mulus tanpa terputus
-            container.innerHTML = htmlCards + htmlCards;
+            // Untuk efek mondar-mandir (pingpong), kita TIDAK perlu menggandakan isinya lagi
+            container.innerHTML = htmlCards;
             
-            initAutoScroll('scrollKatalogContainer', 1);
+            // Panggil animasi (speed 0.8 untuk kecepatan mengambang yang pas)
+            initAutoScroll('scrollKatalogContainer', 0.8);
         }
 
         function renderCategoriesMenu() {
