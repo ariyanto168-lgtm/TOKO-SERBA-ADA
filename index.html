@@ -300,4 +300,687 @@
             <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
                 <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-day" style="color:var(--primary);"></i> Hari Ini</h4>
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repHariOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
-                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repHariLaba" style="color:var(--success);
+                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repHariLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
+            </div>
+
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
+                <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-week" style="color:var(--primary);"></i> Minggu Ini</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repMingguOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repMingguLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
+            </div>
+
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:16px; margin-bottom:16px;">
+                <h4 style="color:#f8fafc; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:8px;"><i class="fas fa-calendar-alt" style="color:var(--primary);"></i> Bulan Ini</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Omset:</span> <b id="repBulanOmset" style="color:#f8fafc; font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>Laba Bersih:</span> <b id="repBulanLaba" style="color:var(--success); font-size:16px;">Rp0</b></div>
+            </div>
+            
+            <div style="background:var(--primary-gradient); border-radius:16px; padding:16px; color:white;">
+                <h4 style="margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:8px;"><i class="fas fa-chart-line"></i> Total Keseluruhan Waktu</h4>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total Omset:</span> <b id="repSemuaOmset" style="font-size:16px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total Laba:</span> <b id="repSemuaLaba" style="color:#10b981; font-size:16px; background:white; padding:2px 8px; border-radius:6px;">Rp0</b></div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.9; margin-top:8px;"><span>Pesanan Selesai:</span> <b id="repSemuaSelesai">0 Order</b></div>
+            </div>
+        </div>
+
+        <div class="admin-container admin-tab-content" id="adminTab_produk" style="display:none;">
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 16px;" onclick="openProductModal()">+ Tambah Produk Baru</button>
+            <div id="adminCategoryFilter" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:16px; scrollbar-width:none;"></div>
+            <div id="adminProductList">Memuat data produk...</div>
+        </div>
+        
+        <div class="admin-container admin-tab-content" id="adminTab_pesanan" style="display:none;">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="loadAdminData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                <button class="btn btn-danger" style="flex: 1; background: #991b1b; border: 1px solid #7f1d1d;" onclick="resetAllOrdersAdmin()"><i class="fas fa-trash"></i> Hapus Semua</button>
+            </div>
+            <div id="adminOrderList">Memuat pesanan masuk...</div>
+        </div>
+        
+        <div class="admin-container admin-tab-content" id="adminTab_banner" style="display:none;">
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="openBannerModal()">+ Tambah Banner Promosi</button>
+            <div id="adminBannerList">Memuat data banner...</div>
+        </div>
+
+        <div class="admin-container admin-tab-content" id="adminTab_pengaturan" style="display:none;">
+            <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px;">
+                <h3 style="margin-bottom:16px; color:#f8fafc;"><i class="fas fa-lock"></i> Ganti PIN Admin</h3>
+                <div class="form-group"><label>PIN Admin Baru</label><input type="password" id="setNewPin" placeholder="Minimal 4-6 digit"></div>
+                <button class="btn btn-success" style="width: 100%; margin-top:14px;" onclick="changePinAdmin()"><i class="fas fa-key"></i> Simpan PIN Baru</button>
+            </div>
+            <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
+                <h3 style="margin-bottom:16px; color:#f8fafc;"><i class="fas fa-cog"></i> Pengaturan Toko</h3>
+                <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: TOKO PRISMA"></div>
+                <div class="form-group"><label>Alamat Lengkap Toko</label><textarea id="setAlamatToko" rows="2" placeholder="Jalan..."></textarea></div>
+                <div class="form-group"><label>Warna Tema Utama</label><input type="color" id="setWarnaTema" style="height: 50px; padding: 5px;"></div>
+                <div class="form-group"><label>Biaya Kirim Kurir Toko (Rp)</label><input type="number" id="setTarifKurir" placeholder="Contoh: 10000"></div>
+                <div class="form-group"><label>WA Admin Utama</label><input type="number" id="setWaAdmin" placeholder="Contoh: 081234567"></div>
+                <div class="form-group"><label>Link URL Logo Toko</label><input type="text" id="setLogoUrl" placeholder="https://..."></div>
+                <div class="form-group"><label>Info Rekening Bank</label><textarea id="setInfoRekening" rows="2" placeholder="BCA 12345 a/n Toko"></textarea></div>
+                <div class="form-group"><label>Link URL Gambar QRIS</label><input type="text" id="setQrisUrl" placeholder="https://..."></div>
+                <button class="btn btn-primary" style="width: 100%; margin-top:20px;" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan & Tema</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CETAK NOTA -->
+    <div class="modal-overlay center" id="notaModal" onclick="if(event.target===this) closeModal('notaModal')">
+        <div class="modal-content" style="max-width: 350px; background: white; color: black; border-radius: 12px; padding: 24px; position: relative;">
+            <div class="no-print modal-close-btn" onclick="closeModal('notaModal')" style="background: #f1f5f9; color: #64748b; border: none; top:10px; right:10px; z-index: 999;">X</div>
+            <div id="notaPrintArea" style="font-family: 'Courier New', Courier, monospace; margin-bottom: 24px;"></div>
+            <div class="no-print" style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" style="flex:1; border-color:#cbd5e1; color:black;" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                <button class="btn btn-success" style="flex:1;" id="btnShareNota"><i class="fab fa-whatsapp"></i> Share WA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PRODUK -->
+    <div class="no-print modal-overlay" id="productModal" onclick="if(event.target===this) closeModal('productModal')">
+        <div class="modal-content" style="background:#1e293b; color:white; border-top-left-radius: 28px; border-top-right-radius: 28px;">
+            <div class="modal-close-btn" onclick="closeModal('productModal')" style="background:#0f172a; color:white; border-color:#334155;">X</div>
+            <h3 style="margin-bottom: 16px;"><i class="fas fa-box"></i> Detail Produk Lengkap</h3>
+            <input type="hidden" id="formIdProduk">
+            
+            <div class="form-group" style="background:#0f172a; padding:12px; border-radius:12px; margin-bottom:12px; border:1px solid #334155;">
+                <label>Foto Produk (Otomatis Dikecilkan)*</label>
+                <input type="file" id="formFileFoto" accept="image/*" onchange="compressAndUploadImage(event, 'formFotoBase64', 'imagePreview')">
+                <div id="imageUploadStatus" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Pilih foto dari galeri HP Anda.</div>
+                <div style="text-align:center; margin: 8px 0; font-size:12px; color:#94a3b8;">ATAU ketik nama file link:</div>
+                <input type="text" id="formFotoUrl" placeholder="Contoh: produk-1.jpg" oninput="document.getElementById('imagePreview').src=this.value; document.getElementById('imagePreview').style.display=this.value?'block':'none'; document.getElementById('formFotoBase64').value='';">
+                <input type="hidden" id="formFotoBase64">
+                <img id="imagePreview" style="max-height:140px; display:none; margin-top:10px; border-radius:8px; border:1px solid #475569; object-fit: contain; background: #0f172a; width: 100%;">
+            </div>
+
+            <div class="form-group"><label>Nama Produk*</label><input type="text" id="formNama" placeholder="Contoh: Kemeja Polos"></div>
+            <div class="form-row">
+                <div class="form-group"><label>Kategori*</label><input type="text" id="formKategori" placeholder="Contoh: Pakaian"></div>
+                <div class="form-group"><label>Satuan Barang</label><input type="text" id="formSatuan" value="pcs" placeholder="pcs, kg"></div>
+            </div>
+            
+            <div class="form-row" style="background:rgba(99, 102, 241, 0.1); padding:10px; border-radius:12px; border:1px solid #6366f1; margin-bottom:12px;">
+                <div class="form-group"><label style="color:#818cf8;">Harga Beli/Modal (HPP)*</label><input type="number" id="formHpp" placeholder="Misal: 40000"></div>
+                <div class="form-group"><label style="color:#818cf8;">Harga Jual Normal*</label><input type="number" id="formHargaNormal" placeholder="Misal: 50000"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"><label>Harga Promo Diskon</label><input type="number" id="formHargaPromo" placeholder="Isi untuk coret harga"></div>
+                <div class="form-group"><label>Harga Grosir (Min 5)</label><input type="number" id="formHargaGrosir" placeholder="0 jika tidak ada"></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group"><label>Stok Tersedia*</label><input type="number" id="formStok" value="10"></div>
+                <div class="form-group"><label>Teks Label Promo</label><input type="text" id="formLabelPromo" placeholder="Cth: Diskon 50%"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Pita Badge Khusus</label>
+                <select id="formBadge"><option value="">Tidak Ada</option><option value="Terlaris">Terlaris</option><option value="Terbaru">Terbaru</option><option value="Unggulan">Unggulan</option></select>
+            </div>
+
+            <div class="form-group"><label>Deskripsi Produk</label><textarea id="formDeskripsi" rows="3" placeholder="Jelaskan detail produk"></textarea></div>
+            <div class="form-group"><label>Status Penayangan</label><select id="formStatus"><option value="Aktif">Aktif (Tampil)</option><option value="Nonaktif">Nonaktif (Sembunyikan)</option></select></div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top:16px; padding: 14px;" onclick="submitProduct()"><i class="fas fa-check"></i> Simpan Data Produk</button>
+        </div>
+    </div>
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx8W3cz67OVyLAGrAWWaB-DexUjC4K9pdotFqsp1QinMUd0M0olcZ4JdT6Dy3npp29h/exec"; 
+        const FALLBACK_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'%3E%3C/circle%3E%3Cpolyline points='21 15 16 10 5 21'%3E%3C/polyline%3E%3C/svg%3E";
+        
+        let allProducts = [], storeSettings = {}, customerOrdersCache = [];
+        let adminOrdersCache = [], adminOrderDetailsCache = [], allReviews = [];
+        let cart = [], wishlist = [];
+        let tarifKurir = 0, globalSubtotal = 0;
+        let adminActiveCategory = "Semua";
+        let searchTimeout = null;
+        let activeCartInputIndex = -1; 
+        
+        // OBJEK GLOBAL UNTUK MENGELOLA AUTO-SCROLL
+        let autoScrollStates = {};
+
+        try { let c = JSON.parse(localStorage.getItem("TokoPrismaCart_v1")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaCart_v1"); }
+        try { let w = JSON.parse(localStorage.getItem("TokoPrismaWishlist_v1")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaWishlist_v1"); }
+
+        let activeCategory = "Semua", currentSort = "terbaru";
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        }
+
+        try { document.getElementById('footerYear').innerText = new Date().getFullYear(); if (localStorage.getItem("TokoPrismaTheme_v1") === "dark") { document.body.classList.add("dark-theme"); document.getElementById("themelcon").innerText = "☀️"; } } catch(e) {}
+
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customDialogModal');
+                const msgEl = document.getElementById('customDialogMessage');
+                const inputEl = document.getElementById('customDialogInput');
+                const btnCancel = document.getElementById('customDialogCancel');
+                const btnConfirm = document.getElementById('customDialogConfirm');
+                
+                msgEl.innerText = message; inputEl.style.display = 'none'; modal.style.display = 'flex';
+                
+                const cleanup = () => { modal.style.display = 'none'; btnCancel.onclick = null; btnConfirm.onclick = null; inputEl.onkeypress = null; };
+                btnCancel.onclick = () => { cleanup(); resolve(false); };
+                btnConfirm.onclick = () => { cleanup(); resolve(true); };
+            });
+        }
+
+        function customPrompt(message, type="text") {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customDialogModal');
+                const msgEl = document.getElementById('customDialogMessage');
+                const inputEl = document.getElementById('customDialogInput');
+                const btnCancel = document.getElementById('customDialogCancel');
+                const btnConfirm = document.getElementById('customDialogConfirm');
+                
+                msgEl.innerText = message; inputEl.type = type; inputEl.value = ''; inputEl.style.display = 'block'; modal.style.display = 'flex'; inputEl.focus();
+                
+                const cleanup = () => { modal.style.display = 'none'; btnCancel.onclick = null; btnConfirm.onclick = null; inputEl.onkeypress = null; };
+                btnCancel.onclick = () => { cleanup(); resolve(null); };
+                btnConfirm.onclick = () => { cleanup(); resolve(inputEl.value); };
+                inputEl.onkeypress = (e) => { if(e.key === 'Enter') btnConfirm.click(); };
+            });
+        }
+
+        function formatWaNumber(phoneStr) {
+            if(!phoneStr) return "";
+            let cleaned = String(phoneStr).replace(/[^0-9]/g, '');
+            if(cleaned.startsWith('0')) return '62' + cleaned.substring(1);
+            if(cleaned.startsWith('8')) return '62' + cleaned;
+            if(!cleaned.startsWith('62')) return '62' + cleaned;
+            return cleaned;
+        }
+
+        function toggleTheme() { document.body.classList.toggle("dark-theme"); localStorage.setItem("TokoPrismaTheme_v1", document.body.classList.contains("dark-theme") ? "dark" : "light"); document.getElementById("themelcon").innerText = document.body.classList.contains("dark-theme") ? "☀" : "🌙"; }
+        function applyStoreTheme(hexColor) { if (hexColor && hexColor !== "") { document.documentElement.style.setProperty('--primary', hexColor); } }
+        function showToast(msg, type = "success") {
+            const c = document.getElementById("toastContainer"); const t = document.createElement("div"); t.className = `toast ${type}`; 
+            t.innerHTML = `<span>${type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-shield-alt"></i>'}</span> <span>${escapeHTML(msg)}</span>`;
+            c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
+        }
+
+        function shareStoreLink() { let url = window.location.href.split('#')[0].split('?')[0]; let text = `Belanja hemat di *${storeSettings.Nama_Toko || 'TOKO PRISMA'}*! ${url}`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer'); }
+        function shareProductWA(idProduk, namaProduk) { let url = window.location.href.split('#')[0].split('?')[0] + "?product=" + idProduk; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Cek produk *${namaProduk}* di TOKO PRISMA: ${url}`)}`, '_blank', 'noopener,noreferrer'); }
+
+        async function fetchAPI(action, method = 'POST', data = {}, silent = false) {
+            if(!silent) document.getElementById('loadingBar').style.display = 'block';
+            try {
+                if(sessionStorage.getItem("TokoPrisma_AdminToken")) data.admin_pin = sessionStorage.getItem("TokoPrisma_AdminToken");
+                const res = await fetch(method==='GET' ? `${GAS_URL}?action=${action}` : GAS_URL, { method: method, ...(method==='POST' && { headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action,data}) }) });
+                const resData = await res.json();
+                
+                if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) { if (window.location.hash.includes("#admin")) { closeAdmin(); } }
+                return resData;
+            } catch (e) { return { status: "error", message: "Koneksi terputus." }; } finally { document.getElementById('loadingBar').style.display = 'none'; }
+        }
+
+        function formatRp(angka) { return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(Number(angka) || 0); }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById('btnShareProduct').style.display = 'none'; }
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function updateCartBadge() { document.getElementById('navCartBadge').innerText = cart.reduce((s, i) => s + (i.qty || 0), 0); }
+        function updateWishlistBadge() { document.getElementById('navWishlistBadge').innerText = wishlist.length; }
+        
+        function toggleWishlist(id) {
+            const p = allProducts.find(x => x && x.ID_Produk === id); if(!p) return;
+            const idx = wishlist.findIndex(x => x.id === id);
+            if(idx > -1) { wishlist.splice(idx, 1); showToast("Dihapus dari wishlist", "error"); }
+            else { wishlist.push({id: p.ID_Produk, nama: p.Nama_Produk, foto: p.Foto_URL, harga: p.Harga_Normal, satuan: p.Satuan||'pcs'}); showToast("Disimpan ke wishlist"); }
+            localStorage.setItem('TokoPrismaWishlist_v1', JSON.stringify(wishlist)); updateWishlistBadge(); renderKatalogVisitor(allProducts);
+        }
+
+        function openWishlist() {
+            closeModal('detailModal'); const c = document.getElementById('wishlistContent');
+            c.innerHTML = wishlist.length ? wishlist.map((item) => `<div class="cart-item"><img src="${escapeHTML(item.foto)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex:1;margin-left:14px;"><b>${escapeHTML(item.nama)}</b><br><b style="color:var(--primary);">${formatRp(item.harga)}</b></div><button class="btn btn-primary" style="padding:6px 12px;" onclick="addToCart('${item.id}', 1); openCart();">Beli</button><button class="btn btn-danger" style="padding:6px; margin-left:8px;" onclick="toggleWishlist('${item.id}'); openWishlist();"><i class="fas fa-trash"></i></button></div>`).join("") : '<div style="text-align:center; padding:20px; color:var(--text-muted);">Belum ada produk favorit.</div>';
+            document.getElementById('wishlistModal').style.display = 'flex';
+        }
+
+        function openCustomerOrdersModal() {
+            let savedWa = localStorage.getItem('TokoPrismaUser_WA') || "";
+            document.getElementById('checkWaInput').value = savedWa; document.getElementById('customerOrdersResult').innerHTML = "";
+            document.getElementById('customerOrdersModal').style.display = 'flex'; if(savedWa) fetchCustomerOrders();
+        }
+
+        async function fetchCustomerOrders() {
+            let waInput = document.getElementById('checkWaInput').value; 
+            if(!waInput || waInput.length < 5) { showToast("Masukkan No WA valid!", "error"); return; }
+            document.getElementById('customerOrdersResult').innerHTML = "<div style='text-align:center; padding:20px;'><i class='fas fa-circle-notch fa-spin'></i> Memuat riwayat pesanan...</div>";
+            const res = await fetchAPI("get_customer_orders", "POST", {wa: waInput});
+            if(res.status === 'success') {
+                customerOrdersCache = res.data.orders || []; let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
+                document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o) => {
+                    let localDone = localStorage.getItem('TokoPrisma_OrderDone_' + o.ID_Pesanan);
+                    let currentStatus = (localDone === 'true') ? 'Selesai' : o.Status_Pesanan;
+                    
+                    let statusBg = currentStatus === 'Selesai' ? 'var(--success)' : (currentStatus === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
+                    
+                    let htmlItems = (o.items && o.items.length) ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12px; color:var(--text-main); border-bottom: 1px dashed var(--border); padding-bottom: 6px;"><span>${escapeHTML(i.Nama_Produk)}<br><span style="color:var(--text-muted); font-size:11px;">${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</span></span><span style="font-weight:600;">${formatRp(i.Subtotal)}</span></div>`).join('') : `<div style="font-size:12px; color:var(--text-muted);">Detail produk kosong.</div>`;
+                    
+                    let totalItems = o.items ? o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0) : 0;
+                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems; let ongkir = displayTotal - totalItems; if(ongkir < 0) ongkir = 0;
+
+                    let rincianNota = `<div style="border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 10px; font-size: 12px; color: var(--text-main);"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal Produk:</span><span>${formatRp(totalItems)}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkos Kirim:</span><span>${formatRp(ongkir)}</span></div></div><div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px dashed var(--border); padding-top: 8px; margin-bottom:12px;"><span style="font-size:14px; font-weight:bold;">Total Bayar:</span><span style="font-size:16px; font-weight:800; color:var(--primary);">${formatRp(displayTotal)}</span></div>`;
+                    let chatText = encodeURIComponent(`Halo Admin, konfirmasi pesanan ${o.ID_Pesanan}.`);
+                    
+                    let reviewBtn = (currentStatus === 'Selesai' && !allReviews.find(r => r.ID_Pesanan === o.ID_Pesanan)) ? `<button class="btn btn-outline" style="flex:1; padding:10px; font-size:13px;" onclick="openAddReview('${escapeHTML(o.ID_Pesanan)}', '${escapeHTML(o.Nama_Pembeli)}')"><i class="fas fa-star" style="color:#f59e0b;"></i> Beri Ulasan</button>` : "";
+                    let completeBtn = (currentStatus !== 'Selesai' && currentStatus !== 'Dibatalkan') ? `<button class="btn btn-success" style="flex:1; padding:10px; font-size:13px;" onclick="markOrderCompleted('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-check-circle"></i> Paket Selesai</button>` : "";
+                    let actionRow = (completeBtn || reviewBtn) ? `<div style="display:flex; gap:8px; margin-top:10px;">${completeBtn}${reviewBtn}</div>` : "";
+
+                    let buktiBtn = o.Bukti_Transfer ? `<div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:8px; margin-top:8px;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:8px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_cust_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti Transfer</button><img id="bukti_cust_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:220px; object-fit:contain; margin-top:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface);"></div>` : "";
+
+                    return `<div style="background:var(--surface); padding:16px; border-radius:14px; margin-top:12px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.04);"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><b style="font-size:13px;">${escapeHTML(o.ID_Pesanan)}</b><span class="badge" style="background:${statusBg};">${escapeHTML(currentStatus)}</span></div><div style="font-size:12px; color:var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;"><i class="far fa-clock"></i> ${escapeHTML(o.Tanggal)}<br><i class="fas fa-truck"></i> Pengiriman: <b>${escapeHTML(o.Metode_Pengiriman || 'Ambil di Toko')}</b></div><div style="margin-bottom: 4px;">${htmlItems}</div>${rincianNota}<a href="https://api.whatsapp.com/send?phone=${waAdmin}&text=${chatText}" target="_blank" rel="noopener noreferrer" class="btn btn-success" style="width:100%; padding:10px; font-size:13px; text-decoration:none;"><i class="fab fa-whatsapp"></i> Chat Admin</a>${buktiBtn}${actionRow}</div>`;
+                }).join("") : "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Tidak ada pesanan.</div>";
+            } else { document.getElementById('customerOrdersResult').innerHTML = `<div style='text-align:center; color:var(--danger);'>${escapeHTML(res.message)}</div>`; }
+        }
+
+        async function markOrderCompleted(orderId) {
+            if(!(await customConfirm("Konfirmasi bahwa paket sudah diterima dan pesanan selesai?"))) return;
+            localStorage.setItem('TokoPrisma_OrderDone_' + orderId, 'true');
+            let waInput = document.getElementById('checkWaInput').value;
+            fetchAPI("update_order_status", "POST", {id: orderId, status: "Selesai", role: "customer", wa: waInput}).catch(() => {});
+            showToast("Pesanan berhasil dikonfirmasi selesai!"); await fetchCustomerOrders(); 
+            let order = customerOrdersCache.find(o => String(o.ID_Pesanan) === String(orderId));
+            if (order) { setTimeout(() => { openAddReview(order.ID_Pesanan, order.Nama_Pembeli); }, 500); }
+        }
+
+        function renderReviews() {
+            if (!allReviews.length) { document.getElementById('reviewsListContent').innerHTML = "<div style='text-align:center; padding:20px; color:var(--text-muted);'>Belum ada ulasan.</div>"; document.getElementById('reviewsStatContent').style.display = 'none'; return; }
+            document.getElementById('reviewsStatContent').style.display = 'flex';
+            let avgRating = (allReviews.reduce((sum, r) => sum + (Number(r.Rating)||0), 0) / allReviews.length).toFixed(1);
+            document.getElementById('reviewsStatContent').innerHTML = `<div style="font-size: 36px; font-weight: 800; color: var(--primary);">${escapeHTML(avgRating)}</div><div><div class="star-rating" style="font-size:16px;">${'<i class="fas fa-star"></i>'.repeat(Math.round(avgRating))}</div><div style="font-size:12px; color:var(--text-muted);">Total <b>${allReviews.length}</b> Ulasan</div></div>`;
+            document.getElementById('reviewsListContent').innerHTML = allReviews.map(r => `<div class="review-card" style="background:var(--bg); padding:14px; border-radius:12px; margin-bottom:10px; border:1px solid var(--border);"><div style="display:flex; justify-content:space-between;"><b style="font-size:13px;">${escapeHTML(r.Nama_Pembeli)}</b><div class="star-rating">${'<i class="fas fa-star"></i>'.repeat(Number(r.Rating)||5)}</div></div><div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">${escapeHTML(r.Tanggal)}</div><div style="font-size:13px;">${escapeHTML(r.Komentar) || "<i>Tidak ada komentar.</i>"}</div></div>`).join("");
+        }
+
+        function openReviewsModal() { renderReviews(); document.getElementById('reviewsModal').style.display = 'flex'; }
+        function openAddReview(orderId, customerName) { document.getElementById('revOrderId').value = orderId; document.getElementById('revCustomerName').value = customerName; document.getElementById('addReviewModal').style.display = 'flex'; }
+        
+        async function submitReview() {
+            let btn = document.getElementById('btnSubmitReview'); btn.disabled = true; btn.innerHTML = 'Mengirim...';
+            let finalComment = document.getElementById('revComment').value.trim(); finalComment = finalComment ? finalComment + "\n\n*(Pembeli telah konfirmasi paket diterima)*" : "*(Pembeli telah konfirmasi paket diterima)*";
+            const r = await fetchAPI("save_review", "POST", { id_pesanan: document.getElementById('revOrderId').value, nama: document.getElementById('revCustomerName').value, rating: parseInt(document.getElementById('revRating').value), komentar: finalComment });
+            if (r.status === 'success') { showToast("Terima kasih atas ulasan Anda!"); closeModal('addReviewModal'); fetchAPI("get_catalog", "GET", {}, true).then(res => { if(res.data) allReviews = res.data.reviews || []; }); } else { showToast("Gagal menyimpan ulasan.", "error"); }
+            btn.disabled = false; btn.innerHTML = 'Kirim';
+        }
+
+        function renderBanners(banners) {
+            const wrapper = document.getElementById('bannerWrapper');
+            if (!banners || !banners.length) { wrapper.style.display = 'none'; return; }
+            wrapper.style.display = 'block';
+            document.getElementById('bannerContainer').innerHTML = banners.map(b => `<div class="banner-item"><img src="${escapeHTML(b.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"></div>`).join('');
+        }
+
+        function applyDataToUI(data) {
+            allProducts = data.products || []; allReviews = data.reviews || []; storeSettings = data.settings || {};
+            if(data.banners) renderBanners(data.banners);
+            document.getElementById('uiStoreName').innerHTML = escapeHTML(storeSettings.Nama_Toko) || "TOKO PRISMA"; document.getElementById('footerName').innerHTML = escapeHTML(storeSettings.Nama_Toko) || "TOKO PRISMA";
+            let alamatGabung = (storeSettings.Alamat_Toko ? escapeHTML(storeSettings.Alamat_Toko) : "") + (storeSettings.WhatsApp_Admin ? `<br><i class="fab fa-whatsapp" style="color:var(--success);"></i> ` + escapeHTML(storeSettings.WhatsApp_Admin) : "");
+            if(alamatGabung) { document.getElementById('uiHeaderAlamat').innerHTML = alamatGabung; document.getElementById('uiHeaderAlamat').style.display = "block"; } else { document.getElementById('uiHeaderAlamat').style.display = "none"; }
+            
+            if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = escapeHTML(storeSettings.Logo_URL); document.getElementById('uiLogoImg').style.display = "block"; document.getElementById('favicon').href = escapeHTML(storeSettings.Logo_URL); }
+            if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
+            tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
+            renderScrollingCatalog(allProducts); renderCategoriesMenu(); handleSort();
+        }
+
+        async function initApp() {
+            if(!sessionStorage.getItem("TokoPrisma_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("TokoPrisma_Pinged", "1"); }
+            let params = new URLSearchParams(window.location.search); let productIdUrl = params.get('product'); let isProductOpened = false;
+            let cachedData = localStorage.getItem("TokoPrismaCache_Catalog_v2");
+            if (cachedData) { try { applyDataToUI(JSON.parse(cachedData)); if (productIdUrl) { setTimeout(() => openProductDetail(productIdUrl), 400); isProductOpened = true; } } catch(e) {} }
+            const res = await fetchAPI("get_catalog", "GET", {}, !!cachedData);
+            if (res && res.status === "success" && res.data) { localStorage.setItem("TokoPrismaCache_Catalog_v2", JSON.stringify(res.data)); applyDataToUI(res.data); if (productIdUrl && !isProductOpened) { setTimeout(() => openProductDetail(productIdUrl), 500); } } else if (!cachedData) { document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`; }
+        }
+
+        // --- SISTEM AUTO-SCROLL CERDAS v6.17 (ANTI PATAH-PATAH) ---
+        function initAutoScroll(elementId, speed = 1) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            // Bersihkan animasi lama jika ada (agar tidak double jalan)
+            if (autoScrollStates[elementId]) {
+                cancelAnimationFrame(autoScrollStates[elementId].rafId);
+                clearTimeout(autoScrollStates[elementId].resumeTimer);
+            }
+            
+            autoScrollStates[elementId] = { isInteracting: false, resumeTimer: null, exactScroll: el.scrollLeft };
+            const state = autoScrollStates[elementId];
+            let startX, scrollLeft;
+
+            function pauseScroll() {
+                state.isInteracting = true;
+                clearTimeout(state.resumeTimer);
+            }
+
+            function resumeScroll() {
+                clearTimeout(state.resumeTimer);
+                // Menunggu 1,5 detik setelah dilepas untuk memberi waktu efek "ayunan" (momentum jari) HP selesai
+                state.resumeTimer = setTimeout(() => {
+                    state.isInteracting = false;
+                    state.exactScroll = el.scrollLeft; // Selaraskan titik awal dengan posisi terakhir sehabis diayun
+                }, 1500); 
+            }
+
+            // Mouse Drag (Desktop)
+            el.addEventListener('mousedown', (e) => { pauseScroll(); startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft; });
+            el.addEventListener('mouseleave', () => { if(state.isInteracting) resumeScroll(); });
+            el.addEventListener('mouseup', resumeScroll);
+            el.addEventListener('mousemove', (e) => {
+                if (!state.isInteracting || e.buttons !== 1) return;
+                e.preventDefault();
+                const x = e.pageX - el.offsetLeft;
+                el.scrollLeft = scrollLeft - ((x - startX) * 2);
+                state.exactScroll = el.scrollLeft;
+            });
+            
+            // Touch Swipe (HP)
+            el.addEventListener('touchstart', pauseScroll, {passive: true});
+            el.addEventListener('touchend', resumeScroll, {passive: true});
+            
+            // Roda Mouse
+            let wheelTimer;
+            el.addEventListener('scroll', () => {
+                if(!state.isInteracting) {
+                    pauseScroll();
+                    clearTimeout(wheelTimer);
+                    wheelTimer = setTimeout(resumeScroll, 800);
+                }
+            }, {passive: true});
+
+            // Mesin Animasi Frame-by-Frame (60fps) - Menggantikan SetInterval
+            function animate() {
+                if (!state.isInteracting) {
+                    state.exactScroll += speed;
+                    el.scrollLeft = state.exactScroll;
+                    
+                    // Jaga nilai agar tidak meleset saat browser membulatkan angka piksel
+                    state.exactScroll = el.scrollLeft; 
+                    
+                    // Ulang dari awal jika sudah mentok kanan
+                    if (el.scrollLeft >= (el.scrollWidth - el.clientWidth - 1)) {
+                        el.scrollLeft = 0;
+                        state.exactScroll = 0;
+                    }
+                } else {
+                    state.exactScroll = el.scrollLeft; // Update data saat user menggeser paksa
+                }
+                state.rafId = requestAnimationFrame(animate);
+            }
+            
+            state.rafId = requestAnimationFrame(animate);
+        }
+
+        function renderScrollingCatalog(products) {
+            const wrapper = document.getElementById('scrollKatalogWrapper');
+            const container = document.getElementById('scrollKatalogContainer');
+            
+            let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
+            if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
+            wrapper.style.display = 'block';
+            
+            let wmText = `<div class="watermark" style="font-size:11px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
+
+            container.innerHTML = promoProducts.slice(0, 10).map(p => {
+                let badge = p.Label_Promo ? escapeHTML(p.Label_Promo) : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
+                
+                let hargaHtml = "";
+                if (Number(p.Harga_Promo) > 0) { hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; } 
+                else if (Number(p.Harga_Grosir) > 0) { hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Grosir)}<span style="font-size:9px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; } 
+                else { hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Normal)}</div>`; }
+
+                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; margin-top:6px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; margin-top:6px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}', 1)">+ Beli</button>`;
+                
+                return `<div class="scroll-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:15;">${badge}</div><div style="position:relative; width:100%; height:110px; background:var(--bg); overflow:hidden; display:flex; align-items:center; justify-content:center;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:100%; height:100%; object-fit:contain; z-index:1;">${wmText}</div><div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;"><div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(p.Nama_Produk)}</div><div>${hargaHtml}</div>${btn}</div></div>`;
+            }).join('');
+            
+            // Panggil Animasi Halus (Kecepatan 1 untuk Katalog)
+            initAutoScroll('scrollKatalogContainer', 1);
+        }
+
+        function renderCategoriesMenu() {
+            let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
+            document.getElementById('categoryContainer').innerHTML = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="activeCategory = '${escapeHTML(cat)}'; renderCategoriesMenu(); handleSort();">${escapeHTML(cat)}</div>`).join("");
+            
+            // Panggil Animasi Halus (Kecepatan 0.8 untuk Kategori)
+            initAutoScroll('categoryContainer', 0.8);
+        }
+
+        function handleSort() {
+            currentSort = document.getElementById('sortKatalog').value;
+            let sorted = (activeCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === activeCategory)).sort((a, b) => {
+                let pA = Number(a.Harga_Promo) || Number(a.Harga_Grosir) || Number(a.Harga_Normal); let pB = Number(b.Harga_Promo) || Number(b.Harga_Grosir) || Number(b.Harga_Normal);
+                return currentSort === "termurah" ? pA - pB : (currentSort === "termahal" ? pB - pA : 0);
+            }); renderKatalogVisitor(sorted);
+        }
+        
+        function debounceSearch() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { const k = document.getElementById('searchInput').value.toLowerCase(); renderKatalogVisitor(allProducts.filter(p => p.Nama_Produk && p.Nama_Produk.toLowerCase().includes(k))); }, 300); }
+
+        function renderKatalogVisitor(products) {
+            const grid = document.getElementById('productGrid');
+            if (!products.length) { grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 40px 20px; color: var(--text-muted);">Tidak ada produk.</div>`; return; }
+            let wmText = `<div class="watermark">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
+
+            grid.innerHTML = products.map(p => {
+                let badgeHtml = "", topOffset = 8;
+                if (p.Terbaru === "Ya") { badgeHtml += `<div class="badge-katalog bg-terbaru" style="top: ${topOffset}px;">TERBARU</div>`; topOffset += 24; }
+                if (p.Terlaris === "Ya") { badgeHtml += `<div class="badge-katalog bg-terlaris" style="top: ${topOffset}px;">TERLARIS</div>`; topOffset += 24; }
+                if (p.Label_Promo) { badgeHtml += `<div class="badge-katalog bg-promo" style="top: ${topOffset}px;">${escapeHTML(p.Label_Promo)}</div>`; }
+                
+                let hrgHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>` : `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`);
+                let isW = wishlist.find(w => w.id === p.ID_Produk);
+                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}')">+ Beli</button>`;
+                
+                return `<div class="product-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div class="product-img-wrapper">${badgeHtml}<button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${escapeHTML(p.ID_Produk)}')">${isW ? '<i class="fas fa-heart" style="color:var(--danger);"></i>' : '<i class="far fa-heart" style="color:var(--text-muted);"></i>'}</button><img src="${escapeHTML(p.Foto_URL)}" class="product-img" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;">${wmText}</div><div class="product-info"><div><div class="product-title">${escapeHTML(p.Nama_Produk)}</div>${hrgHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><span style="font-size:10px; color:var(--text-muted);">Sisa: ${escapeHTML(p.Stok)}</span>${btn}</div></div></div>`;
+            }).join("");
+        }
+
+        function openProductDetail(id) {
+            const p = allProducts.find(x => x.ID_Produk === id); if(!p) return;
+            let wmText = `<div class="watermark" style="font-size:24px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
+            let satuan = p.Satuan ? escapeHTML(p.Satuan) : "pcs";
+            let hargaHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Min 5)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>` : `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`);
+            
+            document.getElementById('detailContent').innerHTML = `<div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;"><img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width: 100%; height: 100%; object-fit: contain; z-index:1;">${wmText}</div><div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${escapeHTML(p.Nama_Produk)}</div><div style="margin-bottom: 12px;">${hargaHtml}</div><div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;"><i class="fas fa-box"></i> Stok: ${escapeHTML(p.Stok)}</div><div style="white-space: pre-wrap; margin-bottom:20px; font-size:14px; background:var(--bg); padding:16px; border-radius:12px; border: 1px solid var(--border);">${escapeHTML(p.Deskripsi) || "Tidak ada deskripsi."}</div><div class="sticky-bottom-bar">${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${escapeHTML(p.ID_Produk)}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${escapeHTML(p.ID_Produk)}', 1); openCart();">Beli Sekarang</button>`}</div>`;
+            document.getElementById('btnShareProduct').style.display = 'flex'; document.getElementById('btnShareProduct').onclick = () => shareProductWA(p.ID_Produk, p.Nama_Produk); document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function updateAllCartPrices() {
+            let totalQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
+            cart.forEach(item => { const p = allProducts.find(x => x && x.ID_Produk === item.id); if(p) { item.harga = Number(p.Harga_Promo) > 0 ? Number(p.Harga_Promo) : (totalQty >= 5 && Number(p.Harga_Grosir) > 0 ? Number(p.Harga_Grosir) : Number(p.Harga_Normal)); } });
+            localStorage.setItem("TokoPrismaCart_v1", JSON.stringify(cart));
+        }
+
+        function addToCart(id, qty = 1) {
+            const p = allProducts.find(x => x && x.ID_Produk === id); if(!p) return; const idx = cart.findIndex(i => i.id === id);
+            let currentQty = (idx > -1 ? cart[idx].qty : 0) + qty;
+            if (currentQty > Number(p.Stok)) { showToast("Stok tidak cukup!", "error"); return; }
+            if (idx > -1) { cart[idx].qty = currentQty; } else { cart.push({ id: p.ID_Produk, nama: p.Nama_Produk, foto: p.Foto_URL, qty: qty, satuan: p.Satuan||'pcs', harga: 0 }); }
+            updateAllCartPrices(); updateCartBadge(); showToast("Masuk keranjang");
+        }
+        
+        function updateQty(i, d) { let c = cart[i]; if(!c) return; let p = allProducts.find(x => x && x.ID_Produk === c.id); if(p) handleQtyChange(i, c.qty + d, p); }
+
+        async function handleQtyChange(i, newQty, p) {
+            if(newQty > Number(p.Stok)) { showToast("Maksimal stok tercapai", "error"); newQty = Number(p.Stok); }
+            if (newQty <= 0) { let conf = await customConfirm("Hapus dari keranjang?"); if(conf) { cart.splice(i, 1); } else { cart[i].qty = 1; } } else { cart[i].qty = newQty; }
+            updateAllCartPrices(); openCart(); updateCartBadge(); 
+        }
+
+        function handleManualInput(i, el) {
+            let v = parseInt(el.value); if (isNaN(v) || v <= 0) return; activeCartInputIndex = i;
+            let c = cart[i]; if(!c) return; let p = allProducts.find(x => x && x.ID_Produk === c.id);
+            if(v > Number(p.Stok)) { showToast("Maksimal stok tercapai", "error"); v = Number(p.Stok); } cart[i].qty = v;
+            updateAllCartPrices(); openCart(); updateCartBadge();
+        }
+
+        function openCart() {
+            closeModal('detailModal'); const c = document.getElementById('cartContent');
+            if (cart.length === 0) { c.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:var(--text-muted);">Keranjang kosong.</div>`; } 
+            else {
+                globalSubtotal = 0; let totalCartQty = cart.reduce((sum, item) => sum + item.qty, 0);
+                let promoBanner = totalCartQty >= 5 ? `<div style="background:var(--success); color:white; padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center;"><i class="fas fa-gift"></i> Hore! Harga Grosir Aktif!</div>` : `<div style="background:var(--primary-light); color:var(--primary); padding:10px; border-radius:12px; margin-bottom:16px; font-size:12px; font-weight:bold; text-align:center;"><i class="fas fa-info-circle"></i> Tambah ${5 - totalCartQty} barang lagi untuk Harga Grosir!</div>`;
+
+                c.innerHTML = promoBanner + cart.map((item, i) => { 
+                    globalSubtotal += (item.harga * item.qty); const p = allProducts.find(x => x.ID_Produk === item.id) || {};
+                    let note = (Number(p.Harga_Promo) > 0 && item.harga === Number(p.Harga_Promo)) ? `<span style="font-size:10px; background:var(--danger); color:white; padding:2px 6px; border-radius:4px;">Promo</span>` : (totalCartQty >= 5 && Number(p.Harga_Grosir) > 0 && item.harga === Number(p.Harga_Grosir) ? `<span style="font-size:10px; background:var(--success); color:white; padding:2px 6px; border-radius:4px;">Grosir Min 5 Pcs</span>` : "");
+                    
+                    return `<div class="cart-item"><img src="${escapeHTML(item.foto)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px;height:50px;border-radius:10px;object-fit:contain;background:var(--bg);"><div style="flex: 1; margin-left:14px;"><b>${escapeHTML(item.nama)}</b><div style="color:var(--primary); font-weight:800;">${formatRp(item.harga)}</div><div style="margin-top:2px;">${note}</div></div><div class="qty-control"><div class="qty-btn" onclick="updateQty(${i}, -1)">-</div><input type="number" class="qty-input" id="cart-input-${i}" value="${item.qty}" oninput="handleManualInput(${i}, this)" onblur="if(this.value==='' || parseInt(this.value)<=0){ this.value=1; handleManualInput(${i}, this); } activeCartInputIndex = -1;"><div class="qty-btn" onclick="updateQty(${i}, 1)">+</div></div></div>`; 
+                }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;"><b>Total:</b> <b style="color:var(--primary);">${formatRp(globalSubtotal)}</b></div><button class="btn btn-success" style="width: 100%;" onclick="prepareCheckout()">Checkout</button></div>`;
+            }
+            document.getElementById('cartModal').style.display = 'flex';
+            if (activeCartInputIndex > -1) { setTimeout(() => { let el = document.getElementById('cart-input-' + activeCartInputIndex); if(el) { el.focus(); let val = el.value; el.value = ''; el.value = val; } }, 10); }
+        }
+
+        function calculateOngkir() { document.getElementById('checkoutOngkir').innerText = formatRp(document.getElementById('checkoutMetode').value === "Kurir Toko" ? tarifKurir : 0); document.getElementById('checkoutTotal').innerText = formatRp(globalSubtotal + (document.getElementById('checkoutMetode').value === "Kurir Toko" ? tarifKurir : 0)); }
+
+        async function prepareCheckout() {
+            closeModal('cartModal'); document.getElementById('checkoutSubtotal').innerText = formatRp(globalSubtotal); document.getElementById('checkoutMetode').value = "Ambil di Toko"; calculateOngkir();
+            document.getElementById('checkoutNama').value = localStorage.getItem('TokoPrismaUser_Nama') || ""; document.getElementById('checkoutWA').value = localStorage.getItem('TokoPrismaUser_WA') || ""; document.getElementById('checkoutAlamat').value = localStorage.getItem('TokoPrismaUser_Alamat') || "";
+            document.getElementById('checkoutBuktiBase64').value = ""; document.getElementById('inputFileBukti').value = ""; document.getElementById('checkoutBuktiPreview').style.display = 'none'; document.getElementById('uploadStatusText').innerText = "Belum ada gambar dipilih.";
+            document.getElementById('btnSubmitOrder').disabled = false; document.getElementById('btnSubmitOrder').innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`;
+            if(storeSettings.Info_Rekening) document.getElementById('uiInfoRekening').innerText = escapeHTML(storeSettings.Info_Rekening);
+            if(storeSettings.QRIS_URL) { document.getElementById('uiQrisImage').src = escapeHTML(storeSettings.QRIS_URL); document.getElementById('uiQrisImage').style.display = 'block'; }
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function compressAndUploadImage(e, base64Id, previewId) {
+            const file = e.target.files[0]; if (!file) return; 
+            const statusEl = document.getElementById(base64Id === 'checkoutBuktiBase64' ? 'uploadStatusText' : 'imageUploadStatus');
+            statusEl.innerText = "⏳ Sedang memproses dan mengompres gambar..."; statusEl.style.color = "#f59e0b";
+
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (ev) => { 
+                const img = new Image(); img.src = ev.target.result; 
+                img.onload = () => { 
+                    const canvas = document.createElement('canvas'); 
+                    let MAX_WIDTH = 500; let MAX_HEIGHT = 500;
+                    let width = img.width; let height = img.height;
+                    
+                    if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+                    else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+                    
+                    canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); 
+                    const compressedData = canvas.toDataURL('image/jpeg', 0.5); 
+                    
+                    document.getElementById(base64Id).value = compressedData; 
+                    document.getElementById(previewId).src = compressedData; document.getElementById(previewId).style.display = 'block'; 
+                    statusEl.innerText = "✓ Gambar siap! Ukuran telah dikecilkan otomatis."; statusEl.style.color = "var(--success)"; 
+                    if(base64Id === 'formFotoBase64') { document.getElementById('formFotoUrl').value = ""; }
+                }
+            }
+        }
+
+        async function processCheckout() {
+            let submitBtn = document.getElementById('btnSubmitOrder'); if (submitBtn.disabled) return;
+            let mt = document.getElementById('checkoutMetode').value; let ok = mt === "Kurir Toko" ? tarifKurir : 0; let finalTotal = globalSubtotal + ok;
+            let n = document.getElementById('checkoutNama').value.trim(), w = document.getElementById('checkoutWA').value.trim(), a = document.getElementById('checkoutAlamat').value.trim(), b64 = document.getElementById('checkoutBuktiBase64').value;
+            
+            if(!n || !w || !a) { showToast("Lengkapi form!", "error"); return; }
+            if(!b64) { showToast("Pilih Bukti Transfer!", "error"); return; }
+            
+            submitBtn.disabled = true; submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Menyimpan Pesanan (Antre)...`;
+            localStorage.setItem('TokoPrismaUser_Nama', n); localStorage.setItem('TokoPrismaUser_WA', w); localStorage.setItem('TokoPrismaUser_Alamat', a);
+            
+            try {
+                const res = await fetchAPI("save_order", "POST", { nama: n, wa: w, alamat: a, metode_kirim: mt, total: finalTotal, cart: cart, Bukti_Base64: b64 });
+                if(res.status === 'success') {
+                    let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
+                    let orderItems = cart.map(item => `- ${item.nama} (${item.qty} ${item.satuan}) = ${formatRp(item.harga * item.qty)}`).join('\n');
+                    let txt = `*PESANAN BARU TOKO PRISMA (${res.orderId})*\n\nNama: ${n}\nWA: ${w}\nAlamat: ${a}\nPengiriman: ${mt}\n\n${orderItems}\nOngkir: ${formatRp(ok)}\n*TOTAL: ${formatRp(finalTotal)}*`;
+                    let waUrl = `https://api.whatsapp.com/send?phone=${waAdmin}&text=${encodeURIComponent(txt)}`;
+                    
+                    cart = []; localStorage.removeItem("TokoPrismaCart_v1"); updateCartBadge(); closeModal('checkoutModal');
+                    document.getElementById('detailContent').innerHTML = `<div style="text-align:center; padding:10px;"><i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:12px;"></i><h3 style="margin-bottom:6px;">Pesanan Berhasil!</h3><p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">ID: <b>${escapeHTML(res.orderId)}</b></p><a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-success" style="width:100%; padding:14px; font-size:15px; margin-bottom:12px;"><i class="fab fa-whatsapp"></i> Chat Ke WA Admin</a><button class="btn btn-outline" style="width:100%; padding:14px;" onclick="location.reload()">Kembali Belanja</button></div>`;
+                    document.getElementById('detailModal').style.display = 'flex';
+                } else { submitBtn.disabled = false; submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`; showToast(res.message || "Gagal memproses pesanan.", "error"); }
+            } catch(err) { submitBtn.disabled = false; submitBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Buat Pesanan Sekarang`; showToast("Koneksi bermasalah.", "error"); }
+        }
+
+        window.addEventListener("hashchange", checkAdminAccess);
+        function checkAdminAccess() {
+            if (window.location.hash.includes("#admin")) {
+                if (sessionStorage.getItem("TokoPrisma_AdminToken")) { document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; loadAdminData(); } 
+                else { openAdminLogin(); }
+            } else { document.getElementById('adminView').style.display = 'none'; document.getElementById('userView').style.display = 'block'; }
+        }
+        function openAdminLogin() { window.location.hash = "#admin"; document.getElementById('adminPinModal').style.display = 'flex'; }
+        function closeAdminLoginModal() { document.getElementById('adminPinModal').style.display = 'none'; window.location.hash = ""; document.getElementById('userView').style.display = 'block'; }
+        function closeAdmin() { sessionStorage.removeItem("TokoPrisma_AdminToken"); window.location.hash = ""; checkAdminAccess(); }
+        async function submitAdminPin() { const p = document.getElementById('adminPinInput').value; if(!p) { showToast("Masukkan PIN!", "error"); return; } const btn = document.getElementById('btnSubmitPin'); btn.disabled = true; btn.innerHTML = 'Memeriksa...'; try { const r = await fetchAPI("verify_pin", "POST", { pin: p }); if (r.status === 'success') { sessionStorage.setItem("TokoPrisma_AdminToken", p); document.getElementById('adminPinModal').style.display = 'none'; document.getElementById('userView').style.display = 'none'; document.getElementById('adminView').style.display = 'block'; document.getElementById('adminPinInput').value = ""; window.location.hash = "#admin"; loadAdminData(); } else { showToast("PIN Salah!", "error"); } } catch (e) { showToast("Koneksi gagal.", "error"); } finally { btn.disabled = false; btn.innerHTML = 'Masuk Panel'; } }
+        
+        function switchAdminTab(t) { document.querySelectorAll('.admin-nav-item').forEach(e => e.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); document.getElementById('tabBtn_'+t).classList.add('active'); document.getElementById('adminTab_'+t).style.display = 'block'; if(t === 'pesanan' || t === 'laporan') loadAdminData(true); }
+
+        function renderAdminProductList() {
+            let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
+            document.getElementById('adminCategoryFilter').innerHTML = cats.map(cat => `<button class="btn ${adminActiveCategory === cat ? 'btn-primary' : 'btn-outline'}" style="padding: 6px 14px; font-size: 11px; white-space:nowrap; border-color:${adminActiveCategory === cat ? 'var(--primary)' : '#334155'}; color:${adminActiveCategory === cat ? 'white' : '#cbd5e1'}; background:${adminActiveCategory === cat ? 'var(--primary)' : '#1e293b'};" onclick="adminActiveCategory = '${escapeHTML(cat)}'; renderAdminProductList();">${escapeHTML(cat)}</button>`).join("");
+            let filtered = adminActiveCategory === "Semua" ? allProducts : allProducts.filter(p => p.Kategori === adminActiveCategory);
+            document.getElementById('adminProductList').innerHTML = filtered.length ? filtered.map(p => `<div class="admin-card"><div style="display:flex; align-items:center; gap:12px; width:100%;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:50px; height: 50px; object-fit:contain; border-radius: 10px; background:#0f172a; flex-shrink:0;"><div style="flex:1; min-width:0;"><b style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(p.Nama_Produk)}</b><div style="display:flex; gap:6px; align-items:center; margin-top:3px;"><span class="badge ${p.Status==='Aktif'?'aktif':'nonaktif'}">${escapeHTML(p.Status)}</span> <span style="font-size:11px; background:rgba(99,102,241,0.2); color:#818cf8; padding:2px 6px; border-radius:6px; font-weight:bold;">Stok: ${escapeHTML(p.Stok)}</span></div><span style="font-size:12px; display:block; margin-top:3px; font-weight:bold;">${formatRp(p.Harga_Normal)}</span></div></div><div style="display:flex; gap:8px; width:100%; justify-content:flex-end; border-top:1px solid #334155; padding-top:10px;"><button class="btn btn-secondary" style="padding:6px 14px; font-size:12px;" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'><i class="fas fa-edit"></i> Edit</button><button class="btn btn-danger" style="padding:6px 14px; font-size:12px;" onclick="deleteProductAdmin('${escapeHTML(p.ID_Produk)}')"><i class="fas fa-trash"></i></button></div></div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Tidak ada produk.</div>";
+        }
+
+        async function loadAdminData(silent = false) {
+            const res = await fetchAPI("get_admin_data", "POST", {}, silent);
+            if (res.status === "success") {
+                allProducts = res.data.products || []; adminOrdersCache = res.data.orders || []; adminOrderDetailsCache = res.data.orderDetails || [];
+                if (res.data.laporan) {
+                    document.getElementById('repHariOmset').innerText = formatRp(res.data.laporan.statHariOmset); document.getElementById('repHariLaba').innerText = formatRp(res.data.laporan.statHariLaba);
+                    document.getElementById('repMingguOmset').innerText = formatRp(res.data.laporan.statMingguOmset); document.getElementById('repMingguLaba').innerText = formatRp(res.data.laporan.statMingguLaba);
+                    document.getElementById('repBulanOmset').innerText = formatRp(res.data.laporan.statBulanOmset); document.getElementById('repBulanLaba').innerText = formatRp(res.data.laporan.statBulanLaba);
+                    document.getElementById('repSemuaOmset').innerText = formatRp(res.data.laporan.statSemuaOmset); document.getElementById('repSemuaLaba').innerText = formatRp(res.data.laporan.statSemuaLaba);
+                    document.getElementById('repSemuaSelesai').innerText = res.data.laporan.statSemuaSelesai + " Order Selesai"; document.getElementById('repPengunjung').innerText = res.data.laporan.pengunjung || 0; document.getElementById('repTotalOrder').innerText = res.data.laporan.totalPesanan || 0;
+                }
+                renderAdminProductList();
+                document.getElementById('adminBannerList').innerHTML = (res.data.banners||[]).length ? (res.data.banners||[]).map(b => `<div class="admin-card"><img src="${escapeHTML(b.Foto_URL)}" loading="lazy" style="width:120px; height: 50px; object-fit:contain; border-radius: 8px;"><button class="btn btn-danger" onclick="deleteBannerAdmin('${escapeHTML(b.ID_Banner)}')"><i class="fas fa-trash"></i> Hapus</button></div>`).join("") : "<div style='color:#94a3b8; text-align:center;'>Belum ada banner.</div>";
+
+                let orders = [...adminOrdersCache].reverse();
+                document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
+                    let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
+                    let statusColor = String(o.Status_Pesanan || '').trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan || '').trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
+                    let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
+                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems; let ongkir = displayTotal - totalItems; if(ongkir < 0) ongkir = 0;
+                    let htmlItems = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:4px; border-bottom:1px dashed #334155; padding-bottom:6px;"><span>${escapeHTML(i.Nama_Produk)}<br><span style="opacity:0.7; font-size:11px;">${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</span></span><span style="font-weight:bold;">${formatRp(i.Subtotal)}</span></div>`).join('');
+                    let rincianNotaAdmin = `<div style="border-top: 1px dashed #334155; margin-top: 10px; padding-top: 10px; font-size: 12px; color: #cbd5e1;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal Produk:</span><span>${formatRp(totalItems)}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkos Kirim:</span><span>${formatRp(ongkir)}</span></div></div><div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div>`;
+                    let buktiHtml = o.Bukti_Transfer ? `<div style="width:100%; margin-top:10px;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid #334155; background:var(--bg);"></div>` : "";
+                    return `<div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;"><div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;"><div><b>${escapeHTML(o.ID_Pesanan)}</b><br><span style="font-size:11px; color:#94a3b8;">${escapeHTML(o.Tanggal)}</span></div><span class="badge ${statusColor}">${escapeHTML(o.Status_Pesanan || 'Baru')}</span></div><div style="width:100%; font-size:13px; line-height:1.5;"><div><i class="fas fa-user"></i> <b>${escapeHTML(o.Nama_Pembeli)}</b></div><div><i class="fas fa-phone"></i> <a href="https://wa.me/${formatWaNumber(o.WhatsApp)}" target="_blank" rel="noopener noreferrer" style="color:#818cf8; text-decoration:none;">${escapeHTML(o.WhatsApp)}</a></div><div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(o.Alamat)}</div></div><div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">${htmlItems}${rincianNotaAdmin}</div>${buktiHtml}<div style="display:flex; gap:10px; width:100%; margin-top:4px;"><select onchange="updateStatus('${escapeHTML(o.ID_Pesanan)}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;"><option value="" disabled selected>Ubah Status</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div><div style="display:flex; gap:10px; width:100%; margin-top:4px;"><button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button><button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-trash"></i> Hapus</button></div></div>`;
+                }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Belum ada pesanan masuk.</div>";
+                
+                let s = res.data.settings || {}; document.getElementById('setNamaToko').value = s.Nama_Toko || ""; document.getElementById('setAlamatToko').value = s.Alamat_Toko || ""; document.getElementById('setWaAdmin').value = s.WhatsApp_Admin || ""; document.getElementById('setLogoUrl').value = s.Logo_URL || ""; document.getElementById('setInfoRekening').value = s.Info_Rekening || ""; document.getElementById('setQrisUrl').value = s.QRIS_URL || ""; document.getElementById('setWarnaTema').value = s.Warna_Tema || "#6366f1"; document.getElementById('setTarifKurir').value = s.Tarif_Kurir_Toko || "10000";
+            }
+        }
+        
+        async function updateStatus(id, stat) { await fetchAPI('update_order_status', 'POST', {id: id, status: stat}); showToast("Status diubah"); loadAdminData(true); }
+        function openNota(orderId) {
+            let o = adminOrdersCache.find(x => x.ID_Pesanan === orderId); if(!o) return;
+            let items = adminOrderDetailsCache.filter(x => String(x.ID_Pesanan) === String(orderId));
+            let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
+            let total = Number(o.Total) || totalItems; let ongkir = total - totalItems;
+            let itemsHtml = items.map(i => `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; border-bottom:1px dashed #ccc; padding-bottom:4px;"><span>${escapeHTML(i.Nama_Produk)}<br><small>${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</small></span><span>${formatRp(i.Subtotal)}</span></div>`).join('');
+            document.getElementById('notaPrintArea').innerHTML = `<div style="text-align:center; margin-bottom: 16px;"><h2 style="margin:0; font-size:20px;">${escapeHTML(storeSettings.Nama_Toko) || 'TOKO PRISMA'}</h2><div style="font-size:12px; color:#555;">${escapeHTML(storeSettings.Alamat_Toko) || ''}</div><div style="font-size:12px; color:#555;">WA: ${escapeHTML(storeSettings.WhatsApp_Admin) || ''}</div></div><div style="font-size:12px; margin-bottom: 16px; border-top:1px dashed #000; border-bottom:1px dashed #000; padding:8px 0;"><div><b>ID:</b> ${escapeHTML(o.ID_Pesanan)}</div><div><b>Tgl:</b> ${escapeHTML(o.Tanggal)}</div><div><b>Plg:</b> ${escapeHTML(o.Nama_Pembeli)}</div><div><b>Kirim:</b> ${escapeHTML(o.Metode_Pengiriman) || 'Ambil di Toko'}</div></div><div style="margin-bottom: 16px;">${itemsHtml}</div><div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal:</span> <span>${formatRp(totalItems)}</span></div><div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkir:</span> <span>${formatRp(ongkir)}</span></div><div style="font-size:14px; font-weight:bold; display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px dashed #000;"><span>TOTAL:</span> <span>${formatRp(total)}</span></div>`;
+            document.getElementById('btnShareNota').onclick = function() { window.open(`https://api.whatsapp.com/send?phone=${formatWaNumber(o.WhatsApp)}&text=${encodeURIComponent(`*NOTA PESANAN*\nID: ${o.ID_Pesanan}\nTotal:${formatRp(total)}\nTerima kasih.`)}`, '_blank', 'noopener,noreferrer'); };
+            document.getElementById('notaModal').style.display = 'flex';
+        }
+        async function deleteOrderAdmin(id) { if(!(await customConfirm("Hapus pesanan ini permanen?"))) return; const r = await fetchAPI("delete_order", "POST", {id: id}); if(r.status === 'success') { showToast("Pesanan Dihapus"); loadAdminData(true); } else { showToast(r.message, "error"); } }
+        async function resetAllOrdersAdmin() { if(!(await customConfirm("PERINGATAN! Hapus SEMUA riwayat pesanan?"))) return; let pinConfirm = await customPrompt("Masukkan PIN Admin:", "password"); if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN salah!", "error"); return; } const r = await fetchAPI("reset_orders", "POST", {}); if(r.status === 'success') { showToast("Semua riwayat pesanan dihapus!"); loadAdminData(); } }
+        async function changePinAdmin() { let newPin = document.getElementById('setNewPin').value; if(newPin.length < 4) { showToast("PIN minimal 4 karakter!", "error"); return; } const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin }); if(r.status === 'success') { showToast("PIN diubah!"); sessionStorage.setItem("TokoPrisma_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } }
+        async function openBannerModal() { let url = await customPrompt("URL Banner (Contoh: https://i.ibb.co/banner.jpg):", "text"); if (url) submitBannerAdmin(url); }
+        async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Banner ditambah"); } }
+        async function deleteBannerAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Dihapus"); } }
+        function openProductModal() { ['formIdProduk', 'formFotoUrl', 'formFotoBase64', 'formFileFoto', 'formNama', 'formKategori', 'formDeskripsi', 'formHargaPromo', 'formLabelPromo', 'formHargaNormal', 'formHpp', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = ""); document.getElementById('formStok').value = "10"; document.getElementById('formSatuan').value = "pcs"; document.getElementById('formBadge').value = ""; document.getElementById('imagePreview').style.display = 'none'; document.getElementById('imageUploadStatus').innerText = "Pilih foto."; if (adminActiveCategory !== "Semua") { document.getElementById('formKategori').value = adminActiveCategory; } document.getElementById('productModal').style.display = 'flex'; }
+        function editProduct(p) { openProductModal(); document.getElementById('formIdProduk').value = p.ID_Produk; document.getElementById('formFotoUrl').value = p.Foto_URL; document.getElementById('formNama').value = p.Nama_Produk; document.getElementById('formKategori').value = p.Kategori; document.getElementById('formDeskripsi').value = p.Deskripsi || ""; document.getElementById('formStok').value = p.Stok || 0; document.getElementById('formHpp').value = p.HPP || 0; document.getElementById('formHargaNormal').value = p.Harga_Normal; document.getElementById('formHargaGrosir').value = p.Harga_Grosir || ""; document.getElementById('formHargaPromo').value = p.Harga_Promo || ""; document.getElementById('formSatuan').value = p.Satuan || "pcs"; document.getElementById('formLabelPromo').value = p.Label_Promo || ""; document.getElementById('formBadge').value = p.Terbaru === "Ya" ? "Terbaru" : (p.Terlaris === "Ya" ? "Terlaris" : (p.Unggulan === "Ya" ? "Unggulan" : "")); document.getElementById('formStatus').value = p.Status; if(p.Foto_URL) { document.getElementById('imagePreview').src = p.Foto_URL; document.getElementById('imagePreview').style.display = 'block'; } }
+        async function submitProduct() {
+            let badgeVal = document.getElementById('formBadge').value;
+            const p = { ID_Produk: document.getElementById('formIdProduk').value, Nama_Produk: document.getElementById('formNama').value, Kategori: document.getElementById('formKategori').value, Deskripsi: document.getElementById('formDeskripsi').value, Stok: parseInt(document.getElementById('formStok').value) || 0, HPP: parseInt(document.getElementById('formHpp').value) || 0, Harga_Normal: parseInt(document.getElementById('formHargaNormal').value) || 0, Harga_Grosir: parseInt(document.getElementById('formHargaGrosir').value) || 0, Harga_Promo: parseInt(document.getElementById('formHargaPromo').value) || 0, Satuan: document.getElementById('formSatuan').value || "pcs", Label_Promo: document.getElementById('formLabelPromo').value || "", Terbaru: badgeVal === "Terbaru" ? "Ya" : "", Terlaris: badgeVal === "Terlaris" ? "Ya" : "", Unggulan: badgeVal === "Unggulan" ? "Ya" : "", Status: document.getElementById('formStatus').value, Foto_URL: document.getElementById('formFotoUrl').value, Foto_Base64: document.getElementById('formFotoBase64').value };
+            if(!p.Nama_Produk || !p.Kategori || p.HPP <= 0 || p.Harga_Normal <= 0) { showToast("Lengkapi form penting (Nama, Kategori, Harga)!", "error"); return; }
+            if(!p.Foto_URL && !p.Foto_Base64) { showToast("Foto wajib diisi!", "error"); return; }
+            const btnSubmit = document.querySelector('#productModal .btn-primary'); btnSubmit.disabled = true; btnSubmit.innerHTML = 'Menyimpan (Antre)...';
+            try { const r = await fetchAPI("save_product", "POST", p); if(r.status === 'success') { closeModal('productModal'); loadAdminData(true); initApp(); showToast("Produk Disimpan!"); } else { showToast(r.message || "Gagal", "error"); } } catch (e) { showToast("Koneksi bermasalah.", "error"); } finally { btnSubmit.disabled = false; btnSubmit.innerHTML = 'Simpan Data Produk'; }
+        }
+        async function deleteProductAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Dihapus"); } }
+        async function saveSettings() { const s = { Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value, Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value }; const r = await fetchAPI("save_settings", "POST", s); if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(true); initApp(); } }
+        async function resetPengunjungAdmin() { if(!(await customConfirm("Reset pengunjung hari ini menjadi 0?"))) return; const r = await fetchAPI("reset_visitor", "POST", {}); if(r.status === 'success') { document.getElementById('repPengunjung').innerText = "0"; showToast("Berhasil direset!"); } }
+        
+        document.addEventListener("DOMContentLoaded", async function() { try { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); } catch(e) {} });
+        document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'IMG') { e.preventDefault(); showToast("Gambar dilindungi", "error"); } });
+    </script>
+</body>
+</html>
