@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.15 Secure Pro</title>
+    <title>TOKO PRISMA - v6.16 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -55,15 +55,27 @@
         .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--bg); }
         .banner-item img { width: 100%; max-height: 220px; object-fit: contain; display: block; margin: 0 auto; }
         
-        /* SLOWMO ANIMATION CSS CHANGES */
+        /* REVISI CSS: ANIMASI SCROLL OTOMATIS NAMUN BISA DISENTUH (TOUCH-SCROLLABLE) */
         .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
         .scrolling-title { font-size: 15px; font-weight: 800; padding: 0 20px; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        .scrolling-slider { padding: 0 20px 15px 20px; white-space: nowrap; overflow: hidden; }
-        .scroll-card { display: inline-flex; vertical-align: top; margin-right: 15px; white-space: normal; min-width: 160px; max-width: 160px; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
         
-        .categories-wrapper { padding: 15px 20px 0 20px; max-width: 1200px; margin: 0 auto; }
-        .category-menu-scroll { padding-bottom: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; overflow: hidden; }
-        .category-menu-item { display: inline-block; margin-right: 20px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; }
+        .scrolling-slider, .category-menu-scroll {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 20px 15px 20px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
+        }
+        .scrolling-slider::-webkit-scrollbar, .category-menu-scroll::-webkit-scrollbar { 
+            display: none; /* Sembunyikan scrollbar di Chrome/Safari */
+        }
+
+        .scroll-card { flex: 0 0 auto; margin-right: 15px; white-space: normal; width: 160px; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
+        
+        .categories-wrapper { padding: 15px 0 0 0; max-width: 1200px; margin: 0 auto; }
+        .category-menu-item { flex: 0 0 auto; margin-right: 20px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; padding-bottom: 10px; }
         
         .category-menu-item.active { color: var(--primary); font-weight: 800; }
         .category-menu-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 3px 3px 0 0; }
@@ -78,8 +90,10 @@
         .badge-katalog.bg-promo { background: var(--danger); } .badge-katalog.bg-terbaru { background: var(--success); } .badge-katalog.bg-terlaris { background: var(--secondary); } .badge-katalog.bg-unggulan { background: var(--primary); }
         .product-info { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
         .product-title { font-size: 12px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
         .price-normal { font-size: 10px; color: var(--text-muted); text-decoration: line-through; display: block; }
         .price-final { font-size: 13px; font-weight: 800; color: var(--primary); }
+        
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 99; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; position: relative; flex:1; }
         .nav-item i { font-size: 18px; margin-bottom: 4px; } .nav-item.active { color: var(--primary); }
@@ -163,14 +177,14 @@
 
         <div class="banner-container-wrapper" id="bannerWrapper"><div class="banner-slider" id="bannerContainer"></div></div>
 
-        <!-- REVISI WADAH MARQUEE UNTUK MENCEGAH BUG MACET -->
+        <!-- REVISI WADAH UNTUK AUTO-SCROLL YANG BISA DISENTUH -->
         <div class="scrolling-catalog-wrapper" id="scrollKatalogWrapper">
             <div class="scrolling-title"><i class="fas fa-fire" style="color:var(--danger);"></i> Spesial Buat Anda</div>
-            <div id="scrollKatalogContainer"></div>
+            <div class="scrolling-slider" id="scrollKatalogContainer"></div>
         </div>
 
         <div class="categories-wrapper">
-            <div id="categoryContainer"></div>
+            <div class="category-menu-scroll" id="categoryContainer" style="border-bottom: 1px solid var(--border);"></div>
         </div>
 
         <main class="container">
@@ -188,7 +202,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.15 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.16 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -433,6 +447,9 @@
         let adminActiveCategory = "Semua";
         let searchTimeout = null;
         let activeCartInputIndex = -1; 
+        
+        // VARIABEL UNTUK AUTO-SCROLL
+        let autoScrollIntervals = {};
 
         try { let c = JSON.parse(localStorage.getItem("TokoPrismaCart_v1")); cart = Array.isArray(c) ? c.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaCart_v1"); }
         try { let w = JSON.parse(localStorage.getItem("TokoPrismaWishlist_v1")); wishlist = Array.isArray(w) ? w.filter(x => x && x.id) : []; } catch(e) { localStorage.removeItem("TokoPrismaWishlist_v1"); }
@@ -514,9 +531,7 @@
                 const res = await fetch(method==='GET' ? `${GAS_URL}?action=${action}` : GAS_URL, { method: method, ...(method==='POST' && { headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action,data}) }) });
                 const resData = await res.json();
                 
-                // Mencegah error pop-up merah untuk pembeli yang sedang tidak login admin
                 if(resData.status === 'error' && resData.message && resData.message.includes("Sesi Admin")) {
-                    // HANYA log out / kick jika user saat itu BERADA di panel admin
                     if (window.location.hash.includes("#admin")) {
                         closeAdmin();
                     }
@@ -559,17 +574,13 @@
             if(res.status === 'success') {
                 customerOrdersCache = res.data.orders || []; let waAdmin = formatWaNumber(storeSettings.WhatsApp_Admin || "628000"); 
                 document.getElementById('customerOrdersResult').innerHTML = customerOrdersCache.length ? customerOrdersCache.map((o) => {
-                    
-                    // CEK STATUS LOKAL: Untuk mengakali proteksi backend, kita cek apakah pembeli sudah klik "Selesai" secara lokal.
                     let localDone = localStorage.getItem('TokoPrisma_OrderDone_' + o.ID_Pesanan);
                     let currentStatus = (localDone === 'true') ? 'Selesai' : o.Status_Pesanan;
                     
                     let statusBg = currentStatus === 'Selesai' ? 'var(--success)' : (currentStatus === 'Dibatalkan' ? 'var(--danger)' : 'var(--primary)');
                     
-                    // Rincian produk gaya nota
                     let htmlItems = (o.items && o.items.length) ? o.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12px; color:var(--text-main); border-bottom: 1px dashed var(--border); padding-bottom: 6px;"><span>${escapeHTML(i.Nama_Produk)}<br><span style="color:var(--text-muted); font-size:11px;">${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</span></span><span style="font-weight:600;">${formatRp(i.Subtotal)}</span></div>`).join('') : `<div style="font-size:12px; color:var(--text-muted);">Detail produk kosong.</div>`;
                     
-                    // Rincian Subtotal & Ongkir
                     let totalItems = o.items ? o.items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0) : 0;
                     let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems;
                     let ongkir = displayTotal - totalItems;
@@ -600,28 +611,13 @@
 
         async function markOrderCompleted(orderId) {
             if(!(await customConfirm("Konfirmasi bahwa paket sudah diterima dan pesanan selesai?"))) return;
-            
-            // 1. Simpan status selesai ke memori HP pembeli untuk transparansi instan,
-            //    sehingga tombol langsung berubah jadi ulasan meskipun Backend memblokir status update.
             localStorage.setItem('TokoPrisma_OrderDone_' + orderId, 'true');
-            
-            // 2. Coba update backend secara diam-diam (jika ditolak sistem tidak akan error di layar)
             let waInput = document.getElementById('checkWaInput').value;
-            fetchAPI("update_order_status", "POST", {id: orderId, status: "Selesai", role: "customer", wa: waInput})
-                .catch(() => console.log("Silent backend update blocked by PIN."));
-            
+            fetchAPI("update_order_status", "POST", {id: orderId, status: "Selesai", role: "customer", wa: waInput}).catch(() => console.log("Silent backend update blocked by PIN."));
             showToast("Pesanan berhasil dikonfirmasi selesai!"); 
-            
-            // 3. Render ulang list pesanan (akan membaca memori HP = Selesai)
             await fetchCustomerOrders(); 
-            
-            // 4. Langsung otomatis panggil form pop up ulasan
             let order = customerOrdersCache.find(o => String(o.ID_Pesanan) === String(orderId));
-            if (order) {
-                setTimeout(() => {
-                    openAddReview(order.ID_Pesanan, order.Nama_Pembeli);
-                }, 500);
-            }
+            if (order) { setTimeout(() => { openAddReview(order.ID_Pesanan, order.Nama_Pembeli); }, 500); }
         }
 
         function renderReviews() {
@@ -637,18 +633,11 @@
         
         async function submitReview() {
             let btn = document.getElementById('btnSubmitReview'); btn.disabled = true; btn.innerHTML = 'Mengirim...';
-            // Tambahkan embel-embel ke komentar agar admin sadar pesanan ini sudah sampai secara fisik 
             let finalComment = document.getElementById('revComment').value.trim();
             finalComment = finalComment ? finalComment + "\n\n*(Pembeli telah konfirmasi paket diterima)*" : "*(Pembeli telah konfirmasi paket diterima)*";
             
             const r = await fetchAPI("save_review", "POST", { id_pesanan: document.getElementById('revOrderId').value, nama: document.getElementById('revCustomerName').value, rating: parseInt(document.getElementById('revRating').value), komentar: finalComment });
-            if (r.status === 'success') { 
-                showToast("Terima kasih atas ulasan Anda!"); 
-                closeModal('addReviewModal'); 
-                fetchAPI("get_catalog", "GET", {}, true).then(res => { if(res.data) allReviews = res.data.reviews || []; }); 
-            } else {
-                showToast("Gagal menyimpan ulasan.", "error");
-            }
+            if (r.status === 'success') { showToast("Terima kasih atas ulasan Anda!"); closeModal('addReviewModal'); fetchAPI("get_catalog", "GET", {}, true).then(res => { if(res.data) allReviews = res.data.reviews || []; }); } else { showToast("Gagal menyimpan ulasan.", "error"); }
             btn.disabled = false; btn.innerHTML = 'Kirim';
         }
 
@@ -666,12 +655,7 @@
             let alamatGabung = (storeSettings.Alamat_Toko ? escapeHTML(storeSettings.Alamat_Toko) : "") + (storeSettings.WhatsApp_Admin ? `<br><i class="fab fa-whatsapp" style="color:var(--success);"></i> ` + escapeHTML(storeSettings.WhatsApp_Admin) : "");
             if(alamatGabung) { document.getElementById('uiHeaderAlamat').innerHTML = alamatGabung; document.getElementById('uiHeaderAlamat').style.display = "block"; } else { document.getElementById('uiHeaderAlamat').style.display = "none"; }
             
-            if(storeSettings.Logo_URL) { 
-                document.getElementById('uiLogoImg').src = escapeHTML(storeSettings.Logo_URL); 
-                document.getElementById('uiLogoImg').style.display = "block"; 
-                document.getElementById('favicon').href = escapeHTML(storeSettings.Logo_URL);
-            }
-            
+            if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = escapeHTML(storeSettings.Logo_URL); document.getElementById('uiLogoImg').style.display = "block"; document.getElementById('favicon').href = escapeHTML(storeSettings.Logo_URL); }
             if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
             tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
             renderScrollingCatalog(allProducts); renderCategoriesMenu(); handleSort();
@@ -679,61 +663,93 @@
 
         async function initApp() {
             if(!sessionStorage.getItem("TokoPrisma_Pinged")) { fetchAPI("ping_visitor", "POST", {}, true); sessionStorage.setItem("TokoPrisma_Pinged", "1"); }
-            
-            let params = new URLSearchParams(window.location.search); 
-            let productIdUrl = params.get('product');
-            let isProductOpened = false;
-
+            let params = new URLSearchParams(window.location.search); let productIdUrl = params.get('product'); let isProductOpened = false;
             let cachedData = localStorage.getItem("TokoPrismaCache_Catalog_v2");
-            
-            if (cachedData) { 
-                try { 
-                    applyDataToUI(JSON.parse(cachedData)); 
-                    if (productIdUrl) {
-                        setTimeout(() => openProductDetail(productIdUrl), 400);
-                        isProductOpened = true; 
-                    }
-                } catch(e) {} 
-            }
-            
+            if (cachedData) { try { applyDataToUI(JSON.parse(cachedData)); if (productIdUrl) { setTimeout(() => openProductDetail(productIdUrl), 400); isProductOpened = true; } } catch(e) {} }
             const res = await fetchAPI("get_catalog", "GET", {}, !!cachedData);
-            if (res && res.status === "success" && res.data) {
-                localStorage.setItem("TokoPrismaCache_Catalog_v2", JSON.stringify(res.data)); 
-                applyDataToUI(res.data);
-                
-                if (productIdUrl && !isProductOpened) {
-                    setTimeout(() => openProductDetail(productIdUrl), 500);
-                }
-            } else if (!cachedData) { 
-                document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`; 
-            }
+            if (res && res.status === "success" && res.data) { localStorage.setItem("TokoPrismaCache_Catalog_v2", JSON.stringify(res.data)); applyDataToUI(res.data); if (productIdUrl && !isProductOpened) { setTimeout(() => openProductDetail(productIdUrl), 500); } } else if (!cachedData) { document.getElementById('productGrid').innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 20px; color: var(--danger);"><b>Gagal Terhubung ke Database!</b></div>`; }
         }
 
-        // REVISI FUNGSI RENDER KATALOG SLOWMO AGAR TIDAK MACET
+        // FUNGSI UNTUK MENGAKTIFKAN AUTO-SCROLL CSS YANG BISA DIGESER
+        function initAutoScroll(elementId, speed = 1) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            // Hapus interval lama jika ada (untuk refresh)
+            if (autoScrollIntervals[elementId]) {
+                clearInterval(autoScrollIntervals[elementId]);
+            }
+            
+            let isDown = false;
+            let startX, scrollLeft;
+            
+            // Hentikan scroll saat disentuh/di-klik
+            el.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft; });
+            el.addEventListener('mouseleave', () => { isDown = false; });
+            el.addEventListener('mouseup', () => { isDown = false; });
+            el.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - el.offsetLeft;
+                const walk = (x - startX) * 2; // Kecepatan manual geser
+                el.scrollLeft = scrollLeft - walk;
+            });
+            
+            // Dukungan touch untuk mobile
+            el.addEventListener('touchstart', () => { isDown = true; }, {passive: true});
+            el.addEventListener('touchend', () => { isDown = false; }, {passive: true});
+
+            // Jalankan animasi scroll otomatis (looping)
+            autoScrollIntervals[elementId] = setInterval(() => {
+                // Hanya bergerak jika tidak sedang disentuh pengguna
+                if (!isDown) {
+                    el.scrollLeft += speed;
+                    // Reset ke kiri jika sudah mentok kanan
+                    if (el.scrollLeft >= (el.scrollWidth - el.clientWidth - 1)) {
+                        el.scrollLeft = 0;
+                    }
+                }
+            }, 30);
+        }
+
         function renderScrollingCatalog(products) {
             const wrapper = document.getElementById('scrollKatalogWrapper');
+            const container = document.getElementById('scrollKatalogContainer');
+            
             let promoProducts = products.filter(p => p.Label_Promo || p.Unggulan === "Ya" || p.Terlaris === "Ya" || Number(p.Harga_Promo) > 0);
             if(promoProducts.length === 0) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
+            
             let wmText = `<div class="watermark" style="font-size:11px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
 
-            let cardsHtml = promoProducts.slice(0, 10).map(p => {
+            container.innerHTML = promoProducts.slice(0, 10).map(p => {
                 let badge = p.Label_Promo ? escapeHTML(p.Label_Promo) : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
-                let harga = Number(p.Harga_Promo) > 0 ? formatRp(p.Harga_Promo) : (Number(p.Harga_Grosir) > 0 ? formatRp(p.Harga_Grosir) : formatRp(p.Harga_Normal));
-                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}', 1)">+ Beli</button>`;
                 
-                return `<div class="scroll-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:15;">${badge}</div><div style="position:relative; width:100%; height:110px; background:var(--bg); overflow:hidden; display:flex; align-items:center; justify-content:center;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:100%; height:100%; object-fit:contain; z-index:1;">${wmText}</div><div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;"><div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(p.Nama_Produk)}</div><div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:6px;">${harga}</div>${btn}</div></div>`;
+                // REVISI: TAMBAHKAN HARGA CORET DI KATALOG SPESIAL JIKA ADA DISKON/GROSIR
+                let hargaHtml = "";
+                if (Number(p.Harga_Promo) > 0) {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`;
+                } else if (Number(p.Harga_Grosir) > 0) {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Grosir)}<span style="font-size:9px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`;
+                } else {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Normal)}</div>`;
+                }
+
+                let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; margin-top:6px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; margin-top:6px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}', 1)">+ Beli</button>`;
+                
+                return `<div class="scroll-card" onclick="openProductDetail('${escapeHTML(p.ID_Produk)}')"><div style="position:absolute; top:6px; left:6px; background:var(--danger); color:white; font-size:9px; font-weight:bold; padding:3px 6px; border-radius:4px; z-index:15;">${badge}</div><div style="position:relative; width:100%; height:110px; background:var(--bg); overflow:hidden; display:flex; align-items:center; justify-content:center;"><img src="${escapeHTML(p.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width:100%; height:100%; object-fit:contain; z-index:1;">${wmText}</div><div style="padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1;"><div style="font-size:11px; font-weight:bold; line-height:1.2; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(p.Nama_Produk)}</div><div>${hargaHtml}</div>${btn}</div></div>`;
             }).join('');
             
-            // Membuat ulang elemen marquee secara segar agar browser tidak kebingungan menghitung lebar gambar
-            document.getElementById('scrollKatalogContainer').innerHTML = `<marquee behavior="alternate" scrollamount="2" class="scrolling-slider">${cardsHtml}</marquee>`;
+            // Aktifkan scroll sentuh & auto-gerak (kecepatan 1)
+            initAutoScroll('scrollKatalogContainer', 1);
         }
 
-        // REVISI FUNGSI RENDER KATEGORI SLOWMO
         function renderCategoriesMenu() {
             let cats = ["Semua", ...new Set(allProducts.map(p => p.Kategori))].filter(Boolean);
-            let catsHtml = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="activeCategory = '${escapeHTML(cat)}'; renderCategoriesMenu(); handleSort();">${escapeHTML(cat)}</div>`).join("");
-            document.getElementById('categoryContainer').innerHTML = `<marquee behavior="alternate" scrollamount="2" class="category-menu-scroll">${catsHtml}</marquee>`;
+            document.getElementById('categoryContainer').innerHTML = cats.map(cat => `<div class="category-menu-item ${activeCategory === cat ? 'active' : ''}" onclick="activeCategory = '${escapeHTML(cat)}'; renderCategoriesMenu(); handleSort();">${escapeHTML(cat)}</div>`).join("");
+            
+            // Aktifkan scroll sentuh & auto-gerak untuk kategori (kecepatan 0.8)
+            initAutoScroll('categoryContainer', 0.8);
         }
 
         function handleSort() {
@@ -758,6 +774,7 @@
                 if (p.Terbaru === "Ya") { badgeHtml += `<div class="badge-katalog bg-terbaru" style="top: ${topOffset}px;">TERBARU</div>`; topOffset += 24; }
                 if (p.Terlaris === "Ya") { badgeHtml += `<div class="badge-katalog bg-terlaris" style="top: ${topOffset}px;">TERLARIS</div>`; topOffset += 24; }
                 if (p.Label_Promo) { badgeHtml += `<div class="badge-katalog bg-promo" style="top: ${topOffset}px;">${escapeHTML(p.Label_Promo)}</div>`; }
+                
                 let hrgHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>` : `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`);
                 let isW = wishlist.find(w => w.id === p.ID_Produk);
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}')">+ Beli</button>`;
@@ -812,15 +829,13 @@
 
         function handleManualInput(i, el) {
             let v = parseInt(el.value);
-            if (isNaN(v) || v <= 0) return; // Jangan proses bila kosong/nol
-            activeCartInputIndex = i; // Simpan fokus
+            if (isNaN(v) || v <= 0) return;
+            activeCartInputIndex = i;
             let c = cart[i]; if(!c) return;
             let p = allProducts.find(x => x && x.ID_Produk === c.id);
             if(v > Number(p.Stok)) { showToast("Maksimal stok tercapai", "error"); v = Number(p.Stok); }
             cart[i].qty = v;
-            updateAllCartPrices();
-            openCart();
-            updateCartBadge();
+            updateAllCartPrices(); openCart(); updateCartBadge();
         }
 
         function openCart() {
@@ -838,14 +853,7 @@
                 }).join("") + `<div class="sticky-bottom-bar" style="flex-direction:column;"><div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;"><b>Total:</b> <b style="color:var(--primary);">${formatRp(globalSubtotal)}</b></div><button class="btn btn-success" style="width: 100%;" onclick="prepareCheckout()">Checkout</button></div>`;
             }
             document.getElementById('cartModal').style.display = 'flex';
-            
-            // Kembalikan kursor fokus otomatis bila sedang ngetik manual
-            if (activeCartInputIndex > -1) {
-                setTimeout(() => {
-                    let el = document.getElementById('cart-input-' + activeCartInputIndex);
-                    if(el) { el.focus(); let val = el.value; el.value = ''; el.value = val; }
-                }, 10);
-            }
+            if (activeCartInputIndex > -1) { setTimeout(() => { let el = document.getElementById('cart-input-' + activeCartInputIndex); if(el) { el.focus(); let val = el.value; el.value = ''; el.value = val; } }, 10); }
         }
 
         function calculateOngkir() { document.getElementById('checkoutOngkir').innerText = formatRp(document.getElementById('checkoutMetode').value === "Kurir Toko" ? tarifKurir : 0); document.getElementById('checkoutTotal').innerText = formatRp(globalSubtotal + (document.getElementById('checkoutMetode').value === "Kurir Toko" ? tarifKurir : 0)); }
@@ -933,7 +941,7 @@
             document.querySelectorAll('.admin-tab-content').forEach(e => e.style.display = 'none'); 
             document.getElementById('tabBtn_'+t).classList.add('active'); 
             document.getElementById('adminTab_'+t).style.display = 'block'; 
-            if(t === 'pesanan' || t === 'laporan') loadAdminData(true); // Auto sync diam-diam saat tab dibuka
+            if(t === 'pesanan' || t === 'laporan') loadAdminData(true);
         }
 
         function renderAdminProductList() {
@@ -962,24 +970,11 @@
                 document.getElementById('adminOrderList').innerHTML = orders.length ? orders.map(o => {
                     let items = adminOrderDetailsCache.filter(d => String(d.ID_Pesanan) === String(o.ID_Pesanan));
                     let statusColor = String(o.Status_Pesanan || '').trim() === 'Selesai' ? 'aktif' : (String(o.Status_Pesanan || '').trim() === 'Dibatalkan' ? 'nonaktif' : 'aktif');
-                    
-                    // Rincian produk gaya nota untuk Admin
                     let totalItems = items.reduce((sum, item) => sum + (Number(item.Subtotal) || 0), 0);
-                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems;
-                    let ongkir = displayTotal - totalItems;
-                    if(ongkir < 0) ongkir = 0;
-
+                    let displayTotal = Number(o.Total) > 0 ? Number(o.Total) : totalItems; let ongkir = displayTotal - totalItems; if(ongkir < 0) ongkir = 0;
                     let htmlItems = items.map(i => `<div style="font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:4px; border-bottom:1px dashed #334155; padding-bottom:6px;"><span>${escapeHTML(i.Nama_Produk)}<br><span style="opacity:0.7; font-size:11px;">${escapeHTML(i.Jumlah)} x ${formatRp(i.Harga)}</span></span><span style="font-weight:bold;">${formatRp(i.Subtotal)}</span></div>`).join('');
-                    
-                    let rincianNotaAdmin = `
-                    <div style="border-top: 1px dashed #334155; margin-top: 10px; padding-top: 10px; font-size: 12px; color: #cbd5e1;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal Produk:</span><span>${formatRp(totalItems)}</span></div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkos Kirim:</span><span>${formatRp(ongkir)}</span></div>
-                    </div>
-                    <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div>`;
-
+                    let rincianNotaAdmin = `<div style="border-top: 1px dashed #334155; margin-top: 10px; padding-top: 10px; font-size: 12px; color: #cbd5e1;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal Produk:</span><span>${formatRp(totalItems)}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Ongkos Kirim:</span><span>${formatRp(ongkir)}</span></div></div><div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; color:#f8fafc;"><span>Total Bayar:</span> <span style="color:#818cf8;">${formatRp(displayTotal)}</span></div>`;
                     let buktiHtml = o.Bukti_Transfer ? `<div style="width:100%; margin-top:10px;"><button class="btn btn-outline" style="width:100%; font-size:12px; padding:6px; color:#10b981; border-color:#10b981;" onclick="let img = document.getElementById('bukti_${escapeHTML(o.ID_Pesanan)}'); img.style.display = img.style.display === 'none' ? 'block' : 'none';"><i class="fas fa-image"></i> Lihat Bukti</button><img id="bukti_${escapeHTML(o.ID_Pesanan)}" src="${escapeHTML(o.Bukti_Transfer)}" loading="lazy" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:8px; border:1px solid #334155; background:var(--bg);"></div>` : "";
-
                     return `<div class="admin-card" style="flex-direction:column; align-items:flex-start; gap:10px;"><div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid #334155; padding-bottom:8px;"><div><b>${escapeHTML(o.ID_Pesanan)}</b><br><span style="font-size:11px; color:#94a3b8;">${escapeHTML(o.Tanggal)}</span></div><span class="badge ${statusColor}">${escapeHTML(o.Status_Pesanan || 'Baru')}</span></div><div style="width:100%; font-size:13px; line-height:1.5;"><div><i class="fas fa-user"></i> <b>${escapeHTML(o.Nama_Pembeli)}</b></div><div><i class="fas fa-phone"></i> <a href="https://wa.me/${formatWaNumber(o.WhatsApp)}" target="_blank" rel="noopener noreferrer" style="color:#818cf8; text-decoration:none;">${escapeHTML(o.WhatsApp)}</a></div><div style="font-size:12px; color:#94a3b8; margin-top:2px;"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(o.Alamat)}</div></div><div style="width:100%; background:#0f172a; padding:10px; border-radius:10px;">${htmlItems}${rincianNotaAdmin}</div>${buktiHtml}<div style="display:flex; gap:10px; width:100%; margin-top:4px;"><select onchange="updateStatus('${escapeHTML(o.ID_Pesanan)}', this.value)" style="flex:1; background:#0f172a; color:white; border-color:#475569; padding:8px; border-radius:8px; font-size:12px;"><option value="" disabled selected>Ubah Status</option><option value="Baru">Baru</option><option value="Diproses">Diproses</option><option value="Dikirim">Dikirim</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div><div style="display:flex; gap:10px; width:100%; margin-top:4px;"><button class="btn btn-primary" style="flex:1; font-size:12px; padding:8px;" onclick="openNota('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-file-invoice"></i> Cetak Nota</button><button class="btn btn-outline" style="flex:1; font-size:12px; padding:8px; color:#ef4444; border-color:#ef4444;" onclick="deleteOrderAdmin('${escapeHTML(o.ID_Pesanan)}')"><i class="fas fa-trash"></i> Hapus</button></div></div>`;
                 }).join("") : "<div style='color:#94a3b8; text-align:center; padding:20px;'>Belum ada pesanan masuk.</div>";
                 
@@ -1017,6 +1012,7 @@
         async function deleteProductAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_product", "POST", {id: id}); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Dihapus"); } }
         async function saveSettings() { const s = { Nama_Toko: document.getElementById('setNamaToko').value, Alamat_Toko: document.getElementById('setAlamatToko').value, WhatsApp_Admin: document.getElementById('setWaAdmin').value, Logo_URL: document.getElementById('setLogoUrl').value, Info_Rekening: document.getElementById('setInfoRekening').value, QRIS_URL: document.getElementById('setQrisUrl').value, Warna_Tema: document.getElementById('setWarnaTema').value, Tarif_Kurir_Toko: document.getElementById('setTarifKurir').value }; const r = await fetchAPI("save_settings", "POST", s); if (r.status === 'success') { showToast("Disimpan!"); applyStoreTheme(s.Warna_Tema); loadAdminData(true); initApp(); } }
         async function resetPengunjungAdmin() { if(!(await customConfirm("Reset pengunjung hari ini menjadi 0?"))) return; const r = await fetchAPI("reset_visitor", "POST", {}); if(r.status === 'success') { document.getElementById('repPengunjung').innerText = "0"; showToast("Berhasil direset!"); } }
+        
         document.addEventListener("DOMContentLoaded", async function() { try { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); } catch(e) {} });
         document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'IMG') { e.preventDefault(); showToast("Gambar dilindungi", "error"); } });
     </script>
