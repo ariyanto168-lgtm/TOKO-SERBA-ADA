@@ -685,9 +685,16 @@
                 let badge = p.Label_Promo ? escapeHTML(p.Label_Promo) : (p.Unggulan === "Ya" ? "Pilihan" : "Promo");
                 
                 let hargaHtml = "";
-                if (Number(p.Harga_Promo) > 0) { hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`; } 
-                else if (Number(p.Harga_Grosir) > 0) { hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Grosir)}<span style="font-size:9px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`; } 
-                else { hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Normal)}</div>`; }
+                // LOGIKA REVISI: Tampilkan Promo dan Grosir Bersamaan
+                if (Number(p.Harga_Promo) > 0 && Number(p.Harga_Grosir) > 0) {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Promo)}</div><div style="font-size:10px; font-weight:700; color:var(--success);">Grosir: ${formatRp(p.Harga_Grosir)} <span style="font-weight:normal;">(Min 5)</span></div><span class="price-normal" style="color:var(--danger); font-size:9px;">${formatRp(p.Harga_Normal)}</span>`;
+                } else if (Number(p.Harga_Promo) > 0) {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`;
+                } else if (Number(p.Harga_Grosir) > 0) {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Grosir)}<span style="font-size:9px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`;
+                } else {
+                    hargaHtml = `<div style="font-size:13px; font-weight:800; color:var(--primary);">${formatRp(p.Harga_Normal)}</div>`;
+                }
 
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size:11px; width:100%; margin-top:6px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:6px; font-size:11px; width:100%; margin-top:6px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}', 1)">+ Beli</button>`;
                 
@@ -770,7 +777,18 @@
                 if (p.Terlaris === "Ya") { badgeHtml += `<div class="badge-katalog bg-terlaris" style="top: ${topOffset}px;">TERLARIS</div>`; topOffset += 24; }
                 if (p.Label_Promo) { badgeHtml += `<div class="badge-katalog bg-promo" style="top: ${topOffset}px;">${escapeHTML(p.Label_Promo)}</div>`; }
                 
-                let hrgHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>` : `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`);
+                let hrgHtml = "";
+                // LOGIKA REVISI: Tampilkan Promo dan Grosir Bersamaan
+                if (Number(p.Harga_Promo) > 0 && Number(p.Harga_Grosir) > 0) {
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)} <span class="price-normal" style="display:inline-block; font-size:10px; color:var(--danger); margin-left:4px;">${formatRp(p.Harga_Normal)}</span></div><div style="font-size:11px; font-weight:700; color:var(--success); margin-top:2px;">Grosir: ${formatRp(p.Harga_Grosir)}<span style="font-weight:normal; font-size:9px;">(Min 5)</span></div>`;
+                } else if (Number(p.Harga_Promo) > 0) {
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Promo)}</div><span class="price-normal" style="color:var(--danger);">${formatRp(p.Harga_Normal)}</span>`;
+                } else if (Number(p.Harga_Grosir) > 0) {
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Grosir)}<span style="font-size:10px; font-weight:normal;"> (Min 5)</span></div><span class="price-normal">Ecer: ${formatRp(p.Harga_Normal)}</span>`;
+                } else {
+                    hrgHtml = `<div class="price-final">${formatRp(p.Harga_Normal)}</div>`;
+                }
+
                 let isW = wishlist.find(w => w.id === p.ID_Produk);
                 let btn = Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="padding:6px; font-size: 11px;" disabled>Habis</button>` : `<button class="btn btn-primary" style="padding:8px 10px; font-size: 11px;" onclick="event.stopPropagation(); addToCart('${escapeHTML(p.ID_Produk)}')">+ Beli</button>`;
                 
@@ -782,7 +800,20 @@
             const p = allProducts.find(x => x.ID_Produk === id); if(!p) return;
             let wmText = `<div class="watermark" style="font-size:24px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
             let satuan = p.Satuan ? escapeHTML(p.Satuan) : "pcs";
-            let hargaHtml = Number(p.Harga_Promo) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>` : (Number(p.Harga_Grosir) > 0 ? `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Min 5)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>` : `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`);
+            
+            let hargaHtml = "";
+            let normalTeks = `<div style="text-decoration:line-through; color:var(--text-muted); font-size:14px;">Normal: ${formatRp(p.Harga_Normal)}</div>`;
+            
+            // LOGIKA REVISI: Tampilkan Promo dan Grosir Bersamaan di Popup
+            if (Number(p.Harga_Promo) > 0 && Number(p.Harga_Grosir) > 0) {
+                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div><div style="font-size:15px; font-weight:bold; color:var(--success); margin-bottom:4px;">Harga Grosir: ${formatRp(p.Harga_Grosir)} <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(Beli min 5 ${satuan})</span></div>${normalTeks}`;
+            } else if (Number(p.Harga_Promo) > 0) {
+                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--danger);">${formatRp(p.Harga_Promo)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan}</span></div>${normalTeks}`;
+            } else if (Number(p.Harga_Grosir) > 0) {
+                hargaHtml = `<div class="price-final" style="font-size:24px; color:var(--success);">${formatRp(p.Harga_Grosir)} <span style="font-size:14px; font-weight:normal; color:var(--text-main);">/${satuan} (Min 5)</span></div><div style="font-size:13px; color:var(--text-muted);">Ecer: ${formatRp(p.Harga_Normal)}</div>`;
+            } else {
+                hargaHtml = `<div class="price-final" style="font-size:24px;">${formatRp(p.Harga_Normal)} <span style="font-size:14px; color:var(--text-muted); font-weight:normal;">/${satuan}</span></div>`;
+            }
             
             document.getElementById('detailContent').innerHTML = `<div style="width: 100%; height: 280px; background: var(--bg); border-radius: 18px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;"><img src="${escapeHTML(p.Foto_URL)}" onerror="this.onerror=null;this.src=FALLBACK_IMG;" style="width: 100%; height: 100%; object-fit: contain; z-index:1;">${wmText}</div><div style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">${escapeHTML(p.Nama_Produk)}</div><div style="margin-bottom: 12px;">${hargaHtml}</div><div style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;"><i class="fas fa-box"></i> Stok: ${escapeHTML(p.Stok)}</div><div style="white-space: pre-wrap; margin-bottom:20px; font-size:14px; background:var(--bg); padding:16px; border-radius:12px; border: 1px solid var(--border);">${escapeHTML(p.Deskripsi) || "Tidak ada deskripsi."}</div><div class="sticky-bottom-bar">${Number(p.Stok) <= 0 ? `<button class="btn btn-secondary" style="width:100%; padding:14px;" disabled>Stok Habis</button>` : `<button class="btn btn-outline" style="flex:1; padding:14px;" onclick="addToCart('${escapeHTML(p.ID_Produk)}', 1)"><i class="fas fa-cart-plus"></i> Tambah</button><button class="btn btn-primary" style="flex:1; padding:14px;" onclick="addToCart('${escapeHTML(p.ID_Produk)}', 1); openCart();">Beli Sekarang</button>`}</div>`;
             document.getElementById('btnShareProduct').style.display = 'flex'; document.getElementById('btnShareProduct').onclick = () => shareProductWA(p.ID_Produk, p.Nama_Produk); document.getElementById('detailModal').style.display = 'flex';
@@ -790,7 +821,21 @@
 
         function updateAllCartPrices() {
             let totalQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
-            cart.forEach(item => { const p = allProducts.find(x => x && x.ID_Produk === item.id); if(p) { item.harga = Number(p.Harga_Promo) > 0 ? Number(p.Harga_Promo) : (totalQty >= 5 && Number(p.Harga_Grosir) > 0 ? Number(p.Harga_Grosir) : Number(p.Harga_Normal)); } });
+            
+            // LOGIKA REVISI: Perhitungan harga otomatis keranjang jika beli Grosir (>= 5)
+            cart.forEach(item => { 
+                const p = allProducts.find(x => x && x.ID_Produk === item.id); 
+                if (p) { 
+                    if (totalQty >= 5 && Number(p.Harga_Grosir) > 0) {
+                        // Jika ada promo dan grosir, pilih harga yang lebih menguntungkan pembeli (paling murah)
+                        item.harga = Number(p.Harga_Promo) > 0 ? Math.min(Number(p.Harga_Grosir), Number(p.Harga_Promo)) : Number(p.Harga_Grosir);
+                    } else if (Number(p.Harga_Promo) > 0) {
+                        item.harga = Number(p.Harga_Promo);
+                    } else {
+                        item.harga = Number(p.Harga_Normal);
+                    }
+                } 
+            });
             localStorage.setItem("TokoPrismaCart_v1", JSON.stringify(cart));
         }
 
