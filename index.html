@@ -8,14 +8,18 @@
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob: data: https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; img-src 'self' blob: data: https: http:; media-src 'self' blob: data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta name="description" content="Toko Online Resmi Terpercaya">
-    <meta property="og:title" content="TOKO PRISMA">
+    
+    <!-- METADATA UNTUK SHARE LINK WHATSAPP / SOSMED (OPEN GRAPH) -->
+    <meta property="og:title" id="ogTitle" content="TOKO PRISMA">
+    <meta property="og:description" id="ogDesc" content="Belanja hemat dan mudah di TOKO PRISMA. Toko Online Resmi Terpercaya.">
+    <!-- LINK LOGO TOKO PRISMA TERPASANG PERMANEN -->
+    <meta property="og:image" id="ogImage" content="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg"> 
     <meta property="og:type" content="website">
 
     <!-- LOGO URL BAR (FAVICON) -->
-    <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
+    <link id="favicon" rel="icon" type="image/png" href="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg">
     
-    <title>TOKO PRISMA - v6.22 Secure Pro</title>
+    <title id="mainTitle">TOKO PRISMA - v6.24 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -43,7 +47,7 @@
         body.dark-theme .header, body.dark-theme .bottom-nav { background: rgba(15, 23, 42, 0.9); border-color: var(--border); }
         .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; }
         .logo { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; flex: 1; }
-        .logo img { width: 44px; height: 44px; border-radius: 10px; display: none; object-fit: contain; flex-shrink: 0; background: var(--bg); border: 1px solid var(--border); } 
+        .logo img { width: 44px; height: 44px; border-radius: 10px; object-fit: contain; flex-shrink: 0; background: var(--bg); border: 1px solid var(--border); } 
         .logo-text-container { display: flex; flex-direction: column; justify-content: center; }
         #uiStoreName { font-size: 20px; font-weight: 800; color: var(--primary); line-height: 1.2; margin-bottom: 4px; }
         #uiHeaderAlamat { font-size: 11px; font-weight: 500; color: var(--text-muted); line-height: 1.5; }
@@ -75,9 +79,7 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
-        .scrolling-slider::-webkit-scrollbar, .category-menu-scroll::-webkit-scrollbar { 
-            display: none; 
-        }
+        .scrolling-slider::-webkit-scrollbar, .category-menu-scroll::-webkit-scrollbar { display: none; }
 
         .scroll-card { flex: 0 0 auto; margin-right: 15px; white-space: normal; width: 160px; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
         
@@ -169,7 +171,7 @@
         <header class="header">
             <div class="header-top">
                 <div class="logo" onclick="location.reload()">
-                    <img id="uiLogoImg" src="" alt="Logo">
+                    <img id="uiLogoImg" src="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg" alt="Logo">
                     <div class="logo-text-container"><span id="uiStoreName">TOKO PRISMA</span><span id="uiHeaderAlamat"></span></div>
                 </div>
                 <div class="header-actions">
@@ -206,7 +208,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.22 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.24 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -455,6 +457,13 @@
             if (typeof str !== 'string') return str;
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
         }
+        
+        // FUNGSI UPDATE META TAGS DINAMIS UNTUK SHARE SOSMED
+        function updateMetaTags(title, desc, img) {
+            if(title) { document.getElementById('ogTitle').setAttribute('content', title); document.getElementById('mainTitle').innerText = title + " - TOKO PRISMA"; }
+            if(desc) document.getElementById('ogDesc').setAttribute('content', desc);
+            if(img) document.getElementById('ogImage').setAttribute('content', img);
+        }
 
         try { document.getElementById('footerYear').innerText = new Date().getFullYear(); if (localStorage.getItem("TokoPrismaTheme_v1") === "dark") { document.body.classList.add("dark-theme"); document.getElementById("themelcon").innerText = "☀️"; } } catch(e) {}
 
@@ -508,7 +517,7 @@
             c.appendChild(t); setTimeout(() => { if(t.parentNode) t.remove(); }, 3500);
         }
 
-        function shareStoreLink() { let url = window.location.href.split('#')[0].split('?')[0]; let text = `Belanja hemat di *${storeSettings.Nama_Toko || 'TOKO PRISMA'}*! ${url}`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer'); }
+        function shareStoreLink() { let url = window.location.href.split('#')[0].split('?')[0]; let text = `Belanja hemat dan mudah di *${storeSettings.Nama_Toko || 'TOKO PRISMA'}*!\nCek tokonya sekarang: ${url}`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer'); }
         function shareProductWA(idProduk, namaProduk) { let url = window.location.href.split('#')[0].split('?')[0] + "?product=" + idProduk; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Cek produk *${namaProduk}* di TOKO PRISMA: ${url}`)}`, '_blank', 'noopener,noreferrer'); }
 
         async function fetchAPI(action, method = 'POST', data = {}, silent = false) {
@@ -748,7 +757,16 @@
             let alamatGabung = (storeSettings.Alamat_Toko ? escapeHTML(storeSettings.Alamat_Toko) : "") + (storeSettings.WhatsApp_Admin ? `<br><i class="fab fa-whatsapp" style="color:var(--success);"></i> ` + escapeHTML(storeSettings.WhatsApp_Admin) : "");
             if(alamatGabung) { document.getElementById('uiHeaderAlamat').innerHTML = alamatGabung; document.getElementById('uiHeaderAlamat').style.display = "block"; } else { document.getElementById('uiHeaderAlamat').style.display = "none"; }
             
-            if(storeSettings.Logo_URL) { document.getElementById('uiLogoImg').src = escapeHTML(storeSettings.Logo_URL); document.getElementById('uiLogoImg').style.display = "block"; document.getElementById('favicon').href = escapeHTML(storeSettings.Logo_URL); }
+            if(storeSettings.Logo_URL) { 
+                document.getElementById('uiLogoImg').src = escapeHTML(storeSettings.Logo_URL); 
+                if(!window.location.search.includes('product=')) {
+                    updateMetaTags(storeSettings.Nama_Toko, "Toko Online Resmi Terpercaya", storeSettings.Logo_URL);
+                }
+            } else {
+                if(!window.location.search.includes('product=')) {
+                    updateMetaTags("TOKO PRISMA", "Toko Online Resmi Terpercaya", "https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg");
+                }
+            }
             if(storeSettings.Warna_Tema) applyStoreTheme(storeSettings.Warna_Tema);
             tarifKurir = parseInt(storeSettings.Tarif_Kurir_Toko) || 0;
             renderScrollingCatalog(allProducts); renderCategoriesMenu(); handleSort();
@@ -815,6 +833,10 @@
 
         function openProductDetail(id) {
             const p = allProducts.find(x => x.ID_Produk === id); if(!p) return;
+            
+            // INJEKSI META TAGS SAAT PRODUK DIBUKA (UNTUK SHARE LINK GAMBAR PRODUK)
+            updateMetaTags(p.Nama_Produk, (p.Deskripsi ? p.Deskripsi.substring(0,100) : "Beli " + p.Nama_Produk + " di TOKO PRISMA"), p.Foto_URL);
+
             let wmText = `<div class="watermark" style="font-size:24px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
             let satuan = p.Satuan ? escapeHTML(p.Satuan) : "pcs";
             
