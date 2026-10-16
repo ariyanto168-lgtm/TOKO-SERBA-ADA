@@ -6,7 +6,7 @@
     
     <!-- KEAMANAN ANTI-PHISHING & CSP -->
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob: data: https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; img-src 'self' blob: data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' blob: data: https://script.google.com https://script.googleusercontent.com https://cdnjs.cloudflare.com https://api.whatsapp.com; img-src 'self' blob: data: https: http:; media-src 'self' blob: data: https: http:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="description" content="Toko Online Resmi Terpercaya">
     <meta property="og:title" content="TOKO PRISMA">
@@ -15,7 +15,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏪</text></svg>">
     
-    <title>TOKO PRISMA - v6.19 Secure Pro</title>
+    <title>TOKO PRISMA - v6.20 Secure Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -23,7 +23,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; transition: background 0.3s; }
         @media print { body { background: white !important; } body > *:not(#notaModal) { display: none !important; } #notaModal { display: block !important; position: static !important; background: white !important; height: auto !important; } .modal-content { box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; max-width: 100% !important; } .no-print { display: none !important; } #notaPrintArea, #notaPrintArea * { color: black !important; font-family: 'Courier New', Courier, monospace !important; } }
-        img { -webkit-user-drag: none; user-select: none; -webkit-touch-callout: none; }
+        img, video { -webkit-user-drag: none; user-select: none; -webkit-touch-callout: none; }
         .loading-bar { height: 3px; background: var(--primary); width: 0%; position: fixed; top: 0; left: 0; z-index: 9999; display: none; transition: width 0.3s ease; }
         .btn { padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; text-align: center; font-size: 14px; transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn:active { transform: scale(0.97); } .btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -59,8 +59,9 @@
         }
         .banner-container-wrapper { padding: 18px 20px 0 20px; max-width: 1200px; margin: 0 auto; display: none; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; scrollbar-width: none; border-radius: 20px; }
-        .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--bg); animation: permanentPulse 3s infinite ease-in-out; }
-        .banner-item img { width: 100%; max-height: 220px; object-fit: contain; display: block; margin: 0 auto; }
+        .banner-item { min-width: 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--bg); animation: permanentPulse 3s infinite ease-in-out; display: flex; align-items: center; justify-content: center; position: relative; }
+        /* Dukungan untuk tag img maupun video dalam banner */
+        .banner-item img, .banner-item video { width: 100%; max-height: 220px; object-fit: contain; display: block; margin: 0 auto; }
         
         /* CSS AUTO-SCROLL */
         .scrolling-catalog-wrapper { padding: 20px 0 5px 0; max-width: 1200px; margin: 0 auto; display: none; }
@@ -205,7 +206,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.19 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.20 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -608,11 +609,19 @@
             btn.disabled = false; btn.innerHTML = 'Kirim';
         }
 
+        // --- SISTEM BANNER VIDEO / GAMBAR ---
         function renderBanners(banners) {
             const wrapper = document.getElementById('bannerWrapper');
             if (!banners || !banners.length) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
-            document.getElementById('bannerContainer').innerHTML = banners.map(b => `<div class="banner-item"><img src="${escapeHTML(b.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"></div>`).join('');
+            document.getElementById('bannerContainer').innerHTML = banners.map(b => {
+                let isVideo = b.Foto_URL && (b.Foto_URL.toLowerCase().includes('.mp4') || b.Foto_URL.toLowerCase().includes('.webm'));
+                if (isVideo) {
+                    return `<div class="banner-item"><video src="${escapeHTML(b.Foto_URL)}" autoplay loop muted playsinline></video></div>`;
+                } else {
+                    return `<div class="banner-item"><img src="${escapeHTML(b.Foto_URL)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG;"></div>`;
+                }
+            }).join('');
         }
 
         // --- SISTEM AUTO-SCROLL MONDAR-MANDIR MULTRA SMOOTH (requestAnimationFrame) ---
@@ -1007,7 +1016,7 @@
         async function deleteOrderAdmin(id) { if(!(await customConfirm("Hapus pesanan ini permanen?"))) return; const r = await fetchAPI("delete_order", "POST", {id: id}); if(r.status === 'success') { showToast("Pesanan Dihapus"); loadAdminData(true); } else { showToast(r.message, "error"); } }
         async function resetAllOrdersAdmin() { if(!(await customConfirm("PERINGATAN! Hapus SEMUA riwayat pesanan?"))) return; let pinConfirm = await customPrompt("Masukkan PIN Admin:", "password"); if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN salah!", "error"); return; } const r = await fetchAPI("reset_orders", "POST", {}); if(r.status === 'success') { showToast("Semua riwayat pesanan dihapus!"); loadAdminData(); } }
         async function changePinAdmin() { let newPin = document.getElementById('setNewPin').value; if(newPin.length < 4) { showToast("PIN minimal 4 karakter!", "error"); return; } const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin }); if(r.status === 'success') { showToast("PIN diubah!"); sessionStorage.setItem("TokoPrisma_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } }
-        async function openBannerModal() { let url = await customPrompt("URL Banner (Contoh: https://i.ibb.co/banner.jpg):", "text"); if (url) submitBannerAdmin(url); }
+        async function openBannerModal() { let url = await customPrompt("URL Banner (Contoh: https://i.ibb.co/banner.jpg atau video.mp4):", "text"); if (url) submitBannerAdmin(url); }
         async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Banner ditambah"); } }
         async function deleteBannerAdmin(id) { if(!(await customConfirm("Hapus?"))) return; const r = await fetchAPI("delete_banner", "POST", { id: id }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Dihapus"); } }
         function openProductModal() { ['formIdProduk', 'formFotoUrl', 'formFotoBase64', 'formFileFoto', 'formNama', 'formKategori', 'formDeskripsi', 'formHargaPromo', 'formLabelPromo', 'formHargaNormal', 'formHpp', 'formHargaGrosir'].forEach(id => document.getElementById(id).value = ""); document.getElementById('formStok').value = "10"; document.getElementById('formSatuan').value = "pcs"; document.getElementById('formBadge').value = ""; document.getElementById('imagePreview').style.display = 'none'; document.getElementById('imageUploadStatus').innerText = "Pilih foto."; if (adminActiveCategory !== "Semua") { document.getElementById('formKategori').value = adminActiveCategory; } document.getElementById('productModal').style.display = 'flex'; }
@@ -1025,7 +1034,7 @@
         async function resetPengunjungAdmin() { if(!(await customConfirm("Reset pengunjung hari ini menjadi 0?"))) return; const r = await fetchAPI("reset_visitor", "POST", {}); if(r.status === 'success') { document.getElementById('repPengunjung').innerText = "0"; showToast("Berhasil direset!"); } }
         
         document.addEventListener("DOMContentLoaded", async function() { try { updateCartBadge(); updateWishlistBadge(); await initApp(); checkAdminAccess(); } catch(e) {} });
-        document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'IMG') { e.preventDefault(); showToast("Gambar dilindungi", "error"); } });
+        document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') { e.preventDefault(); showToast("Media dilindungi", "error"); } });
     </script>
 </body>
 </html>
