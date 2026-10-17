@@ -12,14 +12,14 @@
     <!-- METADATA UNTUK SHARE LINK WHATSAPP / SOSMED (OPEN GRAPH) -->
     <meta property="og:title" id="ogTitle" content="TOKO PRISMA">
     <meta property="og:description" id="ogDesc" content="Belanja hemat dan mudah di TOKO PRISMA. Toko Online Resmi Terpercaya.">
-    <!-- LINK LOGO TOKO PRISMA TERPASANG PERMANEN -->
-    <meta property="og:image" id="ogImage" content="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg"> 
+    <!-- LINK LOGO TOKO PRISMA TERPASANG PERMANEN (WA BOT HANYA BACA INI DI GITHUB PAGES) -->
+    <meta property="og:image" id="ogImage" itemprop="image" content="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg"> 
     <meta property="og:type" content="website">
 
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg">
     
-    <title id="mainTitle">TOKO PRISMA - v6.24 Secure Pro</title>
+    <title id="mainTitle">TOKO PRISMA - v6.25</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -208,7 +208,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.24 Secure Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.25 Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -358,7 +358,7 @@
                 <div class="form-group"><label>PIN Admin Baru</label><input type="password" id="setNewPin" placeholder="Minimal 4-6 digit"></div>
                 <button class="btn btn-success" style="width: 100%; margin-top:14px;" onclick="changePinAdmin()"><i class="fas fa-key"></i> Simpan PIN Baru</button>
             </div>
-            <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155;">
+            <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px;">
                 <h3 style="margin-bottom:16px; color:#f8fafc;"><i class="fas fa-cog"></i> Pengaturan Toko</h3>
                 <div class="form-group"><label>Nama Toko</label><input type="text" id="setNamaToko" placeholder="Contoh: TOKO PRISMA"></div>
                 <div class="form-group"><label>Alamat Lengkap Toko</label><textarea id="setAlamatToko" rows="2" placeholder="Jalan..."></textarea></div>
@@ -369,6 +369,12 @@
                 <div class="form-group"><label>Info Rekening Bank</label><textarea id="setInfoRekening" rows="2" placeholder="BCA 12345 a/n Toko"></textarea></div>
                 <div class="form-group"><label>Link URL Gambar QRIS</label><input type="text" id="setQrisUrl" placeholder="https://..."></div>
                 <button class="btn btn-primary" style="width: 100%; margin-top:20px;" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan & Tema</button>
+            </div>
+            
+            <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px;">
+                <h3 style="margin-bottom:16px; color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Zona Berbahaya</h3>
+                <p style="font-size:12px; color:#94a3b8; margin-bottom:14px;">Tindakan ini tidak dapat dibatalkan.</p>
+                <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="resetAllReviewsAdmin()"><i class="fas fa-trash"></i> Hapus Semua Ulasan</button>
             </div>
         </div>
     </div>
@@ -619,7 +625,7 @@
             btn.disabled = false; btn.innerHTML = 'Kirim';
         }
 
-        // --- SISTEM BANNER AUTO-SLIDE BERGANTIAN PERMANEN ---
+        // --- SISTEM BANNER AUTO-SLIDE 12 DETIK ---
         function initBannerAutoSlide() {
             const container = document.getElementById('bannerContainer');
             if (!container) return;
@@ -648,7 +654,7 @@
                         behavior: 'smooth'
                     });
                 }
-            }, 4000);
+            }, 12000); // REVISI: Diubah ke 12 Detik (12000 ms)
         }
 
         function renderBanners(banners) {
@@ -834,7 +840,7 @@
         function openProductDetail(id) {
             const p = allProducts.find(x => x.ID_Produk === id); if(!p) return;
             
-            // INJEKSI META TAGS SAAT PRODUK DIBUKA (UNTUK SHARE LINK GAMBAR PRODUK)
+            // INJEKSI META TAGS SAAT PRODUK DIBUKA
             updateMetaTags(p.Nama_Produk, (p.Deskripsi ? p.Deskripsi.substring(0,100) : "Beli " + p.Nama_Produk + " di TOKO PRISMA"), p.Foto_URL);
 
             let wmText = `<div class="watermark" style="font-size:24px;">${escapeHTML(storeSettings.Nama_Toko || 'TOKO PRISMA')}</div>`;
@@ -1051,6 +1057,21 @@
         }
         async function deleteOrderAdmin(id) { if(!(await customConfirm("Hapus pesanan ini permanen?"))) return; const r = await fetchAPI("delete_order", "POST", {id: id}); if(r.status === 'success') { showToast("Pesanan Dihapus"); loadAdminData(true); } else { showToast(r.message, "error"); } }
         async function resetAllOrdersAdmin() { if(!(await customConfirm("PERINGATAN! Hapus SEMUA riwayat pesanan?"))) return; let pinConfirm = await customPrompt("Masukkan PIN Admin:", "password"); if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN salah!", "error"); return; } const r = await fetchAPI("reset_orders", "POST", {}); if(r.status === 'success') { showToast("Semua riwayat pesanan dihapus!"); loadAdminData(); } }
+        
+        // --- FUNGSI REVISI: TOMBOL HAPUS SEMUA ULASAN ---
+        async function resetAllReviewsAdmin() { 
+            if(!(await customConfirm("PERINGATAN! Hapus SEMUA ulasan pelanggan permanen?"))) return; 
+            let pinConfirm = await customPrompt("Masukkan PIN Admin:", "password"); 
+            if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN salah!", "error"); return; } 
+            const r = await fetchAPI("reset_reviews", "POST", {}); 
+            if(r.status === 'success') { 
+                showToast("Semua ulasan berhasil dihapus!"); 
+                loadAdminData(); 
+            } else {
+                showToast(r.message || "Gagal menghapus ulasan.", "error");
+            }
+        }
+
         async function changePinAdmin() { let newPin = document.getElementById('setNewPin').value; if(newPin.length < 4) { showToast("PIN minimal 4 karakter!", "error"); return; } const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin }); if(r.status === 'success') { showToast("PIN diubah!"); sessionStorage.setItem("TokoPrisma_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } }
         async function openBannerModal() { let url = await customPrompt("URL Banner (Contoh: https://i.ibb.co/banner.jpg atau video.mp4):", "text"); if (url) submitBannerAdmin(url); }
         async function submitBannerAdmin(url) { const r = await fetchAPI("save_banner", "POST", { Foto_URL: url }); if(r.status === 'success') { loadAdminData(true); initApp(); showToast("Banner ditambah"); } }
