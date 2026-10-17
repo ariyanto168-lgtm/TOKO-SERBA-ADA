@@ -19,7 +19,7 @@
     <!-- LOGO URL BAR (FAVICON) -->
     <link id="favicon" rel="icon" type="image/png" href="https://i.ibb.co.com/6cXZJ7K5/Tokoprisma.jpg">
     
-    <title id="mainTitle">TOKO PRISMA - v6.25</title>
+    <title id="mainTitle">TOKO PRISMA - v6.26</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --primary: #6366f1; --primary-gradient: linear-gradient(135deg, var(--primary) 0%, #ec4899 100%); --primary-light: rgba(99, 102, 241, 0.1); --secondary: #f59e0b; --danger: #ef4444; --success: #10b981; --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-hover: #cbd5e1; }
@@ -208,7 +208,7 @@
         <div class="footer" style="text-align: center; padding: 20px 20px 30px 20px; color: var(--text-muted); font-size: 12px;">
             &copy; <span id="footerYear"></span> <span id="footerName" style="font-weight:bold;">TOKO PRISMA</span><br>
             <div style="margin-top:14px; font-weight:bold; color:var(--text-main); font-size:13px;">Powered by Ari GPM</div>
-            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.25 Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
+            <div style="margin-top: 4px; font-size: 11px; opacity: 0.5;"><span onclick="openAdminLogin()" style="cursor:pointer;" title="Versi Aplikasi">v6.26 Pro <i class="fas fa-shield-alt" style="color:var(--success);"></i></span></div>
         </div>
 
         <nav class="bottom-nav">
@@ -374,7 +374,7 @@
             <div style="background:#1e293b; padding:24px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px;">
                 <h3 style="margin-bottom:16px; color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Zona Berbahaya</h3>
                 <p style="font-size:12px; color:#94a3b8; margin-bottom:14px;">Tindakan ini tidak dapat dibatalkan.</p>
-                <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="resetAllReviewsAdmin()"><i class="fas fa-trash"></i> Hapus Semua Ulasan</button>
+                <button id="btnResetUlasan" class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="resetAllReviewsAdmin()"><i class="fas fa-trash"></i> Hapus Semua Ulasan</button>
             </div>
         </div>
     </div>
@@ -1063,13 +1063,21 @@
             if(!(await customConfirm("PERINGATAN! Hapus SEMUA ulasan pelanggan permanen?"))) return; 
             let pinConfirm = await customPrompt("Masukkan PIN Admin:", "password"); 
             if(pinConfirm !== sessionStorage.getItem("TokoPrisma_AdminToken")) { showToast("PIN salah!", "error"); return; } 
+            
+            const btn = document.getElementById('btnResetUlasan');
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghapus...'; }
+
             const r = await fetchAPI("reset_reviews", "POST", {}); 
             if(r.status === 'success') { 
+                allReviews = []; // Kosongkan data ulasan di layar
+                localStorage.removeItem("TokoPrismaCache_Catalog_v2"); // Hapus cache HP agar tidak nyangkut
                 showToast("Semua ulasan berhasil dihapus!"); 
-                loadAdminData(); 
+                loadAdminData(true); 
+                initApp(); // Panggil ulang data toko
             } else {
-                showToast(r.message || "Gagal menghapus ulasan.", "error");
+                showToast(r.message || "Gagal menghapus ulasan di database.", "error");
             }
+            if(btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-trash"></i> Hapus Semua Ulasan'; }
         }
 
         async function changePinAdmin() { let newPin = document.getElementById('setNewPin').value; if(newPin.length < 4) { showToast("PIN minimal 4 karakter!", "error"); return; } const r = await fetchAPI("change_admin_pin", "POST", { new_pin: newPin }); if(r.status === 'success') { showToast("PIN diubah!"); sessionStorage.setItem("TokoPrisma_AdminToken", newPin); document.getElementById('setNewPin').value = ""; } }
